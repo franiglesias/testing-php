@@ -1,0 +1,15 @@
+2017-05-19-del-ojimetro-al-tdd.md
+2017-11-19-tdd-en-php-un-ejemplo-con-colecciones-1.md
+2017-11-21-tdd-en-php-un-ejemplo-con-colecciones-2.md
+2017-11-24-tdd-en-php-un-ejemplo-con-colecciones-3.md
+2017-11-25-tdd-en-php-un-ejemplo-con-colecciones-4.md
+2017-11-30-tdd-en-php-un-ejemplo-con-colecciones-5.md
+2018-01-30-code-coverage-para-mejores-tests.md
+2018-02-08-luhn-kata-python.md
+2018-03-11-tdd-babysteps.md
+2018-03-22-test-doubles-1.md
+2018-04-01-test-doubles-2.md
+2018-04-14-testear-lo-impredecible.md
+2018-04-25-psicologia-de-los-test.md
+2018-05-01-tdd-boolean-validator.md
+2018-06-03-clean-testing.md
