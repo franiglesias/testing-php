@@ -1,21 +1,6 @@
----
-layout: post
-title: TDD en PHP. Un ejemplo con colecciones (4)
-categories: articles
-tags:  tdd php 
----
-
+# TDD en PHP. Un ejemplo con colecciones (4)
 
 Con lo pequeñita que es la clase Collection y está dando para un montón de artículos. En esta cuarta entrega voy a intentar desarrollar el método `filter`, el cual también nos dará un punto de partida para otros métodos.
-
-La serie **TDD en PHP: un ejemplo con colecciones** está compuesta de los siguientes artículos:
-
-[TDD en PHP: un ejemplo con colecciones (1)](/tdd-en-php-un-ejemplo-con-colecciones-1)  
-[TDD en PHP: un ejemplo con colecciones (2): método each](/tdd-en-php-un-ejemplo-con-colecciones-2)  
-[TDD en PHP: un ejemplo con colecciones (3): método map](/tdd-en-php-un-ejemplo-con-colecciones-3)  
-[TDD en PHP: un ejemplo con colecciones (4): filter y getBy](/tdd-en-php-un-ejemplo-con-colecciones-4)  
-[TDD en PHP: un ejemplo con colecciones (5): métodos de utilidad](/tdd-en-php-un-ejemplo-con-colecciones-5)
-
 
 Y nuestra lista de tareas había quedado así:
 

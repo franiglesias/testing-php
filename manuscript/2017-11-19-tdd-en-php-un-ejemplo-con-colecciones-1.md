@@ -1,22 +1,8 @@
----
-layout: post
-title: TDD en PHP. Un ejemplo con colecciones (1)
-categories: articles
-tags:  tdd php 
----
+# TDD en PHP. Un ejemplo con colecciones (1)
 
 Arrays… 
 
 En PHP hemos utilizado arrays para todo tipo de cosas: listas, diccionarios, persistencia en memoria, registros y un largo etcétera.
-
-La serie **TDD en PHP: un ejemplo con colecciones** está compuesta de los siguientes artículos:
-
-[TDD en PHP: un ejemplo con colecciones (1)](/tdd-en-php-un-ejemplo-con-colecciones-1)  
-[TDD en PHP: un ejemplo con colecciones (2): método each](/tdd-en-php-un-ejemplo-con-colecciones-2)  
-[TDD en PHP: un ejemplo con colecciones (3): método map](/tdd-en-php-un-ejemplo-con-colecciones-3)  
-[TDD en PHP: un ejemplo con colecciones (4): filter y getBy](/tdd-en-php-un-ejemplo-con-colecciones-4)  
-[TDD en PHP: un ejemplo con colecciones (5): métodos de utilidad](/tdd-en-php-un-ejemplo-con-colecciones-5)
-
 
 Lo malo de los arrays es que necesitan mucha supervisión adulta. Al fin y al cabo, nada nos impide hacer cosas como estas:
 

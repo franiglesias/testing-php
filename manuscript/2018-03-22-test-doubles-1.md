@@ -1,9 +1,4 @@
----
-layout: post
-title: Test doubles (1)
-categories: articles
-tags:  testing php
----
+# Test doubles (1)
 
 Estaba pensando en comenzar el artículo con la manida metáfora de los *test doubles* como especialistas de cine, los que doblan a los actores en ciertas escenas, no necesariamente peligrosas. Pero cuando más vueltas le doy, menos claro tengo que sea un buen símil.
 
