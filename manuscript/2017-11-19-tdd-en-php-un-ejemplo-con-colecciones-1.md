@@ -19,11 +19,11 @@ Una solución es encapsular el array en algún tipo de objeto Collection, que se
 
 Existen diversas librerías que aportan colecciones en PHP, a Google pronto:
 
-https://github.com/morrisonlevi/Ardent
-https://github.com/allebb/collection
-https://github.com/emonkak/php-collection
-https://dusankasan.github.io/Knapsack/
-http://jmsyst.com/libs/php-collection
+https://github.com/morrisonlevi/Ardent  
+https://github.com/allebb/collection  
+https://github.com/emonkak/php-collection  
+https://dusankasan.github.io/Knapsack/  
+http://jmsyst.com/libs/php-collection  
 
 Incluso parece que tendremos una implementación canónica en un futuro
 
@@ -124,7 +124,7 @@ Nuestra lista de tareas empieza a tener algunos elementos menos:
 
 * Poder añadir elementos a la colección
 * Que estos elementos sean objetos
-* <del datetime="2017-11-19T22:53:05+01:00">Que pueda decirnos cuántos objetos está almacenando</del>
+* ~~Que pueda decirnos cuántos objetos está almacenando~~
 * Que sólo pueda añadir objetos de la misma clase o interfaz
 * Que pueda añadir objetos de subclases de la original
 * Que pueda iterar a través de todos los elementos y hacer algo con ellos (each)
@@ -242,9 +242,9 @@ El caso es que nuestra implementación era bastante obvia y resulta que es la im
 
 Repasemos lo conseguido hasta ahora:
 
-* <del datetime="2017-11-19T22:53:32+01:00">Poder añadir elementos a la colección</del>
+* ~~Poder añadir elementos a la colección~~
 * Que estos elementos sean objetos
-* <del datetime="2017-11-19T22:53:40+01:00">Que pueda decirnos cuántos objetos está almacenando</del>
+* ~~Que pueda decirnos cuántos objetos está almacenando~~
 * Que sólo pueda añadir objetos de la misma clase o interfaz
 * Que pueda añadir objetos de subclases de la original
 * Que pueda iterar a través de todos los elementos y hacer algo con ellos (each)
@@ -378,7 +378,7 @@ Ahora podemos crear Collections con tipo, pero quizá deberíamos parar un momen
 
 Refactorizamos los tests porque son parte integral de nuestro desarrollo. Y como también son código deberíamos aplicar las mismas buenas prácticas que a nuestro código de producción.
 
-En este caso debería ser evidente que hay una duplicación importante: cada vez que instanciamos nuestro _Subject Under Test_ repetimos el mimso código y, aunque puede parecer trivial, nos conviene reducirla extrayendo el código común a un método.
+En este caso debería ser evidente que hay una duplicación importante: cada vez que instanciamos nuestro _Subject Under Test_ repetimos el mismo código y, aunque puede parecer trivial, nos conviene reducirla extrayendo el código común a un método.
 
 También hay una repetición en los dos test que inicializan Collection especificando un tipo, así que también lo extraemos:
 
@@ -561,7 +561,7 @@ class CollectionTest extends TestCase
 }
 ```
 
-Nuestro test fallará. Esto es por que nuestro control del tipo es demasiado estricto, podemos relajarlo con is_a, una función que nos dice si un objeto es, o hereda, de la clase indicada:
+Nuestro test fallará. Esto es por que nuestro control del tipo es demasiado estricto, podemos relajarlo con `is_a`, una función que nos dice si un objeto es, o hereda, de la clase indicada:
 
 ```php
 <?php
@@ -641,11 +641,11 @@ class Collection
 
 Por fin, podemos tachar algunos elementos de nuestra lista:
 
-* <del datetime="2017-11-19T22:54:11+01:00">Poder añadir elementos a la colección</del>
-* <del datetime="2017-11-19T22:54:14+01:00">Que estos elementos sean objetos</del>
-* <del datetime="2017-11-19T22:54:18+01:00">Que pueda decirnos cuántos objetos está almacenando</del>
-* <del datetime="2017-11-19T22:54:22+01:00">Que sólo pueda añadir objetos de la misma clase o interfaz</del>
-* <del datetime="2017-11-19T22:54:27+01:00">Que pueda añadir objetos de subclases de la original</del>
+* ~~Poder añadir elementos a la colección~~
+* ~~Que estos elementos sean objetos~~
+* ~~Que pueda decirnos cuántos objetos está almacenando~~
+* ~~Que sólo pueda añadir objetos de la misma clase o interfaz~~
+* ~~Que pueda añadir objetos de subclases de la original~~
 * Que pueda iterar a través de todos los elementos y hacer algo con ellos (each)
 * Que pueda devolver un array de transformaciones de los objetos (map)
 * Que pueda devolver una Collection de objetos filtrados conforme a un criterio (filter)
@@ -1041,6 +1041,6 @@ Lo interesante creo que está en el proceso seguido y en algunas técnicas que h
 * El uso de técnicas self-shunt para evitar tener que crear clases o dobles para ciertos tests.
 * El uso de métodos factoría en los tests para crear instancias de nuestro _Subject Under Test_, gracias a lo cual podemos controlar más fácilmente los parámetros de creación si los hubiese.
 
-Y esto es todo, de momento. En la próxima entrega añadiremos comportamientos que nos permitirán hacer cosas interesantes con nuestra Collection y trataremos de hacerlo de manera intersante también.
+Y esto es todo, de momento. En la próxima entrega añadiremos comportamientos que nos permitirán hacer cosas interesantes con nuestra Collection y trataremos de hacerlo de manera interesante también.
 
-Recuerda que el [código del proyecto puedes verlo en github](https://github.com/franiglesias/collections)./)
+Recuerda que el [código del proyecto puedes verlo en github](https://github.com/franiglesias/collections)
