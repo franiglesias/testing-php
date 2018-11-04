@@ -1,3 +1,5 @@
+# Testing desde cero
+
 En realidad, ya sabes testear software. Lo haces a todas horas. En último término, testear software es comprobar que un programa funciona como se desea que funcione y hace aquello que esperamos que haga. Y esto es algo que sucede cada vez que escribimos una pieza de código.
 
 Ahora bien, esta forma de testeo manual o natural no resulta ni lo suficientemente sólida ni rigurosa como para permitirnos argumentar que nuestro código funciona correctamente. El mismo código trasladado a otro entorno podría funcionar mal, o generar errores porque no hemos tenido en cuenta controlar las diferencias entre nuestro espacio de desarrollo y el de producción.
