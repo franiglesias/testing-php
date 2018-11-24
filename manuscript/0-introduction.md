@@ -1,8 +1,8 @@
-# Del ojímetro al tdd
+# Introducción: Del ojímetro al tdd
 
-Porque todos tenemos spaghetti apestando en el armario.
+Porque todos tenemos spaghetti apestando en el armario y en algún momento hay que limpiarlo.
 
-Cuando empiezas a programar en PHP (y cualquier otro lenguaje, para el caso) sin tener una formación sistemática muchas veces te guías por "arroutadas", es decir por ocurrencias: abres un editor y comienzas a picar código como si te fuera la vida en ello. Al final del día obtienes una gran bola de lodo que, más o menos, funciona y que a ti te parece la versión informática de la Gioconda. O algo así.
+Cuando empiezas a programar en PHP (y cualquier otro lenguaje, para el caso) sin tener una formación sistemática muchas veces te guías por ocurrencias: abres un editor y comienzas a picar código como si te fuera la vida en ello. Al final del día obtienes una gran bola de lodo que, más o menos, funciona y que a ti te parece la versión informática de la Gioconda. O algo así.
 
 Claro que, al día siguiente, algo falla. Siempre falla. Vuelves a la gran bola de lodo, te pringas, y arreglas lo que fallaba.
 
@@ -10,13 +10,19 @@ El problema es cuando falla unos días después, y ya no tienes ni idea de qué 
 
 Y el ciclo se repite.
 
-¿Y cómo sabes que la cosa funciona? Bueno… Pues viendo que subido a producción "No falla" (hasta que lo hace). Lo que viene siendo un "testing manual" o, con un lenguaje más técnico, testing a ojímetro (eyemeter testing).
+¿Y cómo sabes que la cosa funciona? Bueno… Pues viendo que subido a producción "No falla" (hasta que lo hace). Lo que viene siendo un "testing manual" o, con un lenguaje más técnico, testing a *ojímetro*.
+
+Todos y todas tenemos código basura en alguna parte. Da igual los años de experiencia: las prisas, un análisis descuidado del problema, el enrocarnos en una solución y otros muchos motivos hacen que hagamos código que, visto en retrospectiva, nos parece una basura.
+
+Y eso está bien. Lo importante es tener la capacidad de aprender a partir de eso.
+
+Ocurre lo mismo con el testing. Es posible que hayas pasado años escribiendo código que funciona en producción sin  haber escrito un sólo test que lo cubra. Simplemente ocurre que ahora quieres tener más garantías, por ti, por tu equipo y por tu proyecto.
 
 ## Entonces descubres los tests
 
-Mi primer contacto con las suites de tests fue con SimpleTest (indirectamente a través de la suite de tests de CakePHP).
+Mi primer contacto con las suites de tests fue con SimpleTest, indirectamente a través de la suite de tests de CakePHP.
 
-No digo que fuese una epifanía. Al principio no entendía ni torta, con todo el rollo de las aserciones y los mocks. Al fin y al cabo, testear ActiveRecord no es precisamente ni lo más fácil para uno que empieza ni lo más recomendable, y en un framework MVC es casi inevitable.
+No puedo decir que fuese una *epifanía*. Al principio no entendía ni torta, con todo el rollo de las aserciones y los mocks. Al fin y al cabo, testear ActiveRecord no es precisamente ni lo más fácil para uno que empieza ni lo más recomendable, y en un framework MVC es casi inevitable. Incluso algo tan simple como la idea de ejecutar un trozo de código dentro de otro código (el test) resultaba extraña.
 
 Sencillamente dicho: **un test no es más que un programa simple que comprueba si el resultado de otro programa (o unidad de software, ya sea una función o un método de un objeto) devuelve el resultado que se espera tras pasarle unos parámetros**.
 
@@ -24,7 +30,7 @@ Al principio haces post-tests: tienes un montón de código escrito y te has dad
 
 Los post-tests no son perfectos pero son útiles y son el primer paso para poner un poco de orden en lo que escribes. Gracias a esos tests empiezas a manejar el refactoring, aunque no lo llames así todavía.
 
-[Michael Feathers](https://michaelfeathers.silvrback.com), que de refactoring y legacy sabe un rato, llama a estos tests "[Tests de caracterización](https://michaelfeathers.silvrback.com/characterization-testing)". Son los que se hacen para describir y/o descubrir el comportamiento actual de un módulo de software legacy y como primer paso para reescribirlo. Con este test tendríamos una red de seguridad para ir haciendo los cambios necesarios.
+[Michael Feathers](https://michaelfeathers.silvrback.com), que de refactoring y legacy sabe un rato, llama a estos tests "[Tests de caracterización](https://michaelfeathers.silvrback.com/characterization-testing)". Son los que se hacen para describir y/o descubrir el comportamiento actual de un módulo de software *legacy* y como primer paso para reescribirlo. Con este test tendríamos una red de seguridad para ir haciendo los cambios necesarios.
 
 Pero en realidad, estoy siendo demasiado impreciso. Es necesario parar un momento y ser un poco más sistemático.
 
@@ -36,7 +42,7 @@ El control de calidad del software engloba un montón de tipos de pruebas, que p
 
 **Pruebas no funcionales:** que tratan de medir cómo lo hace a través de métricas más genéricas como el rendimiento, la capacidad de carga, la velocidad, la capacidad de recuperación, etc.
 
-En realidad, usamos muy alegremente la palabra test, con sentidos más genéricos o más restringidos, lo que puede llevar a cierta confusión.
+En realidad, usamos muy alegremente la palabra **test**, con sentidos más genéricos o más restringidos, lo que puede llevar a cierta confusión.
 
 Muchas veces, cuando hablamos de tests, nos estamos refiriendo únicamente a un subconjunto de los variados tipos de pruebas funcionales y, precisamente, ese es el contenido de este artículo.
 
@@ -48,9 +54,11 @@ Para empezar, no estamos definiendo de forma precisa, objetiva y reproducible (o
 
 Lo que vemos al recargar una página es el resultado de un conjunto de operaciones, una de las cuales es la pieza concreta de código de la cual queremos saber si funciona. Por lo tanto, no tenemos garantía de que el resultado se produce por las razones que pensamos, por efecto del algoritmo que hemos escrito, sino que podría haber efectos colaterales de diversos componentes del programa.
 
-Para ser honestos: no tenemos ni idea de lo que estamos midiendo.
+Digámoslo honestamente: no tenemos ni idea de lo que estamos midiendo.
 
 Necesitamos introducir un poco de método científico en nuestro trabajo. Como he señalado antes, los tests no son más que programas sencillos que comparan el resultado generado por nuestra unidad de software con el resultado que esperamos obtener dadas unas condiciones iniciales. Los tests nos permiten definir con precisión las condiciones bajo las que ejecutamos la prueba, las acciones que se van a ejecutar y los resultados que deberíamos obtener, todo de una manera replicable.
+
+Lo que viene a continuación es prácticamente un resumen del libro entero. En los siguientes capítulos verás las ideas más desarrolladas, así como ejemplos de código.
 
 ## Tests funcionales
 
@@ -140,7 +148,7 @@ Es decir, tú quieres probar una unidad de software que tiene una dependencia c
 
 El ejemplo clásico, son las implementaciones en memoria de repositorios, bases de datos, sistemas de archivos, etc.
 
-Robert C. Martin explica toda [la problemática de los test doubles en este artículo](https://8thlight.com/blog/uncle-bob/2014/05/14/TheLittleMocker.html).
+Robert C. Martin explica toda [la problemática de los test doubles en este artículo bastante socrático](https://8thlight.com/blog/uncle-bob/2014/05/14/TheLittleMocker.html).
 
 ## Cuándo toca hacer tests
 
@@ -228,13 +236,13 @@ No se hacen tests de métodos o propiedades privadas. Los tests se hacen sobre l
 
 La complejidad ciclomática de una unidad de software (la cantidad de cursos posibles que puede seguir el código) nos indicaría un mínimo de tests necesarios para cubrirla con garantía.
 
-El dominio/negocio debería tener la máxima cobertura de tests que puedas, dado que constituye el <em>core</em> de tu aplicación.
+El dominio/negocio debería tener la máxima cobertura de tests que puedas, dado que constituye el *core* de tu aplicación.
 
 Hay código trivial, como getters/setters, controllers si están bien realmente bien hechos, y otras partes del código que puedes no testear o diferir su testing, pero nunca se sabe, porque un getter podría llegar a dejar de ser trivial.
 
 Haz tests cuando tengas que hacer algún cambio (test de caracterización) o corregir errores (test de regresión, que evidencie el error).
 
-Testear librerías de terceros que ya están bien testeadas no suele merecer la pena. Más bien nos interesa evaluar la interacción de nuestro código con ellas. Se supone que Doctrine va a devolver esos datos que le pides, el problema estaría en cómo se los pides o qué haces con ellos.
+Testear librerías de terceros que ya están bien testeadas no merece la pena. Más bien nos interesa evaluar **la interacción de nuestro código con ellas**. Se supone que Doctrine va a devolver esos datos que le pides, el problema estaría en cómo se los pides o qué haces con ellos, y eso podría necesitar un test.
 
 ### Code Coverage
 
@@ -245,3 +253,11 @@ Sin embargo, no debe tomarse como objetivo. Muchas clases tienen métodos trivia
 El code coverage por sí mismo no dice mucho sobre la calidad de los tests. Éstos pueden cubrir el 100% del código y ser malos o frágiles.
 
 El Code Coverage es una buena herramienta para decidir qué testear, ya que podemos identificar recorridos de la unidad que han quedado sin pruebas y que, por tanto, podrían mantener escondidos problemas.
+
+## Y esto es casi todo
+
+Esta introducción ha quedado casi como un resumen del libro. No está mal. A partir de aquí, los diferentes capítulos te mostrarán una visión más detallada de cada aspecto del testing, sobre todo desde un punto de vista del test driven development.
+
+Habrá capítulos más teóricos y otros más orientados a la práctica. Cosas con las que estarás de acuerdo y cosas con las que no. Podemos discutirlas cuando quieras en el blog http://franiglesias.github.io o en twitter #talkingbit1.
+
+Gracias por seguir leyendo.

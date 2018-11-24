@@ -1,4 +1,4 @@
-2017-05-19-del-ojimetro-al-tdd.md
+0-introduction.md
 que-es-software-testing.md
 2018-08-19-testing-times.md
 2018-01-30-code-coverage-para-mejores-tests.md
@@ -13,5 +13,6 @@ que-es-software-testing.md
 2017-11-30-tdd-en-php-un-ejemplo-con-colecciones-5.md
 2018-02-08-luhn-kata-python.md
 2018-03-11-tdd-babysteps.md
+
 2018-04-14-testear-lo-impredecible.md
 2018-05-01-tdd-boolean-validator.md
