@@ -44,7 +44,7 @@ El control de calidad del software engloba un montón de tipos de pruebas, que p
 
 En realidad, usamos muy alegremente la palabra **test**, con sentidos más genéricos o más restringidos, lo que puede llevar a cierta confusión.
 
-Muchas veces, cuando hablamos de tests, nos estamos refiriendo únicamente a un subconjunto de los variados tipos de pruebas funcionales y, precisamente, ese es el contenido de este artículo.
+Muchas veces, cuando hablamos de tests, nos estamos refiriendo únicamente a un subconjunto de los variados tipos de pruebas funcionales y, precisamente, ese es el contenido principal de este libro.
 
 Muchos programadores hemos empezado con la metodología de "Ojímetro testing(tm)", es decir: observar el output del programa, con frecuencia recargando una página en un navegador.
 

@@ -24,7 +24,6 @@ El software testing debería ir más allá de la detección de errores y problem
 
 [Reckless, Claire: So, What Is Software Testing?](https://www.ministryoftesting.com/dojo/lessons/so-what-is-software-testing)  
 
-
 ## A mano o a máquina
 
 Verificar el funcionamiento de un software es tan sencillo como ejecutarlo, observar el resultado que produce y compararlo con el que esperábamos obtener.
@@ -107,7 +106,7 @@ Un test, en resumen, no es más que un programa que ejecuta una pieza de softwar
 
 Normalmente escribimos los tests con ayuda de un framework o librería especializada, que nos aporta herramientas con las que gestionar y escribir más fácilmente nuestros tests, así como para ejecutarlos y obtener información útil de cada uno de ellos y del conjunto.
 
-## Anatomía de un test
+## Estructura básica de un test
 
 Ahora que tenemos clara la idea de que un test es un pequeño programa que ejecuta una unidad o componente de software para comprobar si su resultado es el que esperamos, vamos a analizar sus elementos.
 
@@ -250,7 +249,7 @@ Por ejemplo, una cláusula if…then que evalúa una condición tiene dos ramas,
 
 Un framework para testing es un paquete de software que nos permite escribir tests de una manera sencilla, así como ejecutarlos y extraer información de interés.
 
-Si no usamos un framework, podríamos escribir un test más o menos así (en *pseudocódigo*):
+Si no usamos un framework, podríamos escribir un test más o menos así, en *pseudocódigo*:
 
 function shouldCalculateFee()
 {
