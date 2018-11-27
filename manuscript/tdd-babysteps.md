@@ -1,25 +1,28 @@
-# TDD no es sólo testear antes de escribir código
+# Resolver problemas con baby-steps
 
-Ya han pasado más de siete meses desde que llegué a Barcelona, acabo de cumplir mis dos primeras semanas en una [nueva empresa](https://www.holaluz.com) y estoy muy contento en [mi nuevo equipo](https://twitter.com/holaluzeng?lang=es), con quienes ya he empezado a aprender un montón de cosas y, de paso, desoxidarme un poco.
+Una de las características de trabajar con metodología TDD es que nos forzamos a avanzar en pasos muy pequeños hacia la solución del problema. Estos pequeños pasos se conocen como *baby-steps*. De hecho, es una de la cosas que distinguen TDD de otras formas de escribir tests antes que el código.
 
-Precisamente en los pocos días que llevo trabajando aquí ya han comenzado a surgir cosas interesantes con el código y me gustaría contar algunas de ellas.
+A muchas personas que comienzan a utilizar TDD les preocupa la dimensión de estos pasos. Dicho de otra forma: ¿cómo de pequeños deberían ser?
 
-Hoy le toca el turno a un problema interesante de TDD que no sé muy bien cómo explicar.
+No hay una respuesta definitiva. Kent Beck, en su libro [Test Driven Development by Example](https://www.amazon.es/Driven-Development-Example-Addison-Wesley-Signature/dp/0321146530) explica que los *baby-steps* se han de ir adaptando a la experiencia y a la dificultad del problema: En resumen:
+
+* Con la experiencia en TDD aprendemos a juzgar qué tamaño de paso nos viene bien y la seguridad adquirida nos permite avanzar en saltos más largos.
+* Pero cuando un problema resulta complicado, una buena solución es tratar de avanzar en pasos más pequeños.
+
+En este capítulo vamos a presentar un caso en el que el problema parece apuntar a una solución "todo de una vez" en un solo paso, cuando en realidad podemos avanzar con más seguridad con pasos más cortos.
 
 ## Un problema sencillo, pero con *intríngulis*
 
-El problema concreto era desarrollar un pequeño servicio capaz de clasificar documentos. Recibe el *path* de un archivo y unos metadatos y, a partir de esa información, decide dónde debe guardarse el documento, devolviendo una ruta al lugar en dónde se almacenará de forma definitiva.
+El problema concreto era desarrollar un pequeño servicio capaz de clasificar documentos. Recibe el *path* de un archivo y unos metadatos y, a partir de esa información, decide dónde debe guardarse el documento, devolviendo una ruta al lugar en donde se almacenará de forma definitiva.
 
 La verdad es que parece más difícil de lo que es. Como veremos, el servicio simplemente entrega un `string` compuesto a partir de elementos extraídos de la información aportada. Inmediatamente nos damos cuenta de que tan solo hay que obtener los fragmentos necesarios, concatenarlos y devolver el resultado.
-
-Voy a intentar ilustrar esto con un ejemplo similar pero de otro ámbito.
 
 Supongamos un centro de enseñanza en el que queremos desarrollar una aplicación que permita al alumnado enviar documentos subiéndolos en una web preparada al efecto. La cuestión es que esos documentos se guarden automáticamente en un sistema de archivos con una estructura determinada. Aunque este sistema podría servir para muchas tareas, voy a simplificar el problema a un único caso:
 
 - Los documentos relacionados con trabajos escolares se guardan en una ubicación específica por curso escolar, etapa, nivel educativo, tutoría, asignatura y alumno.
 - Además, el nombre de archivo se cambiará para refleje un identificador de la tarea y una marca de tiempo.
 
-Es decir, que si alumno con número de matrícula **5433**, matrículado en **5º C** de **Primaria** sube el próximo lunes (**12-03-2018**) el archivo **deberes-de-mates.pdf**, éste deberá situarse en la ruta:
+Es decir, que si un alumno con número de matrícula **5433**, matriculado en **5º C** de **Primaria** sube el próximo lunes (**12-03-2018**) el archivo **deberes-de-mates.pdf**, éste deberá situarse en la ruta:
 
 ```
 2017-2018/primaria/5/5C/matematicas/5433/2018-03-12-deberes.pdf
@@ -39,7 +42,7 @@ La pregunta es: ¿cómo resolvemos este desarrollo utilizando TDD y que los test
 
 Me explico.
 
-La [interfaz](https://dirae.es/palabras/interficie) de este tipo de servicios contiene un único método que devuelve el `string` que necesitamos. 
+La interfaz de este tipo de servicios contiene un único método que devuelve el `string` que necesitamos. 
 
 En una metodología de **tests a posteriori** podríamos simplemente testear el *happy path* y santas pascuas, aparte de algunas situaciones problemáticas como que no se encuentre el estudiante con ese ID o similares, en las que podríamos testear que se lance excepción.
 
@@ -187,12 +190,12 @@ class ClassifyDocumentTest extends TestCase
 }
 ```
 
-– No sé, Rick… Parece bueno.  
+>– No sé, Rick… Parece bueno.  
 – ¡Pues no lo es!
 
 Veamos. Este test tiene algunos problemas aunque aparentemente es correcto. El principal de ellos es que nos obliga a implementar toda la funcionalidad de una sola tacada y resulta que tenemos que extraer ni más ni menos que nueve fragmentos de información para componer la ruta a partir de cinco datos: ¿no nos convendría ir por partes?
 
-¿Qué pasa si en el futuro un cambio provoca que el test no pase? Pues que no tenemos forma de saber a través del test qué parte concreta está fallando. Este caso es bastante simple, pero imagínatelo en desarrollos con algorimos más complejos.
+¿Qué pasa si en el futuro un cambio provoca que el test no pase? Pues que no tenemos forma de saber a través del test qué parte concreta está fallando. Este caso es bastante simple, pero imagínatelo en desarrollos con algoritmos más complejos.
 
 Podríamos considerar éste como un **test de aceptación**: dada una petición válida, devuelve una ruta válida. Así que no vamos a tirar este test, sino que lo utilizaremos como lo que es: un test de aceptación que nos diga si hemos terminado de desarrollar la funcionalidad. Así que, mientras tanto, lo pongo en un archivo aparte y ya volveré a él más adelante.
 
@@ -202,11 +205,7 @@ Como test unitario, en un enfoque TDD, este test no nos sirve de mucho pues no n
 
 ## El enfoque TDD
 
-En un [artículo anterior](https://franiglesias.github.io/luhn-kata-python/) hice una versión de la **Luhn Code Kata**, que me vino muy bien precisamente para abordar este problema. Aunque estaba hecha en Python las ideas que van a orientar este ejercicio son las mismas.
-
-Por cierto, si pensabas que esto de las *katas* no tiene utilidad *en el mundo real* ya puedes ir cambiando de opinión.
-
-Pero vamos allá, por orden de los elementos en la ruta resultante.
+En otro capítulo del libro mostramos una versión de la **Luhn Code Kata**, que nos viene muy bien precisamente para practicar cómo abordar estos problemas. Se trata de analizar la situación para entender cómo podemos dividir el problema en partes manejables, testeando cada una por separado.
 
 ### TDD del curso escolar
 
@@ -326,7 +325,7 @@ namespace Dojo\ClassifyDocument;
 
 use DateTime;
 
-interface SchoolYearCalculator
+interface CalculateSchoolYear
 {
     public function forDate(DateTime $dateTime) : string;
 }
@@ -346,10 +345,10 @@ Un *stub* es un *test double* que tiene una respuesta programada a ciertos mensa
             'misejercicioschupiguais.pdf',
             new DateTime('2018-10-12')
         );
-        $schoolYearCalculator = $this->prophesize(SchoolYearCalculator::class);
-        $schoolYearCalculator->forDate(new DateTime('2018-10-12'))->willReturn('2018-2019');
+        $CalculateSchoolYear = $this->prophesize(CalculateSchoolYear::class);
+        $CalculateSchoolYear->forDate(new DateTime('2018-10-12'))->willReturn('2018-2019');
 
-        $classifyDocumentService = new ClassifyDocument($schoolYearCalculator->reveal());
+        $classifyDocumentService = new ClassifyDocument($CalculateSchoolYear->reveal());
         $route = $classifyDocumentService->execute($classifyDocumentRequest);
         $this->assertEquals('2018-2019', $route);
     }
@@ -364,22 +363,22 @@ namespace Dojo\ClassifyDocument;
 class ClassifyDocument
 {
     /**
-     * @var SchoolYearCalculator
+     * @var CalculateSchoolYear
      */
-    private $schoolYearCalculator;
+    private $CalculateSchoolYear;
 
     /**
      * ClassifyDocument constructor.
      */
-    public function __construct(SchoolYearCalculator $schoolYearCalculator)
+    public function __construct(CalculateSchoolYear $CalculateSchoolYear)
     {
-        $this->schoolYearCalculator = $schoolYearCalculator;
+        $this->CalculateSchoolYear = $CalculateSchoolYear;
     }
 
     public function execute(ClassifyDocumentRequest $classifyDocumentRequest) : string
     {
         $date = $classifyDocumentRequest->dateTime();
-        $schoolYear = $this->schoolYearCalculator->forDate($date);
+        $schoolYear = $this->CalculateSchoolYear->forDate($date);
         return $schoolYear;
     }
 }
@@ -388,7 +387,7 @@ class ClassifyDocument
 Una vez implementado esto vemos que pasan dos cosas:
 
 - El nuevo test pasa.
-- El test que ya existía no pasa porque no contempla el hecho de haber introducido el servicio **SchoolYearCalculator**.
+- El test que ya existía no pasa porque no contempla el hecho de haber introducido el servicio **CalculateSchoolYear**.
 
 Así que arreglamos eso para que pase, cuidando de ajustar los nuevos valores del *stub*.
 
@@ -398,7 +397,7 @@ namespace Tests\Dojo\ClassifyDocument;
 use DateTime;
 use Dojo\ClassifyDocument\ClassifyDocument;
 use Dojo\ClassifyDocument\ClassifyDocumentRequest;
-use Dojo\ClassifyDocument\SchoolYearCalculator;
+use Dojo\ClassifyDocument\CalculateSchoolYear;
 use PHPUnit\Framework\TestCase;
 
 class ClassifyDocumentTest extends TestCase
@@ -413,10 +412,10 @@ class ClassifyDocumentTest extends TestCase
             'misejercicioschupiguais.pdf',
             new DateTime('2018-03-12')
         );
-        $schoolYearCalculator = $this->prophesize(SchoolYearCalculator::class);
-        $schoolYearCalculator->forDate(new DateTime('2018-03-12'))->willReturn('2017-2018');
+        $CalculateSchoolYear = $this->prophesize(CalculateSchoolYear::class);
+        $CalculateSchoolYear->forDate(new DateTime('2018-03-12'))->willReturn('2017-2018');
 
-        $classifyDocumentService = new ClassifyDocument($schoolYearCalculator->reveal());
+        $classifyDocumentService = new ClassifyDocument($CalculateSchoolYear->reveal());
         $route = $classifyDocumentService->execute($classifyDocumentRequest);
         $this->assertEquals('2017-2018', $route);
     }
@@ -430,10 +429,10 @@ class ClassifyDocumentTest extends TestCase
             'misejercicioschupiguais.pdf',
             new DateTime('2018-10-12')
         );
-        $schoolYearCalculator = $this->prophesize(SchoolYearCalculator::class);
-        $schoolYearCalculator->forDate(new DateTime('2018-10-12'))->willReturn('2018-2019');
+        $CalculateSchoolYear = $this->prophesize(CalculateSchoolYear::class);
+        $CalculateSchoolYear->forDate(new DateTime('2018-10-12'))->willReturn('2018-2019');
 
-        $classifyDocumentService = new ClassifyDocument($schoolYearCalculator->reveal());
+        $classifyDocumentService = new ClassifyDocument($CalculateSchoolYear->reveal());
         $route = $classifyDocumentService->execute($classifyDocumentRequest);
         $this->assertEquals('2018-2019', $route);
     }
@@ -453,13 +452,13 @@ namespace Tests\Dojo\ClassifyDocument;
 use DateTime;
 use Dojo\ClassifyDocument\ClassifyDocument;
 use Dojo\ClassifyDocument\ClassifyDocumentRequest;
-use Dojo\ClassifyDocument\SchoolYearCalculator;
+use Dojo\ClassifyDocument\CalculateSchoolYear;
 use PHPUnit\Framework\TestCase;
 
 class ClassifyDocumentTest extends TestCase
 {
     private $classifyDocumentService;
-    private $schoolYearCalculator;
+    private $CalculateSchoolYear;
 
     private const DEFAULT_STUDENT_ID = '5433';
     private const DEFAULT_SUBJECT = 'Matemáticas';
@@ -471,9 +470,9 @@ class ClassifyDocumentTest extends TestCase
 
     public function setUp()
     {
-        $this->schoolYearCalculator = $this->prophesize(SchoolYearCalculator::class);
-        $this->schoolYearCalculator->forDate(new DateTime(self::DEFAULT_UPLOAD_DATE))->willReturn(self::DEFAULT_SCHOOL_YEAR);
-        $this->classifyDocumentService = new ClassifyDocument($this->schoolYearCalculator->reveal());
+        $this->CalculateSchoolYear = $this->prophesize(CalculateSchoolYear::class);
+        $this->CalculateSchoolYear->forDate(new DateTime(self::DEFAULT_UPLOAD_DATE))->willReturn(self::DEFAULT_SCHOOL_YEAR);
+        $this->classifyDocumentService = new ClassifyDocument($this->CalculateSchoolYear->reveal());
     }
 
     public function testSchoolYearIsTheFirstElementOfTheRoute()
@@ -503,13 +502,14 @@ class ClassifyDocumentTest extends TestCase
             new DateTime($uploadDate)
         );
 
-        $this->schoolYearCalculator->forDate(new DateTime($uploadDate))->willReturn($schoolYear);
+        $this->CalculateSchoolYear->forDate(new DateTime($uploadDate))->willReturn($schoolYear);
 
         $route = $this->classifyDocumentService->execute($classifyDocumentRequest);
         $this->assertEquals($schoolYear, $route);
     }
 }
 ```
+
 Ahora está un poquito mejor, así que: ¡sigamos adelante!
 
 ### TDD de la Etapa Educativa
@@ -644,22 +644,22 @@ En esta ocasión me voy a decantar por la primera opción porque, como se puede 
 class ClassifyDocument
 {
     /**
-     * @var SchoolYearCalculator
+     * @var CalculateSchoolYear
      */
-    private $schoolYearCalculator;
+    private $CalculateSchoolYear;
 
     /**
      * ClassifyDocument constructor.
      */
-    public function __construct(SchoolYearCalculator $schoolYearCalculator)
+    public function __construct(CalculateSchoolYear $CalculateSchoolYear)
     {
-        $this->schoolYearCalculator = $schoolYearCalculator;
+        $this->CalculateSchoolYear = $CalculateSchoolYear;
     }
 
     public function execute(ClassifyDocumentRequest $classifyDocumentRequest) : string
     {
         $date = $classifyDocumentRequest->dateTime();
-        $schoolYear = $this->schoolYearCalculator->forDate($date);
+        $schoolYear = $this->CalculateSchoolYear->forDate($date);
         return $schoolYear.'/primaria';
     }
 }
@@ -697,7 +697,7 @@ public function testSchoolYearIsTheFirstElementOfTheRoute()
             new DateTime($uploadDate)
         );
 
-        $this->schoolYearCalculator->forDate(new DateTime($uploadDate))->willReturn($schoolYear);
+        $this->CalculateSchoolYear->forDate(new DateTime($uploadDate))->willReturn($schoolYear);
 
         $route = $this->classifyDocumentService->execute($classifyDocumentRequest);
         
@@ -749,10 +749,10 @@ Para ello, nos vamos al método setUp generamos y montamos el *stub*.
 ```php
     public function setUp()
     {
-        $this->schoolYearCalculator = $this->prophesize(
-            SchoolYearCalculator::class
+        $this->CalculateSchoolYear = $this->prophesize(
+            CalculateSchoolYear::class
         );
-        $this->schoolYearCalculator
+        $this->CalculateSchoolYear
             ->forDate(new DateTime(self::DEFAULT_UPLOAD_DATE))
             ->willReturn(self::DEFAULT_SCHOOL_YEAR);
 
@@ -769,7 +769,7 @@ Para ello, nos vamos al método setUp generamos y montamos el *stub*.
                 '5C'
             ));
         $this->classifyDocumentService = new ClassifyDocument(
-            $this->schoolYearCalculator->reveal(),
+            $this->CalculateSchoolYear->reveal(),
             $this->studentRepository->reveal()
         );
     }
@@ -817,9 +817,9 @@ El test sigue fallando porque realmente no hemos implementado nada todavía, lo 
 class ClassifyDocument
 {
     /**
-     * @var SchoolYearCalculator
+     * @var CalculateSchoolYear
      */
-    private $schoolYearCalculator;
+    private $CalculateSchoolYear;
     /**
      * @var StudentRepository
      */
@@ -829,17 +829,17 @@ class ClassifyDocument
      * ClassifyDocument constructor.
      */
     public function __construct(
-        SchoolYearCalculator $schoolYearCalculator,
+        CalculateSchoolYear $CalculateSchoolYear,
         StudentRepository $studentRepository
     ) {
-        $this->schoolYearCalculator = $schoolYearCalculator;
+        $this->CalculateSchoolYear = $CalculateSchoolYear;
         $this->studentRepository = $studentRepository;
     }
 
     public function execute(ClassifyDocumentRequest $classifyDocumentRequest) : string
     {
         $date = $classifyDocumentRequest->dateTime();
-        $schoolYear = $this->schoolYearCalculator->forDate($date);
+        $schoolYear = $this->CalculateSchoolYear->forDate($date);
 
         $student = $this->studentRepository->byId(
             $classifyDocumentRequest->studentId()
@@ -880,9 +880,9 @@ Y, a continuación, la implementación para que pase el test que, gracias a lo q
 class ClassifyDocument
 {
     /**
-     * @var SchoolYearCalculator
+     * @var CalculateSchoolYear
      */
-    private $schoolYearCalculator;
+    private $CalculateSchoolYear;
     /**
      * @var StudentRepository
      */
@@ -892,17 +892,17 @@ class ClassifyDocument
      * ClassifyDocument constructor.
      */
     public function __construct(
-        SchoolYearCalculator $schoolYearCalculator,
+        CalculateSchoolYear $CalculateSchoolYear,
         StudentRepository $studentRepository
     ) {
-        $this->schoolYearCalculator = $schoolYearCalculator;
+        $this->CalculateSchoolYear = $CalculateSchoolYear;
         $this->studentRepository = $studentRepository;
     }
 
     public function execute(ClassifyDocumentRequest $classifyDocumentRequest) : string
     {
         $date = $classifyDocumentRequest->dateTime();
-        $schoolYear = $this->schoolYearCalculator->forDate($date);
+        $schoolYear = $this->CalculateSchoolYear->forDate($date);
 
         $student = $this->studentRepository->byId(
             $classifyDocumentRequest->studentId()
@@ -922,9 +922,9 @@ namespace Dojo\ClassifyDocument;
 class ClassifyDocument
 {
     /**
-     * @var SchoolYearCalculator
+     * @var CalculateSchoolYear
      */
-    private $schoolYearCalculator;
+    private $CalculateSchoolYear;
     /**
      * @var StudentRepository
      */
@@ -934,17 +934,17 @@ class ClassifyDocument
      * ClassifyDocument constructor.
      */
     public function __construct(
-        SchoolYearCalculator $schoolYearCalculator,
+        CalculateSchoolYear $CalculateSchoolYear,
         StudentRepository $studentRepository
     ) {
-        $this->schoolYearCalculator = $schoolYearCalculator;
+        $this->CalculateSchoolYear = $CalculateSchoolYear;
         $this->studentRepository = $studentRepository;
     }
 
     public function execute(ClassifyDocumentRequest $classifyDocumentRequest) : string
     {
         $date = $classifyDocumentRequest->dateTime();
-        $schoolYear = $this->schoolYearCalculator->forDate($date);
+        $schoolYear = $this->CalculateSchoolYear->forDate($date);
 
         $student = $this->studentRepository->byId(
             $classifyDocumentRequest->studentId()
@@ -993,9 +993,9 @@ namespace Dojo\ClassifyDocument;
 class ClassifyDocument
 {
     /**
-     * @var SchoolYearCalculator
+     * @var CalculateSchoolYear
      */
-    private $schoolYearCalculator;
+    private $CalculateSchoolYear;
     /**
      * @var StudentRepository
      */
@@ -1005,17 +1005,17 @@ class ClassifyDocument
      * ClassifyDocument constructor.
      */
     public function __construct(
-        SchoolYearCalculator $schoolYearCalculator,
+        CalculateSchoolYear $CalculateSchoolYear,
         StudentRepository $studentRepository
     ) {
-        $this->schoolYearCalculator = $schoolYearCalculator;
+        $this->CalculateSchoolYear = $CalculateSchoolYear;
         $this->studentRepository = $studentRepository;
     }
 
     public function execute(ClassifyDocumentRequest $classifyDocumentRequest) : string
     {
         $date = $classifyDocumentRequest->dateTime();
-        $schoolYear = $this->schoolYearCalculator->forDate($date);
+        $schoolYear = $this->CalculateSchoolYear->forDate($date);
 
         $student = $this->studentRepository->byId(
             $classifyDocumentRequest->studentId()
@@ -1050,7 +1050,7 @@ namespace Tests\Dojo\ClassifyDocument\Application;
 use DateTime;
 use Dojo\ClassifyDocument\Application\ClassifyDocument;
 use Dojo\ClassifyDocument\Application\ClassifyDocumentRequest;
-use Dojo\ClassifyDocument\Application\SchoolYearCalculator;
+use Dojo\ClassifyDocument\Application\CalculateSchoolYear;
 use Dojo\ClassifyDocument\Domain\Student;
 use Dojo\ClassifyDocument\Domain\StudentRepository;
 use PHPUnit\Framework\TestCase;
@@ -1067,10 +1067,10 @@ class ClassifyDocumentAcceptanceTest extends TestCase
 
     public function setUp()
     {
-        $this->schoolYearCalculator = $this->prophesize(
-            SchoolYearCalculator::class
+        $this->CalculateSchoolYear = $this->prophesize(
+            CalculateSchoolYear::class
         );
-        $this->schoolYearCalculator
+        $this->CalculateSchoolYear
             ->forDate(new DateTime(self::DEFAULT_UPLOAD_DATE))
             ->willReturn(self::DEFAULT_SCHOOL_YEAR);
 
@@ -1087,7 +1087,7 @@ class ClassifyDocumentAcceptanceTest extends TestCase
                 '5C'
             ));
         $this->classifyDocumentService = new ClassifyDocument(
-            $this->schoolYearCalculator->reveal(),
+            $this->CalculateSchoolYear->reveal(),
             $this->studentRepository->reveal()
         );
     }
@@ -1115,14 +1115,7 @@ Lo que he tratado de mostrar en este ejercicio es que TDD no consiste sólo en h
 
 Para que podamos hablar de TDD, los tests tienen que generarnos la necesidad de implementar, impulsando el desarrollo de cada característica de nuestro software.
 
-
-## Actualizaciones
-
-(13/03/2018)
-
-Ahora que repaso el texto, cambiaría el nombre del servicio **SchoolYearCalculator** por **CalculateSchoolYear**, que da más sentido a su único método: `CalculateSchoolYear::forDate()`. Creo que no hace falta explicar por qué.
-
-[Bernat Borrás](https://twitter.com/lepetitbernat/status/973112721473507329) y [Alfonso Silóniz](https://twitter.com/alfonsosiloniz/status/973117446201724928) comentaban en Twitter sobre si era necesario hacer varios tests sobre el mismo fragmento de ruta. La respuesta es que si haces TDD a ritmo de *baby steps* de manera que cada paso te fuerce a implementar la solución más simple, primero, y a refactorizar en busca de un buen diseño, lo cierto es que puedes tener que hacer bastantes tests:
+Si haces TDD a ritmo de *baby steps* de manera que cada paso te fuerce a implementar la solución más simple, primero, y a refactorizar en busca de un buen diseño, lo cierto es que puedes tener que hacer bastantes tests:
 
 - El primero para hacer una implementación "tonta" e inflexible: el típico devolver exactamente lo que esperas.
 - El segundo para provocar que la implementación inflexible falle e implementar una solución sencilla, aunque no sea del todo genérica.
@@ -1131,9 +1124,7 @@ Ahora que repaso el texto, cambiaría el nombre del servicio **SchoolYearCalcula
 
 En cualquier caso esto va a depender del tamaño de los *baby steps* que decidamos tomar, que dependen de nuestra experiencia, del conocimiento que tengamos de la tarea, etc.
 
-Ahora, en la práctica creo que es perfectamente válido desechar algunos de estos tests si no aportan información extra con el objetivo de aligerar nuestras *Suites de Tests*. Puedes contemplarlo como un caso de **duplicación**, y ya sabemos que la duplicación hay que eliminarla. Se trataría de dejar los tests que nos funcionarían como **tests de regresión**.
-
-[Alfonso](https://twitter.com/alfonsosiloniz/status/973119323169525760) señalaba muy atinadamente que los tests tendrían que ser idempotentes y, por tanto, no deberíamos cambiarlos, como es el caso de nuestro primer test sobre el curso escolar.
+Ahora, en la práctica creo que es perfectamente válido desechar algunos de estos tests si no aportan información extra con el objetivo de aligerar nuestras *Suites de Tests*. Puedes contemplarlo como un caso de **duplicación**, y ya sabemos que la duplicación innecesaria hay que eliminarla. Se trataría de dejar los tests que nos podrían funcionar como **tests de regresión**.
 
 Podemos ver TDD como una metodología iterativa: empezamos con unos requerimientos muy sencillos: que exista una clase, que tenga cierto método, que devuelva un cierto resultado… Cada vez, un nuevo requisito, intentando no ver más allá del problema actual. 
 
