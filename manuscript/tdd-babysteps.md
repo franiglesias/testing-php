@@ -345,10 +345,10 @@ Un *stub* es un *test double* que tiene una respuesta programada a ciertos mensa
             'misejercicioschupiguais.pdf',
             new DateTime('2018-10-12')
         );
-        $CalculateSchoolYear = $this->prophesize(CalculateSchoolYear::class);
-        $CalculateSchoolYear->forDate(new DateTime('2018-10-12'))->willReturn('2018-2019');
+        $calculateSchoolYear = $this->prophesize(CalculateSchoolYear::class);
+        $calculateSchoolYear->forDate(new DateTime('2018-10-12'))->willReturn('2018-2019');
 
-        $classifyDocumentService = new ClassifyDocument($CalculateSchoolYear->reveal());
+        $classifyDocumentService = new ClassifyDocument($calculateSchoolYear->reveal());
         $route = $classifyDocumentService->execute($classifyDocumentRequest);
         $this->assertEquals('2018-2019', $route);
     }
@@ -365,20 +365,20 @@ class ClassifyDocument
     /**
      * @var CalculateSchoolYear
      */
-    private $CalculateSchoolYear;
+    private $calculateSchoolYear;
 
     /**
      * ClassifyDocument constructor.
      */
-    public function __construct(CalculateSchoolYear $CalculateSchoolYear)
+    public function __construct(CalculateSchoolYear $calculateSchoolYear)
     {
-        $this->CalculateSchoolYear = $CalculateSchoolYear;
+        $this->calculateSchoolYear = $calculateSchoolYear;
     }
 
     public function execute(ClassifyDocumentRequest $classifyDocumentRequest) : string
     {
         $date = $classifyDocumentRequest->dateTime();
-        $schoolYear = $this->CalculateSchoolYear->forDate($date);
+        $schoolYear = $this->calculateSchoolYear->forDate($date);
         return $schoolYear;
     }
 }
@@ -412,10 +412,10 @@ class ClassifyDocumentTest extends TestCase
             'misejercicioschupiguais.pdf',
             new DateTime('2018-03-12')
         );
-        $CalculateSchoolYear = $this->prophesize(CalculateSchoolYear::class);
-        $CalculateSchoolYear->forDate(new DateTime('2018-03-12'))->willReturn('2017-2018');
+        $calculateSchoolYear = $this->prophesize(CalculateSchoolYear::class);
+        $calculateSchoolYear->forDate(new DateTime('2018-03-12'))->willReturn('2017-2018');
 
-        $classifyDocumentService = new ClassifyDocument($CalculateSchoolYear->reveal());
+        $classifyDocumentService = new ClassifyDocument($calculateSchoolYear->reveal());
         $route = $classifyDocumentService->execute($classifyDocumentRequest);
         $this->assertEquals('2017-2018', $route);
     }
@@ -429,10 +429,10 @@ class ClassifyDocumentTest extends TestCase
             'misejercicioschupiguais.pdf',
             new DateTime('2018-10-12')
         );
-        $CalculateSchoolYear = $this->prophesize(CalculateSchoolYear::class);
-        $CalculateSchoolYear->forDate(new DateTime('2018-10-12'))->willReturn('2018-2019');
+        $calculateSchoolYear = $this->prophesize(CalculateSchoolYear::class);
+        $calculateSchoolYear->forDate(new DateTime('2018-10-12'))->willReturn('2018-2019');
 
-        $classifyDocumentService = new ClassifyDocument($CalculateSchoolYear->reveal());
+        $classifyDocumentService = new ClassifyDocument($calculateSchoolYear->reveal());
         $route = $classifyDocumentService->execute($classifyDocumentRequest);
         $this->assertEquals('2018-2019', $route);
     }
@@ -458,7 +458,7 @@ use PHPUnit\Framework\TestCase;
 class ClassifyDocumentTest extends TestCase
 {
     private $classifyDocumentService;
-    private $CalculateSchoolYear;
+    private $calculateSchoolYear;
 
     private const DEFAULT_STUDENT_ID = '5433';
     private const DEFAULT_SUBJECT = 'Matemáticas';
@@ -470,9 +470,9 @@ class ClassifyDocumentTest extends TestCase
 
     public function setUp()
     {
-        $this->CalculateSchoolYear = $this->prophesize(CalculateSchoolYear::class);
-        $this->CalculateSchoolYear->forDate(new DateTime(self::DEFAULT_UPLOAD_DATE))->willReturn(self::DEFAULT_SCHOOL_YEAR);
-        $this->classifyDocumentService = new ClassifyDocument($this->CalculateSchoolYear->reveal());
+        $this->calculateSchoolYear = $this->prophesize(CalculateSchoolYear::class);
+        $this->calculateSchoolYear->forDate(new DateTime(self::DEFAULT_UPLOAD_DATE))->willReturn(self::DEFAULT_SCHOOL_YEAR);
+        $this->classifyDocumentService = new ClassifyDocument($this->calculateSchoolYear->reveal());
     }
 
     public function testSchoolYearIsTheFirstElementOfTheRoute()
@@ -502,7 +502,7 @@ class ClassifyDocumentTest extends TestCase
             new DateTime($uploadDate)
         );
 
-        $this->CalculateSchoolYear->forDate(new DateTime($uploadDate))->willReturn($schoolYear);
+        $this->calculateSchoolYear->forDate(new DateTime($uploadDate))->willReturn($schoolYear);
 
         $route = $this->classifyDocumentService->execute($classifyDocumentRequest);
         $this->assertEquals($schoolYear, $route);
@@ -646,20 +646,20 @@ class ClassifyDocument
     /**
      * @var CalculateSchoolYear
      */
-    private $CalculateSchoolYear;
+    private $calculateSchoolYear;
 
     /**
      * ClassifyDocument constructor.
      */
-    public function __construct(CalculateSchoolYear $CalculateSchoolYear)
+    public function __construct(CalculateSchoolYear $calculateSchoolYear)
     {
-        $this->CalculateSchoolYear = $CalculateSchoolYear;
+        $this->calculateSchoolYear = $calculateSchoolYear;
     }
 
     public function execute(ClassifyDocumentRequest $classifyDocumentRequest) : string
     {
         $date = $classifyDocumentRequest->dateTime();
-        $schoolYear = $this->CalculateSchoolYear->forDate($date);
+        $schoolYear = $this->calculateSchoolYear->forDate($date);
         return $schoolYear.'/primaria';
     }
 }
@@ -697,7 +697,7 @@ public function testSchoolYearIsTheFirstElementOfTheRoute()
             new DateTime($uploadDate)
         );
 
-        $this->CalculateSchoolYear->forDate(new DateTime($uploadDate))->willReturn($schoolYear);
+        $this->calculateSchoolYear->forDate(new DateTime($uploadDate))->willReturn($schoolYear);
 
         $route = $this->classifyDocumentService->execute($classifyDocumentRequest);
         
@@ -749,10 +749,10 @@ Para ello, nos vamos al método setUp generamos y montamos el *stub*.
 ```php
     public function setUp()
     {
-        $this->CalculateSchoolYear = $this->prophesize(
+        $this->calculateSchoolYear = $this->prophesize(
             CalculateSchoolYear::class
         );
-        $this->CalculateSchoolYear
+        $this->calculateSchoolYear
             ->forDate(new DateTime(self::DEFAULT_UPLOAD_DATE))
             ->willReturn(self::DEFAULT_SCHOOL_YEAR);
 
@@ -769,7 +769,7 @@ Para ello, nos vamos al método setUp generamos y montamos el *stub*.
                 '5C'
             ));
         $this->classifyDocumentService = new ClassifyDocument(
-            $this->CalculateSchoolYear->reveal(),
+            $this->calculateSchoolYear->reveal(),
             $this->studentRepository->reveal()
         );
     }
@@ -819,7 +819,7 @@ class ClassifyDocument
     /**
      * @var CalculateSchoolYear
      */
-    private $CalculateSchoolYear;
+    private $calculateSchoolYear;
     /**
      * @var StudentRepository
      */
@@ -829,17 +829,17 @@ class ClassifyDocument
      * ClassifyDocument constructor.
      */
     public function __construct(
-        CalculateSchoolYear $CalculateSchoolYear,
+        CalculateSchoolYear $calculateSchoolYear,
         StudentRepository $studentRepository
     ) {
-        $this->CalculateSchoolYear = $CalculateSchoolYear;
+        $this->calculateSchoolYear = $calculateSchoolYear;
         $this->studentRepository = $studentRepository;
     }
 
     public function execute(ClassifyDocumentRequest $classifyDocumentRequest) : string
     {
         $date = $classifyDocumentRequest->dateTime();
-        $schoolYear = $this->CalculateSchoolYear->forDate($date);
+        $schoolYear = $this->calculateSchoolYear->forDate($date);
 
         $student = $this->studentRepository->byId(
             $classifyDocumentRequest->studentId()
@@ -882,7 +882,7 @@ class ClassifyDocument
     /**
      * @var CalculateSchoolYear
      */
-    private $CalculateSchoolYear;
+    private $calculateSchoolYear;
     /**
      * @var StudentRepository
      */
@@ -892,17 +892,17 @@ class ClassifyDocument
      * ClassifyDocument constructor.
      */
     public function __construct(
-        CalculateSchoolYear $CalculateSchoolYear,
+        CalculateSchoolYear $calculateSchoolYear,
         StudentRepository $studentRepository
     ) {
-        $this->CalculateSchoolYear = $CalculateSchoolYear;
+        $this->calculateSchoolYear = $calculateSchoolYear;
         $this->studentRepository = $studentRepository;
     }
 
     public function execute(ClassifyDocumentRequest $classifyDocumentRequest) : string
     {
         $date = $classifyDocumentRequest->dateTime();
-        $schoolYear = $this->CalculateSchoolYear->forDate($date);
+        $schoolYear = $this->calculateSchoolYear->forDate($date);
 
         $student = $this->studentRepository->byId(
             $classifyDocumentRequest->studentId()
@@ -924,7 +924,7 @@ class ClassifyDocument
     /**
      * @var CalculateSchoolYear
      */
-    private $CalculateSchoolYear;
+    private $calculateSchoolYear;
     /**
      * @var StudentRepository
      */
@@ -934,17 +934,17 @@ class ClassifyDocument
      * ClassifyDocument constructor.
      */
     public function __construct(
-        CalculateSchoolYear $CalculateSchoolYear,
+        CalculateSchoolYear $calculateSchoolYear,
         StudentRepository $studentRepository
     ) {
-        $this->CalculateSchoolYear = $CalculateSchoolYear;
+        $this->calculateSchoolYear = $calculateSchoolYear;
         $this->studentRepository = $studentRepository;
     }
 
     public function execute(ClassifyDocumentRequest $classifyDocumentRequest) : string
     {
         $date = $classifyDocumentRequest->dateTime();
-        $schoolYear = $this->CalculateSchoolYear->forDate($date);
+        $schoolYear = $this->calculateSchoolYear->forDate($date);
 
         $student = $this->studentRepository->byId(
             $classifyDocumentRequest->studentId()
@@ -995,7 +995,7 @@ class ClassifyDocument
     /**
      * @var CalculateSchoolYear
      */
-    private $CalculateSchoolYear;
+    private $calculateSchoolYear;
     /**
      * @var StudentRepository
      */
@@ -1005,17 +1005,17 @@ class ClassifyDocument
      * ClassifyDocument constructor.
      */
     public function __construct(
-        CalculateSchoolYear $CalculateSchoolYear,
+        CalculateSchoolYear $calculateSchoolYear,
         StudentRepository $studentRepository
     ) {
-        $this->CalculateSchoolYear = $CalculateSchoolYear;
+        $this->calculateSchoolYear = $calculateSchoolYear;
         $this->studentRepository = $studentRepository;
     }
 
     public function execute(ClassifyDocumentRequest $classifyDocumentRequest) : string
     {
         $date = $classifyDocumentRequest->dateTime();
-        $schoolYear = $this->CalculateSchoolYear->forDate($date);
+        $schoolYear = $this->calculateSchoolYear->forDate($date);
 
         $student = $this->studentRepository->byId(
             $classifyDocumentRequest->studentId()
@@ -1067,10 +1067,10 @@ class ClassifyDocumentAcceptanceTest extends TestCase
 
     public function setUp()
     {
-        $this->CalculateSchoolYear = $this->prophesize(
+        $this->calculateSchoolYear = $this->prophesize(
             CalculateSchoolYear::class
         );
-        $this->CalculateSchoolYear
+        $this->calculateSchoolYear
             ->forDate(new DateTime(self::DEFAULT_UPLOAD_DATE))
             ->willReturn(self::DEFAULT_SCHOOL_YEAR);
 
@@ -1087,7 +1087,7 @@ class ClassifyDocumentAcceptanceTest extends TestCase
                 '5C'
             ));
         $this->classifyDocumentService = new ClassifyDocument(
-            $this->CalculateSchoolYear->reveal(),
+            $this->calculateSchoolYear->reveal(),
             $this->studentRepository->reveal()
         );
     }
