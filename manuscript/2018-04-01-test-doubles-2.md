@@ -2,7 +2,7 @@
 
 Los principios de diseño están muy relacionados con el testing de tal forma que son tanto objetivo de diseño como herramienta para lograrlo.
 
-En el [artículo anterior](/test-doubles-1/), hicimos un repaso de los test-doubles y sus tipos. En este, reflexionaremos sobre la aplicación de principios de diseño y el uso de test-doubles.
+En el capítulo anterior sobre test doubles, hicimos un repaso de los mismos y sus tipos. En este, reflexionaremos sobre la aplicación de principios de diseño y el uso de test-doubles.
 
 Las consecuencias sobre la escritura de tests se podrían sintetizar en dos beneficios principales:
 

@@ -108,9 +108,9 @@ Los tests de aceptación prueban el sistema desde el punto de visto de sus usuar
 
 Nuestras pruebas de aceptación se ejecutan en un entorno específico de tests que sería idéntico al de producción.
 
-Por lo general, en los tests de aceptación nos interesa probar ciertos escenarios que son significativos para los stakeholders. Por ejemplo:
+Por lo general, en los tests de aceptación nos interesa probar ciertos escenarios que son significativos para los *stakeholders*. Por ejemplo:
 
-* Un usuario que quiere contratar un servicio y aporta los datos necesarios debe recibcir una confirmación de que ha contratado el servicio.
+* Un usuario que quiere contratar un servicio y aporta los datos necesarios debe recibir una confirmación de que ha contratado el servicio.
 * Un usuario que quiere contratar un servicio y no aporta los datos necesarios (o son incorrectos) debe recibir una información de qué datos debería corregir y que no se ha contratado el servicio.
 * Un usuario que quiere contratar un servicio debe recibir una información adecuada en caso de que haya algún fallo del sistema que impida completar el proceso.
 
@@ -136,7 +136,7 @@ La pirámide de tests nos proporciona tres niveles de resolución a la hora de a
 
 Idealmente, con una buena proporción de tests nos encontraríamos que un test que no pasa  en el nivel de aceptación se reflejaría en tests que no pasan en alguno de los otros niveles:
 
-* Si fallan tests en el nivel de integración (pero no en unitarios) nos estaría indicando que algunas unidades de software no se comunican bien entre sí, por ejemplo, porque una está entrgando datos en formatos inadecuados.
+* Si fallan tests en el nivel de integración (pero no en unitarios) nos estaría indicando que algunas unidades de software no se comunican bien entre sí, por ejemplo, porque una está entregando datos en formatos inadecuados.
 * Si fallan tests en el nivel unitario (seguramente también estará fallando el nivel de integración) indica que alguna unidad de software está funcionando mal.
 
 A veces es más informativa la ausencia de fallos:

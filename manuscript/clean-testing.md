@@ -1,21 +1,23 @@
 # Clean testing
 
-Algunas estrategias con las que intento que mis tests sean cada vez más limpios y legibles y, por tanto, más capaces de comunicar lo que hace el software que escribo.
+Los tests también son código. así que igualmente tenemos que mantenerlos legibles y, por tanto, más capaces de comunicar lo que hace el software que respaldan.
 
 Escribo bastantes tests en mi trabajo y tiendo a hacerlo en modo TDD siempre que puedo. Aún así, no estoy especialmente orgulloso de mis tests, pienso que tengo un gran espacio de mejora en esa área. Hay dos aspectos que me preocupan en particular:
 
 * El primero es la constatación de que todavía se me escapan bastantes casos, sobre todo en la integración, que acaban dando lugar a defectos en el software. Sobre esto tengo que pensar más a fondo y adoptar mejores estrategias de diseño.
-* El segundo tiene que ver con la calidad del código de los tests. Al fin y al cabo los tests siguen siendo código y debería aplicar los principios de diseño y las buenas prácticas para que sean mantenibles, legibles y útiles. Es más, en mi opinión, deberían ser legibles incluso para alguien que no conozca el lenguaje de programación.
+* El segundo tiene que ver con la calidad del código de los tests. Al fin y al cabo los tests siguen siendo código y debería aplicar los principios de diseño y las buenas prácticas para que sean sostenibles, legibles y útiles. Es más, en mi opinión, deberían ser legibles incluso para alguien que no conozca el lenguaje de programación.
 
-De este segundo aspecto es de lo que trata este artículo, en el que intento recoger algunas ideas con las que estoy trabajando últimamente.
+De este segundo aspecto es de lo que trata este capítulo, en el que intento recoger algunas ideas con las que estoy trabajando últimamente.
 
 Buena parte de esto se apoya en la charla [Be solid my tests](https://www.youtube.com/watch?v=6t2Z7uf16F4) de mi compañera y team lead en [HolaLuz](https://twitter.com/holaluzeng?lang=es), [Mavi Jiménez](https://www.youtube.com/watch?v=yvMGWCYqT04), que explica muy bien por qué y cómo nuestros tests tienen que ser SOLID, además de sólidos, y propone algunas técnicas prácticas para lograrlo.
 
-Después de [ver la charla](https://www.youtube.com/watch?v=6t2Z7uf16F4), puedes seguir leyendo.
+Después de ver la charla, puedes seguir leyendo.
 
 ## Naming de los test
 
-Cada vez más, intento escribir tests cuyo nombre pueda leerse incluso sin saber programación, de modo que pueda entender qué es lo que se prueba y facilitar así la vida de mi yo del futuro y de compañeras y compañeros que tengan que enfrentarse a ese código. Espero poder convertir esto en un hábito.
+Cada vez más, intento escribir tests cuyo nombre pueda leerse incluso sin saber programación, de modo que pueda entender qué es lo que se prueba y facilitar así la vida de mi yo del futuro y de compañeras y compañeros que tengan que enfrentarse a ese código.
+
+Puede parecer que el nombre de los tests no tenga importancia. Sin embargo, es un aspecto clave del test en el que declaramos qué es lo que estamos probando en lenguaje de negocio. Así que, aunque comencemos con nombres tentativos, debemos crearlo con mucho cuidado y asegurarnos de que realmente dice lo que queremos demostrar con él.
 
 ### Usar abstracciones
 
@@ -31,7 +33,7 @@ public function testShouldNotAcceptStringsLongerThanNineCharacters()
 public function testShouldNotAcceptStringsLongerThanAMaximumOfCharacters()
 ```
 
-La razón por la que no pongo un número concreto es que ese número es un detalle que podría cambiar. En la formulación *better* hablo de un concepto en lugar de una concreción por lo que el test se seguiría cumpliendo incluso si el máximo cambiase o fuese configurable.
+La razón por la que no pongo un número concreto es que ese número es un detalle que podría cambiar. En la formulación *better* hablo de un concepto en lugar de una concreción por lo que el enunciado del test se seguiría cumpliendo incluso si el máximo cambiase o fuese configurable.
 
 En lo posible evito introducir detalles técnicos, aunque a veces es complicado, como en el caso anterior en el que menciono String, pero prefiero escribir tests que no revelen la implementación.
 
@@ -59,9 +61,9 @@ El caso *Better* ataca ambos problemas:
 
 ### Los tests dicen lo que debería ocurrir
 
-El uso de Should como elemento del nombre del test merece su mención. De hecho me gustaría poder eliminar el prefijo test, que es lo que hace que los ~~test frameworks~~ PHPUnit identifique los métodos que se tienen que ejecutar. Hay un par de soluciones:
+El uso de `Should` como elemento del nombre del test merece su mención. De hecho me gustaría poder eliminar el prefijo test, que es lo que hace que ~~los test frameworks~~ PHPUnit identifique los métodos que se tienen que ejecutar. Hay un par de soluciones:
 
-Usar anotaciones, que no me gusta:
+Usar anotaciones:
 
 ```php
 /** @test */
@@ -86,7 +88,7 @@ En cualquier caso, me gusta Should como prefijo porque significa "debería", ind
 public function testShouldCalculateTheDiscountedPrice()
 ```
 
-He visto alguna propuesta de utilizar Should como sufijo en el nombre del TestCase, cosa que no estoy seguro de que pudiese funcionar en PHPUnit, pero hay que reconocer que molaría:
+He visto alguna propuesta de utilizar `Should` como sufijo en el nombre del `TestCase`, cosa que no estoy seguro de que pudiese funcionar en PHPUnit, pero hay que reconocer que molaría:
 
 ```php
 class MyClassShould extends TestCase
@@ -128,7 +130,7 @@ Por tanto, una buena forma de afrontar esto es redactar una `checklist` de regla
 
 ## Eliminar los números mágicos
 
-Uno de los defectos que me gustaría evitar en mis tests es el de la aparente arbitrariedad de los valores de los ejemplos y su falta de significatividad. Quiero decir que, para alguien que lea el test puede resultar difícil comprender en una primera lectura por qué hemos elegido probar unos valores y no otros y qué significado tienen.
+Uno de los defectos que me gustaría evitar en los tests es el de la aparente arbitrariedad de los valores de los ejemplos y su falta de significatividad. Quiero decir que, para alguien que lea el test puede resultar difícil comprender en una primera lectura por qué hemos elegido probar unos valores y no otros y qué significado tienen.
 
 Existen técnicas para seleccionar los valores que usamos para nuestros tests, como pueden ser *Equivalence Class Partitioning* o *Boundary Value Analysis*, que se utilizan para asegurarnos de que los tests cubren todos los escenarios posibles con el mínimo de pruebas, lo que resuelve el primer problema estableciendo una metodología.
 
@@ -154,7 +156,7 @@ Así que podríamos hacer una tabla de casos como esta:
 | 26 - 64   | 30     | 12       | 
 | 65 o más  | 70     | 10       |
 
-Así que podríamos hacer un test como este:
+Y, consecuentemente, podríamos hacer un test como este:
 
 ```php
 public function testCalculatesPriceForSevenOrLess()
@@ -321,9 +323,7 @@ public function prepareClassRepository()
 
 Lo que hemos hecho ha sido extraer la preparación de los dobles de los repositorios a sus propios métodos, lo que nos permite escribir el test de una forma más concisa y clara.
 
-Obviamente, en un proyecto real, es posible que pudiésemos extraer gran parte de la preparación a métodos setUp, incluyendo la instanciación del servicio, o incluso parametrizar de algún modo los métodos `prepare*`, pero creo que la idea queda clara en cuanto a que el cuerpo del test tenga líneas con un mismo nivel de abstracción.
-
-En fin, los Double Builders merecerían un artículo por sí mismos, que quizá escriba algún día [^2].
+Obviamente, en un proyecto real, es posible que pudiésemos extraer gran parte de la preparación a métodos `setUp`, incluyendo la instanciación del servicio, o incluso parametrizar de algún modo los métodos `prepare*`, pero creo que la idea queda clara en cuanto a que el cuerpo del test tenga líneas con un mismo nivel de abstracción [^2].
 
 [^2]: Los Mocks me plantean un problema, pues se llevan las aserciones fuera del flujo Given-When-Then del test hasta el punto de tener tests sin aserciones explícitas y, de hecho, acoplan el test a la implementación del *subject under test*, algo que me fastidia sobremanera porque revientan cuando necesitas hacer un cambio.
 
@@ -391,9 +391,3 @@ protected function assertValidCommercial(Commercial $commercial)
     $this->assertEquals([CommercialRole::ROLE_ADMIN], $commercial->getRoles());
 }
 ```
-
-## Concluyendo
-
-Y hasta aquí una tanda de ideas para escribir tests más limpios, legibles y mantenibles.
-
-Happy testing! (But don't forget test the sad paths, too.)

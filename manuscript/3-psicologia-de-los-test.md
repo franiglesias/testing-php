@@ -4,7 +4,7 @@ Mi primer contacto con los tests, con el propio concepto de test para ser precis
 
 Al principio conseguí desarrollar una noción bastante vaga de la idea y necesidad de testear software, la cual, afortunadamente, fui elaborando y perfeccionando con el tiempo. Aún hoy sigo trabajando en refinarla.
 
-Asímismo me costó entrar en la técnica del testing. En aquel momento había pocas referencias en el mundo PHP y tampoco es que hubiese mucho interés en hacer pedagogía sobre cómo escribir tests, no digamos ya buenos tests. Toda  mi documentación era la que proveía [SimpleTest](http://simpletest.org), un framework de la familia JUunit del que no sé si se acordará alguien todavía.
+Asimismo me costó entrar en la técnica del testing. En aquel momento había pocas referencias en el mundo PHP y tampoco es que hubiese mucho interés en hacer pedagogía sobre cómo escribir tests, no digamos ya buenos tests. Toda  mi documentación era la que proveía [SimpleTest](http://simpletest.org), un framework de la familia JUnit del que no sé si se acordará alguien todavía.
 
 Ni te cuento el shock mental que supuso encontrarme con las metodologías test-first y test driven development. Por entonces, no me cabía en la cabeza la idea de no tener que preparar un montón de cosas antes de plantearme siquiera poder empezar a escribir el test más simple. En aquella época, un 'Class Not Found' era un error, no una indicación de mi siguiente tarea.
 
@@ -58,7 +58,7 @@ Para decirlo de forma más técnica y menos dramática: todos tenemos un cierto 
 En particular, señalaría estos factores que influyen en la dificultad psicológica de poner a prueba el código creado por nosotros:
 
 1. **Tarea terminada**: cuando conseguimos que un código funcione tenemos la sensación de haber cumplido con la tarea, por lo que la fase de testing se convierte en un extra difícil de asumir. Nuestra mente se ha puesto en modo de "buscar la siguiente tarea".
-2. **La solución única**: la mayoría de nosotros hemos pasado por un sistema educativo que ha inculcado en nuestros cerebros la idea de que sólo hay una solución correcta para los problemas. Una cultura maniquea, en la que las cosas o están bien o están mal y en la que la evaluación se percibe como un peligro más que como una forma de diagnostico (a ver si va a fallar el test en algún caso raruno).
+2. **La solución única**: la mayoría de nosotros hemos pasado por un sistema educativo que ha inculcado en nuestros cerebros la idea de que sólo hay una solución correcta para los problemas. Una cultura maniquea, en la que las cosas o están bien o están mal y en la que la evaluación se percibe como un peligro más que como una forma de diagnostico (a ver si va a fallar el test en algún caso raro).
 
 Pero, ¿cómo librarse de esta visión subjetiva del propio código? Probablemente la mejor forma sea utilizando un enfoque *test first*, como TDD y BDD. 
 
