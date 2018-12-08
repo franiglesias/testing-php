@@ -11,11 +11,11 @@
 10-tdd-babysteps-real-world-project.md
 11-code-coverage-para-mejores-tests.md
 12-testear-lo-impredecible.md
-2017-11-19-tdd-en-php-un-ejemplo-con-colecciones-1.md
-2017-11-21-tdd-en-php-un-ejemplo-con-colecciones-2.md
-2017-11-24-tdd-en-php-un-ejemplo-con-colecciones-3.md
-2017-11-25-tdd-en-php-un-ejemplo-con-colecciones-4.md
-2017-11-30-tdd-en-php-un-ejemplo-con-colecciones-5.md
+13-ejemplo-con-colecciones.md
+14-ejemplo-con-colecciones.md
+15-ejemplo-con-colecciones.md
+16-ejemplo-con-colecciones.md
+17-ejemplo-con-colecciones.md
 app-0-apendices.md
 app-1-phpunit.md
 app-2-phpspec.md
