@@ -1,6 +1,6 @@
 # TDD en PHP. Un ejemplo con colecciones (4)
 
-Con lo pequeñita que es la clase Collection y está dando para un montón de artículos. En esta cuarta entrega voy a intentar desarrollar el método `filter`, el cual también nos dará un punto de partida para otros métodos.
+En este capítulo voy a intentar desarrollar el método `filter`, el cual también nos dará un punto de partida para otros métodos.
 
 Y nuestra lista de tareas había quedado así:
 
@@ -70,7 +70,7 @@ Yo voy a optar por la primera y dar pasos más cortos.
 Mi primer test mínimo prueba que `filter` devuelve un objeto Collection:
 
 ```php
-    public function test_Filter_returns_a_Collection()
+    public function testFilterShouldReturnACollection()
     {
         $sut = $this->getCollection();
         $result = $sut->filter(function(CollectionTest $element) {
@@ -102,7 +102,7 @@ Ahora que estamos en verde y que no hay implementación más sencilla posible, v
 Lo que necesitamos siempre para avanzar es un test que falle y eso nos lleva al punto cuatro: la Collection no es la misma que la original. Este tests sí va a fallar, obligándonos a introducir un cambio en la implementación suficiente para pasar:
 
 ```php
-    public function test_Filter_returns_a_Collection_that_is_not_the_same()
+    public function testFilterShouldReturnNewCollection()
     {
         $sut = $this->getCollection();
         $result = $sut->filter(function(CollectionTest $element) {
@@ -121,14 +121,14 @@ Bien. El test falla, así que toca implementar algo.
     }
 ```
 
-No hay que complicarse mucho, creamos una lista nueva y como hemos de asignarle un tipo de objeto tiramos del que tenemos más cerca, el tipo de la clase que contiene el método o, como en el ejemplo, de stdClass, la clase básica de PHP.
+No hay que complicarse mucho, creamos una lista nueva y como hemos de asignarle un tipo de objeto tiramos del que tenemos más cerca, el tipo de la clase que contiene el método o, como en el ejemplo, de `stdClass`, la clase básica de PHP.
 
 Ahora volvemos a los puntos que hemos pospuesto. ¿Podemos hacer un test que falle para probarlos?
 
 En el caso comprobar el tipo de objeto, sí que podemos.
 
 ```php
-    public function test_Filter_returns_a_Collection_with_the_same_type_of_objects()
+    public function testFilterShouldReturnCollectionOfSameType()
     {
         $sut = $this->getCollection();
         $result = $sut->filter(function(CollectionTest $element) {
@@ -138,7 +138,7 @@ En el caso comprobar el tipo de objeto, sí que podemos.
     }
 ```
 
-Prueba superada. El método filter devuelve una Collection de stdClass y nosotros queremos una de CollectionTest. Por tanto, debemos cambiar la implementación para que podamos volver al verde:
+Prueba superada. El método `filter` devuelve una Collection de `stdClass` y nosotros queremos una de `CollectionTest`. Por tanto, debemos cambiar la implementación para que podamos volver al verde:
 
 ```php
     public function filter(Callable $function)
@@ -149,12 +149,12 @@ Prueba superada. El método filter devuelve una Collection de stdClass y nosotro
 
 Y, finalmente, tenemos que probar que la nueva colección creada está vacía. Sin embargo, tal como está la implementación sabemos que el test va a pasar, incluso si añadimos objetos a nuestra colección bajo test: la nueva colección se crea vacía y, de momento, no estamos haciendo nada con ella.
 
-Así que el siguiente test mínimo que sí podría fallar es un test en el que añadimos un objeto a la colección bajo test, aplicamos una función que devuelve true, indicando que esos objetos deben incluirse en la selección y esperando que nos devuelva la nueva colección con el objeto incluido.
+Así que el siguiente test mínimo que sí podría fallar es un test en el que añadimos un objeto a la colección bajo test, aplicamos una función que devuelve `true`, indicando que esos objetos deben incluirse en la selección y esperando que nos devuelva la nueva colección con el objeto incluido.
 
 Aquí tenemos el test que prueba lo que acabamos de decir:
 
 ```php
-    public function test_Filter_include_element_if_filter_function_returns_true()
+    public function testFilterShouldIncludeElementIfCallableReturnsTrue()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -176,7 +176,7 @@ Este test sí falla y, por tanto, nos obliga a implementar algo.
     }
 ```
 
-El test pasa, pero se nos rompen los test anteriores. Tenemos una regresión, esperable por otra parte, debido al caso límite de colección vacía, que ya conocemos de la implementación de los otros métodos.
+El test pasa, pero se nos rompen los tests anteriores. Tenemos una regresión, esperable por otra parte, debido al caso límite de colección vacía, que ya conocemos de la implementación de los otros métodos.
 
 Trataremos el caso particular con una cláusula de guarda, sin más.
 
@@ -195,7 +195,7 @@ Trataremos el caso particular con una cláusula de guarda, sin más.
 Ahora, podríamos probar el caso de que la función de filtrado devuelva false. Entonces la colección devuelta por filter no podrá tener elementos. Este test falla:
 
 ```php
-    public function test_Filter_does_not_include_element_if_filter_function_returns_false()
+    public function testFilterShouldNotIncludeElementIfCallableReturnsFalse()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -225,7 +225,7 @@ Obligándonos a hacer una implementación mínima del filtrado para que el test 
 Para nuestro siguiente test necesitamos que la lista tenga más de un elemento. En la implementación de los métodos each y map llegamos a la conclusión de que dos elementos serían suficientes para probar que la función funcionaría bien para cualquier tamaño de colección.
 
 ```php
-    public function test_Filter_iterates_all_elements_in_collection()
+    public function testFilterShouldIterateOverAllElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -259,7 +259,7 @@ Finalmente, el test pasa con esta implementación, que pone punto final al desar
 
 Pero… Nuestro abogado del diablo lleva un rato sugiriendo que deberíamos probar varias condiciones más. Por ejemplo:
 
-* Que la función de filtro permita probar que unos objetos pasan y otros no pasan (ahora mismo cuando hacemos un test usamos una función que siempre devuelve lo mismo). Realmente no es necesario. Lo que nosotros tenemos que probar es que filter utiliza el resultado de la función para decidir si incluye o no un objeto en la lista, cosa que hemos probado ya con un par de tests. Si la función filtra bien o no, es cuestión del test de la propia función.
+* Que la función de filtro permita probar que unos objetos pasan y otros no pasan (ahora mismo cuando hacemos un test usamos una función que siempre devuelve lo mismo). Realmente no es necesario. Lo que nosotros tenemos que probar es que `filter` utiliza el resultado de la función para decidir si incluye o no un objeto en la lista, cosa que hemos probado ya con un par de tests. Si la función filtra bien o no, es cuestión del test de la propia función.
 * Que los objetos de la colección deberían ser instancias distintas (ahora son la misma). Tampoco es necesario, sencillamente no los consideramos en la función de filtro, tan sólo necesitamos que estén llenando la colección en un número conocido.
 * Que tenemos que probar que estamos iterando la colección. De momento sólo hemos probado que si esperamos un número de elementos (porque se han de incluir o todos o ninguno, según lo que devuelva la función de filtrado), recibiremos ese número de elementos en la colección filtrada, podría ser el mismo elemento repetido el número de veces deseado.
 
@@ -272,7 +272,7 @@ Pero para probar eso no necesitamos hacer otro test, sino arreglar el último qu
 Mi apuesta es que el test pasará.
 
 ```php
-    public function test_Filter_iterates_all_elements_in_collection()
+    public function testFilterShouldIterateOverAllElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -301,7 +301,7 @@ En la práctica esto significa que realmente no necesitamos escribir tests que p
 Por ejemplo, el primer test de `filter` comprobaba justamente eso:
 
 ```php
-    public function test_Filter_returns_a_Collection()
+    public function testFilterShouldReturnACollection()
     {
         $sut = $this->getCollection();
         $result = $sut->filter(function(CollectionTest $element) {
@@ -399,7 +399,7 @@ Yo voy a lanzar una excepción, pero en algunas aplicaciones podría tener senti
 Empecemos por el caso de la colección vacía, que ya sabemos que es un buen test mínimo que falla:
 
 ```php
-    public function test_GetBy_throws_exception_on_empty_collection()
+    public function testGetByShouldThrowExceptionWhenCollectionIsEmpty()
     {
         $sut = $this->getCollection();
         $this->expectException(\UnderflowException::class);
@@ -429,7 +429,7 @@ Fallo del test y nueva implementación mínima para pasar el test:
 Al volver a verde es hora de pensar un nuevo test mínimo que falle. Si la colección no está vacía y no se encuentra el elemento buscado devolveremos una excepción, pero no del mismo tipo.
 
 ```php
-    public function test_GetBy_throws_exception_if_element_is_not_found()
+    public function testGetByShouldThrowExceptionIfElementIsNotFound()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -455,7 +455,7 @@ La implementación supone controlar el caso especial de colección vacía:
 Pero si el objeto está en la colección no debe saltar ninguna excepción y el método devolverá el objeto encontrado. Vamos a probarlo:
 
 ```php
-    public function test_GetBy_returns_element_if_found()
+    public function testGetByShouldReturnFoundElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -486,7 +486,7 @@ De momento, vamos bien, pero ahora necesitamos estar seguros de que la función 
 Este es el código del test y la parte del _self-shunt_.
 
 ```php
-    public function test_GetBy_selects_the_right_element()
+    public function testGetByShouldSelectTheRightElement()
     {
         $sut = $this->getCollection();
         $target = clone $this;
@@ -524,7 +524,7 @@ Para que el test pase, tengo que asegurarme de que examino todos los elementos d
 
 ¿Y sabes qué? Que el test pasa y hemos terminado de implementar `getBy`.
 
-## Fin del cuarto capítulo
+## Fin del capítulo
 
 Nuestra lista queda como sigue:
 
@@ -534,6 +534,5 @@ Nuestra lista queda como sigue:
 * Método isEmpty que nos diga si la colección está vacía
 * Método getType devuelve tipo de la colección
 
-Todavía nos quedan por desarrollar unos cuantos métodos interesantes, pero los dejaremos para la próxima entrega.
+Todavía nos quedan por desarrollar unos cuantos métodos interesantes, pero los dejaremos para el próximo capítulo.
 
-Recuerda que el [código del proyecto puedes verlo en github](https://github.com/franiglesias/collections).

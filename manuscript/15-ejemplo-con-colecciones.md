@@ -11,7 +11,7 @@ Veamos como está nuestra lista de tareas:
 * Alimentar una lista a partir de un array
 * Método isEmpty que nos diga si la colección está vacía
 
-Una cosa que no he reflejado en esta lista es que deberia poder pedirle objetos concretos a Collection, bien sea por un criterio, bien por su posición. Así que añado estas tareas.
+Una cosa que no he reflejado en esta lista es que debería poder pedirle objetos concretos a Collection, bien sea por un criterio, bien por su posición. Así que añado estas tareas.
 
 * Que pueda devolver un array de transformaciones de los objetos (map)
 * Que pueda devolver una Collection de objetos filtrados conforme a un criterio (filter)
@@ -23,21 +23,21 @@ Una cosa que no he reflejado en esta lista es que deberia poder pedirle objetos 
 * Método isEmpty que nos diga si la colección está vacía
 * Método para obtener uno o más objetos de la lista, por criterio, posición, etc.
 
-Fíjate que estoy mezclando diversos tipos de ideas más o menos concretas. Esto es lo de menos porque la iremos reescribiendo contínuamente. Pero aquello que está en la checklist está fuera de nuestra cabeza y, por lo tanto, nos deja más recursos para trabajar en la tarea concreta que tengamos entre manos.
+Fíjate que estoy mezclando diversos tipos de ideas más o menos concretas. Esto es lo de menos porque la iremos reescribiendo continuamente. Pero aquello que está en la checklist está fuera de nuestra cabeza y, por lo tanto, nos deja más recursos para trabajar en la tarea concreta que tengamos entre manos.
 
 ## Pipeline en el método each
 
-Al final del artículo anterior quedaba implementado el método each, pero como nos hemos planteado la posibilidad de poder montar pipelines me gustaría abordarlo ahora antes de entrar a trabajar con otros métodos.
+Al final del capítulo anterior quedaba implementado el método `each`, pero como nos hemos planteado la posibilidad de poder montar pipelines me gustaría abordarlo ahora antes de entrar a trabajar con otros métodos.
 
 En líneas generales, necesitamos resolver dos cosas:
 
 * Que el método devuelva un objeto Collection para poder aplicarle los mismos métodos.
-* Si el objeto Collection va a ser inmutable con respecto al método each y devolverá un Collection nuevo con las modifaciones aplicadas.
+* Si el objeto Collection va a ser inmutable con respecto al método each y devolverá un Collection nuevo con las modificaciones aplicadas.
 
-El primer punto es casi trivial y muy fácil de testear. Simplemente esperamos que each devuelva un objeto del tipo Collection.
+El primer punto es casi trivial y muy fácil de testear. Simplemente esperamos que `each` devuelva un objeto del tipo Collection.
 
 ```php
-    public function test_Each_method_allows_pipeline()
+    public function testEachShouldAllowPipelining()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -58,6 +58,7 @@ El test no pasa, pero la implementación es sencilla:
             return;
         }
         array_map($function, $this->elements);
+        
         return $this;
     }
 ```
@@ -67,7 +68,7 @@ Y nos ponemos en verde enseguida.
 Pero, ¿y si la colección está vacía?
 
 ```php
-    public function test_Each_method_on_empty_Collection_allows_pipeline()
+    public function testEachShouldAllowPipeliningOnEmptyCollection()
     {
         $sut = $this->getCollection();
         $log = '';
@@ -78,7 +79,7 @@ Pero, ¿y si la colección está vacía?
     }
 ```
 
-Pues pasa que el test falla dado que estamos devolviendo null. Hacer algo con una colección vacía no tiene mucho sentido, pero tal vez no nos interese romper el pipeline, por lo que simplemente devolvemos la misma colección.
+Pues pasa que el test falla dado que estamos devolviendo `null`. Hacer algo con una colección vacía no tiene mucho sentido, pero tal vez no nos interese romper el *pipeline*, por lo que simplemente devolvemos la misma colección.
 
 ```php
     public function each(Callable $function)
@@ -87,6 +88,7 @@ Pues pasa que el test falla dado que estamos devolviendo null. Hacer algo con un
             return $this;
         }
         array_map($function, $this->elements);
+        
         return $this;
     }
 ```
@@ -97,25 +99,25 @@ En esta ocasión, al "saltarnos" la situación de colección vacía no hemos det
 
 De momento, no voy a tachar nada de mi lista para recordar este tema al implementar otros métodos.
 
-## Una disgresión: mutable, modificable o todo lo contrario
+## Una digresión: mutable, modificable o todo lo contrario
 
-La verdad es que llevo un buen rato dándole vueltas a este tema. En algunos lenguajes, como Scala, se ofrecen colecciones inmutables y mutables. Cada tipo tiene sus ventajas e inconvenientes. El que una colección sea inmutable no implica que no podamos realizar operaciones con ella, pero estas operaciones devovlerán una colección nueva, que es copia de la original y a la cual se le aplica la transformación. De este modo, la colección original permanece inalterada.
+La verdad es que llevo un buen rato dándole vueltas a este tema. En algunos lenguajes, como Scala, se ofrecen colecciones inmutables y mutables. Cada tipo tiene sus ventajas e inconvenientes. El que una colección sea inmutable no implica que no podamos realizar operaciones con ella, pero estas operaciones devolverán una colección nueva, que es copia de la original y a la cual se le aplica la transformación. De este modo, la colección original permanece inalterada.
 
-La modificabilidad o inmutabilidad no afecta a la interfaz. Sencillamente en una colección inmutable los métodos clonan la colección actual y aplican la transformación sobre ella.
+La mutabilidad o inmutabilidad no afecta a la interfaz. Sencillamente en una colección inmutable los métodos clonan la colección actual y aplican la transformación sobre ella.
 
-Hay varias cuestiones con respecto a la mutabilidad y la modificabilidad de la colección:
+Hay varias cuestiones con respecto a la mutabilidad y la inmutabilidad de la colección:
 
 * Que se puedan, o no, añadir, quitar o cambiar elementos a la colección, una vez creada. En algunos casos, necesitamos que la colección funcione como si fuese un repositorio en memoria. En otros, nos interesa una colección constante de la que obtener ciertos datos. Una colección que no se pueda modificar en este sentido, no expone métodos append o remove o, si lo hace, estos devuelven una instancia nueva de la colección.
 * Que ciertas operaciones devuelvan la colección transformada o bien una colección nueva con la transformación. Una operación de filtrado siempre debería devolvernos una colección nueva, dejando la original intacta, para poder realizar nuevas búsquedas o selecciones en ella.
 * Que se puedan modificar elementos o no, en el sentido de cambiar el estado de los elementos, pero no la colección como tal. El hecho de que la colección no pueda variar el número de elementos no implica que éstos no puedan cambiar de algún modo. El método each, implementado en el artículo anterior, encaja aquí.
 
-Es buena idea leerse [este artículo de Martin Fowler sobre las colection pipelines](https://martinfowler.com/articles/collection-pipeline/). Además, nos da un montón de pistas sobre qué funcionalidad añadir en ella.
+Es buena idea leerse [este artículo de Martin Fowler sobre las *collection pipelines*](https://martinfowler.com/articles/collection-pipeline/). Además, nos da un montón de pistas sobre qué funcionalidad añadir en ella.
 
-Fin de la disgresión.
+Fin de la digresión.
 
 ## Antes de implementar el método map
 
-La idea de `map` es aplicar una transformación a cada elemento de la colección actual y creando una nueva colección con los resultados de esa tranformación. Collection es inmutable con respecto a `map` y tampoco los objetos deberían ver su estado cambiado.
+La idea de `map` es aplicar una transformación a cada elemento de la colección actual y creando una nueva colección con los resultados de esa transformación. Collection es inmutable con respecto a `map` y tampoco los objetos deberían ver su estado cambiado.
 
 En cierto modo, `map` es lo mismo que `each`, pero devolviendo resultados.
 
@@ -125,7 +127,7 @@ Además, me estoy fijando que hay algunas ideas que no están bien expresadas y 
 
 Sin embargo, hay una cuestión que me preocupa: ¿y si no devuelvo objetos en la función de mapeo? Por ejemplo, a lo mejor sólo quiero obtener una lista simple de nombres a partir de una colección de objetos.
 
-Una solución es forzar que todas las transformacion den como resultado objetos, que no tienen que ser del mismo tipo que los de la colección original, de modo que pueda coleccionarlos sin más. Eso me lleva a pensar en que podría ser necesario un método `mapToArray` o `toArray` (o ambos), con el que mapear una colección a un array y que sería el punto final de un pipeline.
+Una solución es forzar que todas las transformación den como resultado objetos, que no tienen que ser del mismo tipo que los de la colección original, de modo que pueda coleccionarlos sin más. Eso me lleva a pensar en que podría ser necesario un método `mapToArray` o `toArray` (o ambos), con el que mapear una colección a un array y que sería el punto final de un pipeline.
 
 Otra solución sería generalizar Collection para permitir cualquier tipo de dato, de modo que pueda coleccionar cualquier cosa. Esta idea es correcta y es interesante. Podríamos poder seguir especificando el tipo para garantizar que la lista se mantenga coherente. Aún siguiendo este desarrollo, sigue siendo interesante incluir el método `mapToArray` para poder obtener la colección en ese formato que suele ser útil para interactuar con otro código existente.
 
@@ -156,7 +158,7 @@ Así que tendremos que probar eso.
 El caso más sencillo sería el de la colección vacía, como hemos dicho antes, no queremos romper el pipeline, por lo que el test podría ser el siguiente:
 
 ```php
-    public function test_Map_method_on_empty_Collection_allows_pipeline()
+    public function testMapShouldAllowPipelineOnEmptyCollection)
     {
         $sut = $this->getCollection();
         $result = $sut->map(function(CollectionTest $element) {
@@ -180,7 +182,7 @@ Y esto nos coloca en verde de nuevo.
 Ocurre, sin embargo, que no queremos que map devuelva la misma Collection, sino otra. Así que necesitamos un test que pruebe eso:
 
 ```php
-    public function test_Map_method_returns_another_collection()
+    public function testMapShouldReturnAnotherCollection()
     {
         $sut = $this->getCollection();
         $result = $sut->map(function(CollectionTest $element) {
@@ -202,7 +204,7 @@ El test falla porque devolvemos la misma colección, vamos a ver cómo soluciona
 Ahora que estamos en verde, haremos un test para probar que se realiza el mapeo. Para ello añadimos un elemento a la colección y esperamos que la colección devuelta tenga un elemento. Por desgracia, este test va a pasar:
 
 ```php
-    public function test_Map_can_map_one_element()
+    public function testShouldMapSingleElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -226,7 +228,7 @@ class MappedObject {}
 Y cambiamos el test:
 
 ```php
-    public function test_Map_can_map_one_element()
+    public function testShouldMapSingleElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -262,7 +264,7 @@ En cualquier caso, ahora hemos conseguido un test que falla, con lo que estamos 
 Ahora el test pasa, pero no prueba que estemos mapeando, sólo prueba que devolvemos una Collection con el tipo MappedObject, el objeto resultado del mapeo. Nuestro test necesita una cierta <strong>triangulación</strong>, es decir, varias aserciones que, juntas, prueben lo que queremos mostrar con el test. Debemos volver al rojo, retomando un test que descartamos antes:
 
 ```php
-    public function test_Map_can_map_one_element()
+    public function testShouldMapSingleElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -285,10 +287,10 @@ Ahora ya tenemos mejor información. La implementación mínima es la siguiente:
     }
 ```
 
-Hemos vuelto a verde, pero hay una cosa que me enciende una pequeña luz de alarma. Los tests con colecciones vacías no fallan aunque nuestra implementación actual fuerza a devolver una colección con un objeto. Necsitamos un test que verifique que devolvemos una nueva colección vacía:
+Hemos vuelto a verde, pero hay una cosa que me enciende una pequeña luz de alarma. Los tests con colecciones vacías no fallan aunque nuestra implementación actual fuerza a devolver una colección con un objeto. Necesitamos un test que verifique que devolvemos una nueva colección vacía:
 
 ```php
-    public function test_Map_method_on_empty_Collection_returns_empty_collection()
+    public function testMapShouldReturnNewEmptyCollectionOnEmptyCollection()
     {
         $sut = $this->getCollection();
         $result = $sut->map(function(CollectionTest $element) {
@@ -316,7 +318,7 @@ Creamos una implementación que contemple este caso límite:
 Nos vamos acercando, estamos de nuevo en verde. Necesitamos un test más que nos fuerce a implementar una solución más general:
 
 ```php
-    public function test_Map_can_map_two_elements()
+    public function testShouldMapTwoElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -375,7 +377,7 @@ Y como el código es poco inteligible, vamos a refactorizar un poco aprovechando
 
 ## Para finalizar (por ahora)
 
-Al igual que ocurre con each, no hay razón para pensar que haya otros casos límite con colecciones de más de dos elementos, por lo que no merece la pena escribir tests para probar que podemos mapear colecciones más grandes.
+Al igual que ocurre con `each`, no hay razón para pensar que haya otros casos límite con colecciones de más de dos elementos, por lo que no merece la pena escribir tests para probar que podemos mapear colecciones más grandes.
 
 Nos quedan unas cuantas cosas pendientes en la lista de tareas, pero las afrontaremos en futuras entregas.
 
@@ -389,4 +391,4 @@ Nos quedan unas cuantas cosas pendientes en la lista de tareas, pero las afronta
 * Método toArray y/o mapToArray que devuelva los elementos de Collection como un array
 * Método getType devuelve tipo de la colección
 
-Recuerda que el [código del proyecto puedes verlo en github](https://github.com/franiglesias/collections).
+

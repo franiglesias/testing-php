@@ -29,7 +29,9 @@ Incluso parece que tendremos una implementación canónica en un futuro
 
 http://php.net/manual/en/class.ds-collection.php
 
-Sin embargo siempre es interesante reinventar la rueda para profundizar en un concepto, así que mi intención es desarrollar una clase Collection usando TDD e ilustrando el proceso de desarrollo. [El proyecto lo pongo en Github](https://github.com/franiglesias/collections) por si te interesa seguirlo más en detalle.
+Sin embargo siempre es interesante reinventar la rueda para profundizar en un concepto, así que mi intención en este capítulo y los siguientes es desarrollar una clase Collection usando TDD e ilustrando el proceso de desarrollo. [El proyecto original está en Github](https://github.com/franiglesias/collections) por si te interesa seguirlo más en detalle.
+
+El objetivo es mostrar un proyecto bastante desarrollado desde el inicio mediante TDD.
 
 ## ¿Qué tendría que tener una clase Collection?
 
@@ -47,7 +49,7 @@ Hagamos una lista de control. Fundamentalmente pienso que necesitamos:
 
 ## Escribiendo el primer mínimo test que falle
 
-Decidir el primer test siempre tiene su intríngulis. Después de un tiempo usando PHPSpec muchas veces comienzo con un test que chequee que puedo instanciar la clase, incluso en PHPUnit, que es el entorno de test que voy a utilizar. Quedaría algo así:
+Decidir el primer test siempre tiene su dificultad. Después de un tiempo usando PHPSpec muchas veces comienzo con un test que chequee que puedo instanciar la clase, incluso en PHPUnit, que es el entorno de test que voy a utilizar. Quedaría algo así:
 
 ```php
 <?php
@@ -59,7 +61,7 @@ use PHPUnit\Framework\TestCase;
 class CollectionTest extends TestCase
 {
 
-    public function test_It_Initializes()
+    public function testShouldInitialize()
     {
         $this->instanceOf(Collection::class, new Collection());
     }
@@ -88,12 +90,12 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
-    public function test_It_Initializes()
+    public function testShouldInitialize()
     {
         $this->assertInstanceOf(Collection::class, new Collection());
     }
 
-    public function test_It_contains_zero_items_on_creation()
+    public function testShouldBeConstructedEmpty()
     {
         $sut = new Collection();
         $this->assertEquals(0, $sut->count());
@@ -116,7 +118,7 @@ class Collection
 }
 ```
 
-En fin, puede que te parezca que de momento vamos muy lentos. Esto es lo que Kent Beck llama _baby steps_ (acabo de leerme su libro de TDD by example, así que déjame posturear un poco). También dice que cada quien tiene que encontrar el tamaño ideal de sus _baby steps_ incluso dependiendo de cómo nos estemos encontrando en cada fase de desarrollo. Es decir, no hay una medida fija de cuál es el mínimo test o el mínimo código de producción, sino que es algo que podemos modular en función de las necesidades que percibimos al trabajar.
+En fin, puede que te parezca que de momento vamos muy lentos. Esto es lo que Kent Beck llama _baby steps_. También dice que cada quien tiene que encontrar el tamaño ideal de sus _baby steps_ incluso dependiendo de cómo nos estemos encontrando en cada fase de desarrollo. Es decir, no hay una medida fija de cuál es el mínimo test o el mínimo código de producción, sino que es algo que podemos modular en función de las necesidades que percibimos al trabajar.
 
 ## Pongamos un poco de comportamiento aquí
 
@@ -143,18 +145,18 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
-    public function test_It_Initializes()
+    public function testShouldInitialize()
     {
         $this->assertInstanceOf(Collection::class, new Collection());
     }
 
-    public function test_It_contains_zero_items_on_creation()
+    public function testShouldBeConstructedEmpty()
     {
         $sut = new Collection();
         $this->assertEquals(0, $sut->count());
     }
 
-    public function test_It_can_append_one_element()
+    public function testShouldBeAbleToAppendOneElement()
     {
         $sut = new Collection();
         $sut->append(new class{});
@@ -204,25 +206,25 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
-    public function test_It_Initializes()
+    public function testShouldInitialize()
     {
         $this->assertInstanceOf(Collection::class, new Collection());
     }
 
-    public function test_It_contains_zero_items_on_creation()
+    public function testShouldBeConstructedEmpty()
     {
         $sut = new Collection();
         $this->assertEquals(0, $sut->count());
     }
 
-    public function test_It_can_append_one_element()
+    public function testShouldBeAbleToAppendOneElement()
     {
         $sut = new Collection();
         $sut->append(new class{});
         $this->assertEquals(1, $sut->count());
     }
 
-    public function test_It_can_append_two_elements()
+    public function testShouldBeAbleToAppendTwoElements()
     {
         $sut = new Collection();
         $sut->append(new class{});
@@ -234,9 +236,9 @@ class CollectionTest extends TestCase
 
 Y este test nos sale directamente en verde.
 
-Siempre que un nuevo test nos sale en verde nos plantea una disyuntiva. El test pasa porque ya hemos hecho la implementación obvia general o bien el test pasa porque no estamos testeando lo que debemos.
+Siempre que un nuevo test nos sale en verde nos plantea una disyuntiva: o bien el test pasa porque ya hemos hecho la implementación obvia general o bien el test pasa porque no estamos testeando lo que debemos.
 
-El caso es que nuestra implementación era bastante obvia y resulta que es la implementación general, así que, podríamos decir que el test incluso sobra.
+El caso es que nuestra implementación era bastante obvia y resulta que es la implementación general, así que, podríamos decir que este último test incluso sobra.
 
 ## Controlando qué ponemos en la colección
 
@@ -254,7 +256,7 @@ Repasemos lo conseguido hasta ahora:
 
 Para asegurar que los elementos que añadimos a la colección sean objetos y que sean de un tipo lo primero que tenemos que hacer es un test que lo pruebe. Lo cierto es que si podemos asegurar que son objetos de una clase, automáticamente estamos validando la condición de que sean objetos.
 
-Si pasamos un objeto de la clase incorrecta deberíamos tener una excepción. En este caso he optado por `UnexpectedValueException`. Podríamos cambiarla más adelante por otra más explícita ya que no es lo más importante de nuestro proyecto.
+Si pasamos un objeto de la clase incorrecta deberíamos tener una excepción. En este caso he optado por `OutOfBoundsException`. Podríamos cambiarla más adelante por otra más explícita ya que no es lo más importante de nuestro proyecto.
 
 Y es ahora cuando empiezan los problemas: ¿Cómo testeamos esto? ¿Cómo sabe Collection qué tipos son válidos y cuáles no? Empecemos por el test más básico:
 
@@ -269,7 +271,7 @@ class CollectionTest extends TestCase
 {
 	/* The other tests ... */
 	
-    public function test_It_does_not_store_objects_of_a_incorrect_type()
+    public function testShouldNotStoreObjectOfIncorrectType()
     {
         $sut = new Collection();
         $this->expectException(\OutOfBoundsException::class);
@@ -295,13 +297,13 @@ class CollectionTest extends TestCase
 {
 	/* The other tests ... */
 	
-    public function test_It_can_initialize_collection_with_a_type()
+    public function testShouldInitializeWithAType()
     {
         $sut = new Collection(get_class($this));
         $this->assertInstanceOf(Collection::class, $sut);
     }
 
-    public function test_It_does_not_store_objects_of_a_incorrect_type()
+    public function testShouldNotStoreObjectOfIncorrectType()
     {
         $sut = new Collection();
         $this->expectException(\OutOfBoundsException::class);
@@ -325,13 +327,13 @@ class CollectionTest extends TestCase
 {
 	/* The other tests ... */
 	
-    public function test_It_can_initialize_collection_with_a_type()
+    public function testShouldInitializeWithAType()
     {
         $sut = new Collection(get_class($this));
         $this->assertInstanceOf(Collection::class, $sut);
     }
 
-    public function test_It_does_not_store_objects_of_a_incorrect_type()
+    public function testShouldNotStoreObjectOfIncorrectType()
     {
         $sut = new Collection(get_class($this));
         $this->expectException(\OutOfBoundsException::class);
@@ -391,25 +393,25 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
-    public function test_It_Initializes()
+    public function testShouldInitialize()
     {
         $this->assertInstanceOf(Collection::class, $this->getCollection());
     }
 
-    public function test_It_contains_zero_items_on_creation()
+    public function testShouldBeConstructedEmpty()
     {
         $sut = $this->getCollection();
         $this->assertEquals(0, $sut->count());
     }
 
-    public function test_It_can_append_one_element()
+    public function testShouldBeAbleToAppendOneElement()
     {
         $sut = $this->getCollection();
         $sut->append(new class{});
         $this->assertEquals(1, $sut->count());
     }
 
-    public function test_It_can_append_two_elements()
+    public function testShouldBeAbleToAppendTwoElements()
     {
         $sut = $this->getCollection();
         $sut->append(new class{});
@@ -417,13 +419,13 @@ class CollectionTest extends TestCase
         $this->assertEquals(2, $sut->count());
     }
 	
-    public function test_It_can_initialize_collection_with_a_type()
+    public function testShouldInitializeWithAType()
     {
         $sut = $this->getTypedCollection();
         $this->assertInstanceOf(Collection::class, $sut);
     }
 
-    public function test_It_does_not_store_objects_with_incorrect_type()
+    public function testShouldNotStoreObjectOfIncorrectType()
     {
         $sut = $this->getTypedCollection();
         $this->expectException(\OutOfBoundsException::class);
@@ -533,14 +535,14 @@ class CollectionTest extends TestCase
 {
 	/* The other tests */
 
-    public function test_It_does_not_store_objects_with_incorrect_type()
+    public function testShouldNotStoreObjectOfIncorrectType()
     {
         $sut = $this->getTypedCollection();
         $this->expectException(\OutOfBoundsException::class);
         $sut->append(new class{});
     }
 	
-    public function test_It_can_store_subclasess_of_the_type()
+    public function testShouldBeAbleToStoreSubClasses()
     {
         $sut = $this->getTypedCollection();
         $sut->append(new class extends CollectionTest {});
@@ -670,25 +672,25 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
-    public function test_It_Initializes()
+    public function testShouldInitialize()
     {
         $this->assertInstanceOf(Collection::class, $this->getCollection());
     }
 
-    public function test_It_contains_zero_items_on_creation()
+    public function testShouldBeConstructedEmpty()
     {
         $sut = $this->getCollection();
         $this->assertEquals(0, $sut->count());
     }
 
-    public function test_It_can_append_one_element()
+    public function testShouldBeAbleToAppendOneElement()
     {
         $sut = $this->getCollection();
         $sut->append(new class {});
         $this->assertEquals(1, $sut->count());
     }
 
-    public function test_It_can_append_two_elements()
+    public function testShouldBeAbleToAppendTwoElements()
     {
         $sut = $this->getCollection();
         $sut->append(new class {});
@@ -696,20 +698,20 @@ class CollectionTest extends TestCase
         $this->assertEquals(2, $sut->count());
     }
 
-    public function test_It_can_initialize_collection_with_a_type()
+    public function testShouldInitializeWithAType()
     {
         $sut = $this->getTypedCollection();
         $this->assertInstanceOf(Collection::class, $sut);
     }
 
-    public function test_It_does_not_store_objects_of_a_incorrect_type()
+    public function testShouldNotStoreObjectOfIncorrectType()
     {
         $sut = $this->getTypedCollection();
         $this->expectException(\UnexpectedValueException::class);
         $sut->append(new class {});
     }
 
-    public function test_It_can_store_subclasess_of_the_type()
+    public function testShouldBeAbleToStoreSubClasses()
     {
         $sut = $this->getTypedCollection();
         $sut->append(new class extends CollectionTest {});
@@ -739,25 +741,25 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
-    public function test_It_Initializes()
+    public function testShouldInitialize()
     {
         $this->assertInstanceOf(Collection::class, $this->getCollection());
     }
 
-    public function test_It_contains_zero_items_on_creation()
+    public function testShouldBeConstructedEmpty()
     {
         $sut = $this->getCollection();
         $this->assertEquals(0, $sut->count());
     }
 
-    public function test_It_can_append_one_element()
+    public function testShouldBeAbleToAppendOneElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
         $this->assertEquals(1, $sut->count());
     }
 
-    public function test_It_can_append_two_elements()
+    public function testShouldBeAbleToAppendTwoElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -765,20 +767,20 @@ class CollectionTest extends TestCase
         $this->assertEquals(2, $sut->count());
     }
 
-    public function test_It_can_initialize_collection_with_a_type()
+    public function testShouldInitializeWithAType()
     {
         $sut = $this->getTypedCollection();
         $this->assertInstanceOf(Collection::class, $sut);
     }
 
-    public function test_It_does_not_store_objects_of_a_incorrect_type()
+    public function testShouldNotStoreObjectOfIncorrectType()
     {
         $sut = $this->getTypedCollection();
         $this->expectException(\UnexpectedValueException::class);
         $sut->append(new class {});
     }
 
-    public function test_It_can_store_subclasess_of_the_type()
+    public function testShouldBeAbleToStoreSubClasses()
     {
         $sut = $this->getTypedCollection();
         $sut->append(new class extends CollectionTest {});
@@ -808,26 +810,25 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
-
-    public function test_It_Initializes()
+    public function testShouldInitialize()
     {
         $this->assertInstanceOf(Collection::class, $this->getCollection());
     }
 
-    public function test_It_contains_zero_items_on_creation()
+    public function testShouldBeConstructedEmpty()
     {
         $sut = $this->getCollection();
         $this->assertEquals(0, $sut->count());
     }
 
-    public function test_It_can_append_one_element()
+    public function testShouldBeAbleToAppendOneElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
         $this->assertEquals(1, $sut->count());
     }
 
-    public function test_It_can_append_two_elements()
+    public function testShouldBeAbleToAppendTwoElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -835,20 +836,20 @@ class CollectionTest extends TestCase
         $this->assertEquals(2, $sut->count());
     }
 
-    public function test_It_can_initialize_collection_with_a_type()
+    public function testShouldInitializeWithAType()
     {
         $sut = $this->getCollection();
         $this->assertInstanceOf(Collection::class, $sut);
     }
 
-    public function test_It_does_not_store_objects_of_a_incorrect_type()
+    public function testShouldNotStoreObjectOfIncorrectType()
     {
         $sut = $this->getCollection();
         $this->expectException(\UnexpectedValueException::class);
         $sut->append(new class {});
     }
 
-    public function test_It_can_store_subclasess_of_the_type()
+    public function testShouldBeAbleToStoreSubClasses()
     {
         $sut = $this->getCollection();
         $sut->append(new class extends CollectionTest {});
@@ -927,25 +928,25 @@ use PHPUnit\Framework\TestCase;
 class CollectionTest extends TestCase
 {
 
-    public function test_It_Initializes()
+    public function testShouldInitialize()
     {
         $this->assertInstanceOf(Collection::class, $this->getCollection());
     }
 
-    public function test_It_contains_zero_items_on_creation()
+    public function testShouldBeConstructedEmpty()
     {
         $sut = $this->getCollection();
         $this->assertEquals(0, $sut->count());
     }
 
-    public function test_It_can_append_one_element()
+    public function testShouldBeAbleToAppendOneElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
         $this->assertEquals(1, $sut->count());
     }
 
-    public function test_It_can_append_two_elements()
+    public function testShouldBeAbleToAppendTwoElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -953,20 +954,20 @@ class CollectionTest extends TestCase
         $this->assertEquals(2, $sut->count());
     }
 
-    public function test_It_can_initialize_collection_with_a_type()
+    public function testShouldInitializeWithAType()
     {
         $sut = $this->getCollection();
         $this->assertInstanceOf(Collection::class, $sut);
     }
 
-    public function test_It_does_not_store_objects_of_a_incorrect_type()
+    public function testShouldNotStoreObjectOfIncorrectType()
     {
         $sut = $this->getCollection();
         $this->expectException(\UnexpectedValueException::class);
         $sut->append(new class {});
     }
 
-    public function test_It_can_store_subclasess_of_the_type()
+    public function testShouldBeAbleToStoreSubClasses()
     {
         $sut = $this->getCollection();
         $sut->append(new class extends CollectionTest {});
@@ -1030,7 +1031,7 @@ class Collection
 
 ## Fin del primer acto
 
-Con esto terminamos la primera parte, nuestra clase Collection admite objetos de una clase y sus subclases. También permite objetos que implmenten la misma interfaz, algo que no hemos hecho explícito en los tests, pero que podría ser innecesario ya que el mecanismo de control de tipo funciona tanto para clases como para interfaces.
+Con esto terminamos la primera parte, nuestra clase Collection admite objetos de una clase y sus subclases. También permite objetos que implementen la misma interfaz, algo que no hemos hecho explícito en los tests, pero que podría ser innecesario ya que el mecanismo de control de tipo funciona tanto para clases como para interfaces.
 
 Lo interesante creo que está en el proceso seguido y en algunas técnicas que hemos ido aplicando. Por ejemplo:
 
@@ -1041,6 +1042,5 @@ Lo interesante creo que está en el proceso seguido y en algunas técnicas que h
 * El uso de técnicas self-shunt para evitar tener que crear clases o dobles para ciertos tests.
 * El uso de métodos factoría en los tests para crear instancias de nuestro _Subject Under Test_, gracias a lo cual podemos controlar más fácilmente los parámetros de creación si los hubiese.
 
-Y esto es todo, de momento. En la próxima entrega añadiremos comportamientos que nos permitirán hacer cosas interesantes con nuestra Collection y trataremos de hacerlo de manera interesante también.
+En el próximo capítulo añadiremos comportamientos que nos permitirán hacer cosas interesantes con nuestra Collection y trataremos de hacerlo de manera interesante también.
 
-Recuerda que el [código del proyecto puedes verlo en github](https://github.com/franiglesias/collections)

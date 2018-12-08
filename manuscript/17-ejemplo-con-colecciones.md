@@ -1,7 +1,5 @@
 # TDD en PHP. Un ejemplo con colecciones (5)
 
-Terminamos con esta serie sobre la disciplina TDD en la que he aprendido un montón de cosas.
-
 Todavía nos quedan unas cuentas cosas pendientes en nuestra lista:
 
 * Que pueda agregar la Collection (reduce)
@@ -43,16 +41,16 @@ El primer elemento de la lista de tareas es implementar el método <code>reduce<
 
 <code>reduce</code> puede devolver cualquier cosa, desde un número a un array o incluso algún objeto. No hay limitaciones aquí. Lo más importante es que aquello que devuelva la función de reducción debe pasársele como parámetro, junto con el elemento actual.
 
-En fin, ¿cuál podría ser el test más sencillo que falle para este método? Pues siguiendo la línea de los artículos anteriores podemos empezar por el test de la colección vacía. Una colección vacía no acumularía nada ni podría reducirse a nada, así que parece bastante razonable esperar que nos devuelva <code>null</code>. Lo malo es que ese test va a pasar a la primera puesto que cualquier método que no devuelva nada explícitamente devolverá <code>null</code>.
+En fin, ¿cuál podría ser el test más sencillo que falle para este método? Pues siguiendo la línea de los artículos anteriores podemos empezar por el test de la colección vacía. Una colección vacía no acumularía nada ni podría reducirse a nada, así que parece bastante razonable esperar que nos devuelva <code>null</code>. Lo malo es que ese test va a pasar a la primera puesto que cualquier método que no devuelva nada explícitamente devolverá `null`.
 
 Por lo tanto, este test no nos vale. ¿Qué podríamos hacer entonces? Resulta que hemos mencionado que podríamos pasar un valor inicial del acumulador, por lo que en el caso de la lista vacía podríamos devolver ese mismo valor ya que al no tener elementos que iterar no se podría aplicar la función de reducción.
 
 ```php
-    public function test_Reduce_returns_initial_value_for_empty_collection()
+    public function testReduceSouldReturnInitialValueForEmptyCollection()
     {
         $sut = $this->getCollection();
-        $result = $sut->reduce(function (CollectionTest $element, $acumulator) {
-           return $acumulator + 1;
+        $result = $sut->reduce(function (CollectionTest $element, $accumulator) {
+           return $accumulator + 1;
         }, 0);
         $this->assertEquals(0, $result);
     }
@@ -67,18 +65,18 @@ El test fallará por razones obvias y nos pide crear el método <code>reduce</co
     }
 ```
 
-Bien, ¿y por qué no devolver directamente el valor que pasamos en <code>$initial</code>?
+Bien, ¿y por qué no devolver directamente el valor que pasamos en `$initial`?
 
-Después de un tiempo practicando TDD puedes pensar que este _baby step_ es demasiado _baby_ y que puedes lidiar con confianza con algunos pasos más grandes. Y no te equivocarías. Como he mencionado en algún momento de la serie, estos pasos se van adaptando a las circunstancias y los puedes ampliar o reducir dependendiendo, precisamente, de tu confianza en lo que estás haciendo.
+Después de un tiempo practicando TDD puedes pensar que este _baby step_ es demasiado _baby_ y que puedes lidiar con confianza con algunos pasos más grandes. Y no te equivocarías. Como he mencionado en algún momento de la serie, estos pasos se van adaptando a las circunstancias y los puedes ampliar o reducir dependiendo, precisamente, de tu confianza en lo que estás haciendo.
 
 Pero yo ahora prefiero hacer que los tests me vayan marcando el camino. Así, en lugar de dar un paso grande, voy a dar uno más pequeño, que además me servirá para probar que <code>$initial</code> puede ser cualquier tipo de valor. Crearé otro test.
 
 ```php
-    public function test_Reduce_initial_can_be_any_type()
+    public function testReduceShouldAcceptAnyTypeForInitialValue()
     {
         $sut = $this->getCollection();
-        $result = $sut->reduce(function (CollectionTest $element, $acumulator) {
-            return $acumulator + 1;
+        $result = $sut->reduce(function (CollectionTest $element, $accumulator) {
+            return $accumulator + 1;
         }, "");
         $this->assertEquals("", $result);
     }
@@ -104,12 +102,12 @@ Por ejemplo, podríamos probar que la función de reducción se aplica para una 
 Nuestra función de reducción de prueba es muy sencilla y se limita a incrementar el acumulador que se le pasa como segundo parámetro, así que nuestro nuevo test podría ser este:
 
 ```php
-   public function test_Reduce_applies_reduce_function_to_one_element()
+   public function testReduceShouldApplyCallableToOneElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
-        $result = $sut->reduce(function (CollectionTest $element, $acumulator) {
-            return $acumulator + 1;
+        $result = $sut->reduce(function (CollectionTest $element, $accumulator) {
+            return $accumulator + 1;
         }, 0);
         $this->assertEquals(1, $result);
     }
@@ -138,7 +136,7 @@ Y, aunque el nuevo test pasa, se nos rompen los dos test anteriores. Nuestra imp
 
 Y con esta implementación volvemos a verde.
 
-He mecionado varias veces que la colección vacía es un caso límite, pero no he explicado cómo podemos decir esto. Aprovecho ahora:
+He mencionado varias veces que la colección vacía es un caso límite, pero no he explicado cómo podemos decir esto. Aprovecho ahora:
 
 La colección vacía es un caso límite porque no puede ser tratado por el algoritmo general. Es una situación especial que no cumple los supuestos que asumimos respecto a las situaciones cubiertas por el algoritmo. Normalmente podemos detectar estos casos con TDD cuando falla un test anterior a la implementación de una solución general.
 
@@ -158,13 +156,13 @@ Por esa razón intentamos crear tests que cubran las tres situaciones. Al hacerl
 En principio nos quedaría probar con una colección de más elementos. El resultado de este test es previsible: tenemos un fallo porque la solución no es lo bastante general.
 
 ```php
-    public function test_Reduce_applies_reduce_function_to_several_elements()
+    public function testReduceShouldApplyFunctionToSeveralElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
         $sut->append($this);
-        $result = $sut->reduce(function (CollectionTest $element, $acumulator) {
-            return $acumulator + 1;
+        $result = $sut->reduce(function (CollectionTest $element, $accumulator) {
+            return $accumulator + 1;
         }, 0);
         $this->assertEquals(2, $result);
     }
@@ -217,14 +215,14 @@ Así que ahora tenemos una lista específica de tareas para desarrollar este mé
 Particularmente no me gusta comenzar por un caso que lanza una excepción, se llaman así por ser excepcionales, así que me voy directamente al primer caso de uso normal y decido que este será el test mínimo:
 
 ```php
-    public function test_Collect_array_returns_instance_of_collection()
+    public function testCollectShouldReturnInstanceOfCollection()
     {
         $sut = Collection::collect([]);
         $this->assertAttributeEquals(\stdClass::class, 'type', $sut);
     }
 ```
 
-El test falla porque no existe el método <code>collect</code>. Lo creamos y observamos que vuelve a fallar porque no devolvemos nada y es, por tanto, momento de implementar alguna solución.
+El test falla porque no existe el método `collect`. Lo creamos y observamos que vuelve a fallar porque no devolvemos nada y es, por tanto, momento de implementar alguna solución.
 
 La implementación más sencilla podría ser esta:
 
@@ -240,7 +238,7 @@ Que nos sirve para pasar el test.
 Ahora quiero probar que el método toma en cuenta el array que le pasamos para instanciar la clase. Para eso hago un test que falle.
 
 ```php
-    public function test_Collect_array_uses_first_element_to_instance_collection()
+    public function testCollectShouldUseFirstElementToDecideCollectionType()
     {
         $sut = Collection::collect([new \stdClass()]);
         $this->assertAttributeEquals(\stdClass::class, 'type', $sut);
@@ -259,12 +257,12 @@ Y como falla, me obliga a implementar. Si ahora forzase a crear una <code>Collec
 
 Este test pasa, pero falla el anterior. Como hemos visto antes, un test anterior que falla suele implicar un caso límite que aparece al intentar generalizar un algoritmo. Pero es que este caso coincide con uno de los casos que queríamos controlar en particular, el array vacío que iba a generar una excepción.
 
-Necesitamos un test que compruebe específicamente este caso. Con esto me doy cuenta de que he comenzado por un test que no sirve, lo que me muestra que siguiendo la metodología TDD los tests parecen cudidarse a sí mismos. Es decir: incluso no teniendo las cosas muy claras al principio, TDD nos va llevando hacia un camino productivo.
+Necesitamos un test que compruebe específicamente este caso. Con esto me doy cuenta de que he comenzado por un test que no sirve, lo que me muestra que siguiendo la metodología TDD los tests parecen cuidarse a sí mismos. Es decir: incluso no teniendo las cosas muy claras al principio, TDD nos va llevando hacia un camino productivo.
 
 En resumidas cuentas, eliminamos el test malo y preparamos un test adecuado a lo que queremos probar ahora:
 
 ```php
-    public function test_Collect_empty_array_fails_with_exception()
+    public function testShouldFailWithExceptionCollectingEmptyArray()
     {
         $this->expectException(\InvalidArgumentException::class);
         Collection::collect([]);
@@ -287,7 +285,7 @@ Hay que implementar para volver a verde:
 Ahora tenemos que probar que <code>collect</code> es capaz de llenar la colección con los objetos que se encuentran en el array. El test mínimo que lo demuestra podría ser este:
 
 ```php
-    public function test_Collect_array_with_one_element_populates_collection()
+    public function testShouldPopulateCollectionWithUniqueElementInArray()
     {
         $sut = Collection::collect([
             $this
@@ -314,7 +312,7 @@ Y una implementación mínima sería la siguiente:
 Para forzarnos a implementar el método general necesitamos un nuevo test, que pruebe que un array de varios elementos genera una colección con esos elementos.
 
 ```php
-    public function test_Collect_array_with_several_elements_populates_collection()
+    public function testShouldPopulateCollectionWithSeveralElementsInArray()
     {
         $sut = Collection::collect([
             $this,
@@ -344,7 +342,7 @@ Para pasar el test, ya podríamos implementar el método general:
 La siguiente tarea que tenemos es lanzar una excepción si algún elemento del array no es del tipo adecuado para la colección. Podríamos hacer un test para probarlo, pero este test va a pasar a la primera.
 
 ```php
-    public function test_Invalid_type_in_array_throws_exception()
+    public function testShouldFailWithExceptionIfWrongTypeElementFound()
     {
         $this->expectException(\UnexpectedValueException::class);
         Collection::collect([
@@ -387,7 +385,7 @@ Usar colecciones puede ser muy útil y elegante, pero si interactuamos con códi
 Pero, como siempre, deberíamos probar eso con un test.
 
 ```php
-    public function test_Empty_Collection_maps_to_empty_array()
+    public function testShouldMapEmptyCollectionToEmptyArray()
     {
         $sut = $this->getCollection();
         $this->assertEquals([], $sut->toArray());
@@ -406,7 +404,7 @@ Como suele pasar con estos tests iniciales, no existe el método y nos pide una 
 Para que sea útil, el método debe trabajar con Collections que tengan algún elemento.
 
 ```php
-    public function test_Collection_can_be_returned_as_array()
+    public function testShouldReturnArrayFromCollection()
     {
         $sample = [$this];
         $sut = Collection::collect($sample);
@@ -437,24 +435,24 @@ Así que hay que contemplar el caso límite, cosa que no nos debería sorprender
 
 No merece la pena probar nuevos tamaños de colección, cualquier test que se nos ocurra al respecto pasará y, por tanto, no aportará ninguna información que nos fuerce a realizar cambios en la implementación.
 
-Pero lo cierto es que también planteamos un método <code>mapToArray</code>. La idea es la siguiente: 
+Pero lo cierto es que también planteamos un método `mapToArray`. La idea es la siguiente: 
 
 En algunas ocasiones nos interesa convertir nuestros objetos a una estructura de array asociativo (diversos mecanismos de persistencia nos piden esto). Por desgracia nuestra definición de Collection impide que podamos mapear los objetos como array para generar una "colección de arrays", aunque existe un atajo:
 
 ```php
-	$collectionArray = $collection->reduce(function(Persistible $element, $acumulator) {
-		$acumulator[] = $element->toArray();
+	$collectionArray = $collection->reduce(function(Persistible $element, $accumulator) {
+		$accumulator[] = $element->toArray();
 	}, array());
 ```
 
-Esta solución funciona, pero sería intersante encapsularla, de modo que fuese más fácil de usar. Una posibilidad es crear un método <code>mapToArray</code>, pero ¿por qué no encapsularla en <code>toArray</code> pasando la función de conversión a array como un parámetro opcional? Al fin y al cabo, generar un array a partir de la colección es el caso más simple de mapeo.
+Esta solución funciona, pero sería interesante encapsularla, de modo que fuese más fácil de usar. Una posibilidad es crear un método `mapToArray`, pero ¿por qué no encapsularla en `toArray` pasando la función de conversión a array como un parámetro opcional? Al fin y al cabo, generar un array a partir de la colección es el caso más simple de mapeo.
 
 Por supuesto, debemos probar esto con un test.
 
 El caso de la colección vacía ya lo hemos probado con el test anterior, por lo que podemos pasar al siguiente test mínimo:
 
 ```php
-    public function test_Collection_can_be_mapped_to_array()
+    public function testShouldBeAbleToMapCollectionToArray()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -478,7 +476,7 @@ La forma de hacerlo pasar es sencilla:
     }
 ```
 
-Con esto, el test pasa, pero rompemos un test anterior, el de la definición actual del método <code>toArray</code>. Es buena cosa, porque nos obliga a implementar algo diferente.
+Con esto, el test pasa, pero rompemos un test anterior, el de la definición actual del método `toArray`. Es buena cosa, porque nos obliga a implementar algo diferente.
 
 Por ejemplo, esto:
 
@@ -495,12 +493,12 @@ Por ejemplo, esto:
     }
 ```
 
-Nos queda menos. El siguiente test probará que podemos mapear dos elementos en el array, pero aquí voy a hacer algo que puede parecer un churro pero que me va a servir para hacer una explicación que hasta ahora he pasado por alto sobre la naturaleza de los baby-steps.
+Nos queda menos. El siguiente test probará que podemos mapear dos elementos en el array, pero aquí voy a hacer algo que puede parecer un churro pero que me va a servir para hacer una explicación que hasta ahora he pasado por alto sobre la naturaleza de los *baby-steps*.
 
 Pero primero, el test:
 
 ```php
-    public function test_Collection_with_two_elements_can_be_mapped_to_array()
+    public function testShouldBeAbleToMapCollectionWithTwoElementsToArray()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -531,7 +529,7 @@ Falla. Implementemos una solución:
 
 ¿Cómo te quedas?
 
-Nuestro último test pasa, nuestro test anterior se rompe. Este baby-step parece ridículo, pero no lo es, de ningún modo. Vamos a ver lo que nos aporta:
+Nuestro último test pasa, nuestro test anterior se rompe. Este *baby-step* parece ridículo, pero no lo es, de ningún modo. Vamos a ver lo que nos aporta:
 
 * En primer lugar, nos ha permitido tener un test que pasa y que es válido, facilitándonos cambiar una implementación para cubrir un nuevo caso.
 * Pero al fallar un test anterior, nos dice que debemos buscar una implementación que pueda dar cuenta de los dos tests. Es decir, un algoritmo más general.
@@ -556,7 +554,7 @@ Así que vamos a implementar de otra manera, en este caso, dando un paso un poco
     }
 ```
 
-Esta implementación ya es lo bastante general como para que no necesitemos más test. Posiblemente podamos refactorizar nuestra solución y hacerla más concisa:
+Esta implementación ya es lo bastante general como para que no necesitemos más tests. Posiblemente podamos refactorizar nuestra solución y hacerla más concisa:
 
 ```php
     public function toArray(Callable $function = null) : array
@@ -581,7 +579,7 @@ La lista se reduce y ya estamos acabando:
 Tenemos un par de métodos de utilidad para nuestra Collection y que no hubiera estado de más implementar antes. Lo bueno es que serán fáciles de implementar y nos servirán para aprender un par de cosas más:
 
 ```php
-    public function test_Collection_getType()
+    public function testShouldGetTheTypeOfCollection()
     {
         $sut = Collection::of(CollectionTest::class);
         $this->assertEquals(CollectionTest::class, $sut->getType());
@@ -604,7 +602,7 @@ La implementación es obvia:
     }
 ```
 
-Por último, <code>isEmpty</code> tiene un poco más de comportamiento. Es un método de utilidad para encapsular una información que podemos obtener de otra manera, aunque un poco más alambicada:
+Por último, `isEmpty` tiene un poco más de comportamiento. Es un método de utilidad para encapsular una información que podemos obtener de otra manera, aunque un poco más alambicada:
 
 ```php
 	if ($collection->count() === 0) { // Collection is empty }
@@ -613,14 +611,14 @@ Por último, <code>isEmpty</code> tiene un poco más de comportamiento. Es un m�
 Hagamos un test que falle:
 
 ```php
-    public function test_Collection_is_empty()
+    public function testShouldTellIfCollectionIsEmpty()
     {
         $sut = $this->getCollection();
         $this->assertTrue($sut->isEmpty());
     }
 ```
 
-Obviamente nos pide implementar y devolver true:
+Obviamente nos pide implementar y devolver `true`:
 
 ```php
     public function isEmpty() : bool
@@ -629,10 +627,10 @@ Obviamente nos pide implementar y devolver true:
     }
 ```
 
-Pero si la colección tiene elementos, debería devolver false.
+Pero si la colección tiene elementos, debería devolver `false`.
 
 ```php
-    public function test_Collection_is_not_empty()
+    public function testShouldTellIfCollectionIsNotEmpty()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -653,11 +651,11 @@ Y, con esto, terminamos.
 
 ## Refactor final
 
-Hemos desarrollado nuestra clase Collection y tachado todos los elementos de la lista. Seguramente queda mucho campo para mejorar esta clase y, tal vez, implementar más métodos. Por el momento, la dejamos así.
+Hemos desarrollado nuestra clase `Collection` y tachado todos los elementos de la lista. Seguramente queda mucho campo para mejorar esta clase y, tal vez, implementar más métodos. Por el momento, la dejamos así.
 
 Puede ser buen momento para refactorizar el código, que está completamente protegido por los tests. De este modo, podemos encontrar implementaciones mejores o más elegantes que, en un futuro, nos permitan intervenir sobre el código, bien para corregir problemas, bien para añadir nuevas funcionalidades o modificar comportamientos de la clase.
 
-Por mi parte, voy a revisar cuestiones como los return type de los métodos y refactorizar algunas cosas con auto-encasulación y, si fuese posible, eliminar algunos bucles También puede ser el momento de reordenar los métodos para agruparlos por afinidad. Este ha sido el resultado:
+Por mi parte, voy a revisar cuestiones como los *return type* de los métodos y refactorizar algunas cosas con auto-encapsulación y, si fuese posible, eliminar algunos bucles También puede ser el momento de reordenar los métodos para agruparlos por afinidad. Este ha sido el resultado:
 
 ```php
 <?php
@@ -832,7 +830,7 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
-    public function test_It_Initializes()
+    public function testShouldInitialize()
     {
         $this->assertInstanceOf(Collection::class, $this->getCollection());
     }
@@ -842,20 +840,20 @@ class CollectionTest extends TestCase
         return Collection::of(get_class($this));
     }
 
-    public function test_It_contains_zero_items_on_creation()
+    public function testShouldBeConstructedEmpty()
     {
         $sut = $this->getCollection();
         $this->assertEquals(0, $sut->count());
     }
 
-    public function test_It_can_append_one_element()
+    public function testShouldBeAbleToAppendOneElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
         $this->assertEquals(1, $sut->count());
     }
 
-    public function test_It_can_append_two_elements()
+    public function testShouldBeAbleToAppendTwoElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -863,13 +861,13 @@ class CollectionTest extends TestCase
         $this->assertEquals(2, $sut->count());
     }
 
-    public function test_It_can_initialize_collection_with_a_type()
+    public function testShouldInitializeWithAType()
     {
         $sut = Collection::of(CollectionTest::class);
         $this->assertInstanceOf(Collection::class, $sut);
     }
 
-    public function test_It_does_not_store_objects_of_a_incorrect_type()
+    public function testShouldNotStoreObjectOfIncorrectType()
     {
         $sut = $this->getCollection();
         $this->expectException(\UnexpectedValueException::class);
@@ -878,7 +876,7 @@ class CollectionTest extends TestCase
         });
     }
 
-    public function test_It_can_store_subclasess_of_the_type()
+    public function testShouldBeAbleToStoreSubClasses()
     {
         $sut = $this->getCollection();
         $sut->append(new class extends CollectionTest
@@ -887,7 +885,7 @@ class CollectionTest extends TestCase
         $this->assertEquals(1, $sut->count());
     }
 
-    public function test_Each_does_nothing_on_empty_collection()
+    public function testEachShouldNotActOnEmptyCollection()
     {
         $sut = $this->getCollection();
         $log = '';
@@ -897,7 +895,7 @@ class CollectionTest extends TestCase
         $this->assertEquals('', $log);
     }
 
-    public function test_Each_can_iterate_one_element()
+    public function testEachShouldIterateOverOneElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -908,7 +906,7 @@ class CollectionTest extends TestCase
         $this->assertEquals('*', $log);
     }
 
-    public function test_Each_can_iterate_two_elements()
+    public function testEachShouldIterateOverSeveralElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -920,7 +918,7 @@ class CollectionTest extends TestCase
         $this->assertEquals('**', $log);
     }
 
-    public function test_Each_element_is_passed_to_function()
+    public function testEachShouldPassEveryElementToCallable()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -932,7 +930,7 @@ class CollectionTest extends TestCase
         $this->assertEquals('**', $log);
     }
 
-    public function test_Each_method_allows_pipeline()
+    public function testEachShouldAllowPipelining()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -943,7 +941,7 @@ class CollectionTest extends TestCase
         $this->assertInstanceOf(Collection::class, $result);
     }
 
-    public function test_Each_method_on_empty_Collection_allows_pipeline()
+    public function testEachShouldAllowPipeliningOnEmptyCollection()
     {
         $sut = $this->getCollection();
         $log = '';
@@ -953,7 +951,7 @@ class CollectionTest extends TestCase
         $this->assertInstanceOf(Collection::class, $result);
     }
 
-    public function test_Map_method_on_empty_Collection_allows_pipeline()
+    public function testMapShouldAllowPipeliningOnEmptyCollection()
     {
         $sut = $this->getCollection();
         $result = $sut->map(function (CollectionTest $element) {
@@ -962,7 +960,7 @@ class CollectionTest extends TestCase
         $this->assertInstanceOf(Collection::class, $result);
     }
 
-    public function test_Map_method_on_empty_Collection_returns_empty_collection()
+    public function testMapShouldReturnEmptyCollectionWhenEmptyCollection()
     {
         $sut = $this->getCollection();
         $result = $sut->map(function (CollectionTest $element) {
@@ -972,7 +970,7 @@ class CollectionTest extends TestCase
         $this->assertEquals(0, $result->count());
     }
 
-    public function test_Map_method_returns_another_collection()
+    public function testMapShoulReturnAnotherCollection()
     {
         $sut = $this->getCollection();
         $result = $sut->map(function (CollectionTest $element) {
@@ -981,7 +979,7 @@ class CollectionTest extends TestCase
         $this->assertNotSame($sut, $result);
     }
 
-    public function test_Map_can_map_one_element()
+    public function testMapShouldMapOneElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -992,7 +990,7 @@ class CollectionTest extends TestCase
         $this->assertEquals(1, $result->count());
     }
 
-    public function test_Map_can_map_two_elements()
+    public function testMapShouldMapSeveralElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -1004,7 +1002,7 @@ class CollectionTest extends TestCase
         $this->assertEquals(2, $result->count());
     }
 
-    public function test_Filter_returns_a_Collection()
+    public function testFilterShouldReturnCollection()
     {
         $sut = $this->getCollection();
         $result = $sut->filter(function (CollectionTest $element) {
@@ -1013,7 +1011,7 @@ class CollectionTest extends TestCase
         $this->assertInstanceOf(Collection::class, $result);
     }
 
-    public function test_Filter_returns_a_Collection_that_is_not_the_same()
+    public function testFilterShouldReturnAnotherCollection()
     {
         $sut = $this->getCollection();
         $result = $sut->filter(function (CollectionTest $element) {
@@ -1022,7 +1020,7 @@ class CollectionTest extends TestCase
         $this->assertNotSame($sut, $result);
     }
 
-    public function test_Filter_returns_a_Collection_with_the_same_type_of_objects()
+    public function testFilterShouldReturnAnotherCollectionWithTheSameType()
     {
         $sut = $this->getCollection();
         $result = $sut->filter(function (CollectionTest $element) {
@@ -1031,7 +1029,7 @@ class CollectionTest extends TestCase
         $this->assertEquals(CollectionTest::class, $result->getType());
     }
 
-    public function test_Filter_include_element_if_filter_function_returns_true()
+    public function testFilterShouldIncludeElementWhenCallableReturnTrue()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -1041,7 +1039,7 @@ class CollectionTest extends TestCase
         $this->assertEquals(1, $result->count());
     }
 
-    public function test_Filter_does_not_include_element_if_filter_function_returns_false()
+    public function testFilterShouldNotIncludeElementWhenCallableReturnFalse()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -1051,7 +1049,7 @@ class CollectionTest extends TestCase
         $this->assertEquals(0, $result->count());
     }
 
-    public function test_Filter_iterates_all_elements_in_collection()
+    public function testFilterShouldIterateOverAllElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -1062,7 +1060,7 @@ class CollectionTest extends TestCase
         $this->assertEquals($sut, $result);
     }
 
-    public function test_GetBy_throws_exception_on_empty_collection()
+    public function testGetByShouldFailWithExceptionWhenEmptyCollection()
     {
         $sut = $this->getCollection();
         $this->expectException(\UnderflowException::class);
@@ -1071,7 +1069,7 @@ class CollectionTest extends TestCase
         });
     }
 
-    public function test_GetBy_throws_exception_if_element_is_not_found()
+    public function testGetByShouldFailWithExceptionWhenElementNotFound()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -1081,7 +1079,7 @@ class CollectionTest extends TestCase
         });
     }
 
-    public function test_GetBy_returns_element_if_found()
+    public function testGetByShouldReturnFoundElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -1091,7 +1089,7 @@ class CollectionTest extends TestCase
         $this->assertSame($this, $result);
     }
 
-    public function test_GetBy_selects_the_right_element()
+    public function testGetByShouldReturnTheRightElement()
     {
         $sut = $this->getCollection();
         $target = clone $this;
@@ -1104,46 +1102,46 @@ class CollectionTest extends TestCase
         $this->assertSame($target, $result);
     }
 
-    public function test_Reduce_returns_initial_value_for_empty_collection()
+    public function testReduceShouldReturnInitialValueWhenCollectionIsEmpty()
     {
         $sut = $this->getCollection();
-        $result = $sut->reduce(function (CollectionTest $element, $acumulator) {
-           return $acumulator + 1;
+        $result = $sut->reduce(function (CollectionTest $element, $accumulator) {
+           return $accumulator + 1;
         }, 0);
         $this->assertEquals(0, $result);
     }
 
-    public function test_Reduce_initial_can_be_any_type()
+    public function testReduceInitialValueShouldAcceptAnyType()
     {
         $sut = $this->getCollection();
-        $result = $sut->reduce(function (CollectionTest $element, $acumulator) {
-            return $acumulator + 1;
+        $result = $sut->reduce(function (CollectionTest $element, $accumulator) {
+            return $accumulator + 1;
         }, "");
         $this->assertEquals("", $result);
     }
 
-    public function test_Reduce_applies_reduce_function_to_one_element()
+    public function testReduceShouldApplyCallableToOneElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
-        $result = $sut->reduce(function (CollectionTest $element, $acumulator) {
-            return $acumulator + 1;
+        $result = $sut->reduce(function (CollectionTest $element, $accumulator) {
+            return $accumulator + 1;
         }, 0);
         $this->assertEquals(1, $result);
     }
 
-    public function test_Reduce_applies_reduce_function_to_several_elements()
+    public function testReduceShouldApplyCallableToSeveralElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
         $sut->append($this);
-        $result = $sut->reduce(function (CollectionTest $element, $acumulator) {
-            return $acumulator + 1;
+        $result = $sut->reduce(function (CollectionTest $element, $accumulator) {
+            return $accumulator + 1;
         }, 0);
         $this->assertEquals(2, $result);
     }
 
-    public function test_Collect_array_uses_first_element_to_instance_collection()
+    public function testCollectShouldReturnInstanceOfCollection()
     {
         $sut = Collection::collect([
             $this
@@ -1151,13 +1149,13 @@ class CollectionTest extends TestCase
         $this->assertEquals(CollectionTest::class, $sut->getType());
     }
 
-    public function test_Collect_empty_array_fails_with_exception()
+    public function testCollectShouldFailWithExceptionIfEmptyArray()
     {
         $this->expectException(\InvalidArgumentException::class);
         Collection::collect([]);
     }
 
-    public function test_Collect_array_with_one_element_populates_collection()
+    public function testCollectShouldPopulateCollectionWithOneElement()
     {
         $sut = Collection::collect([
             $this
@@ -1165,7 +1163,7 @@ class CollectionTest extends TestCase
         $this->assertEquals(1, $sut->count());
     }
 
-    public function test_Collect_array_with_several_elements_populates_collection()
+    public function testCollectShouldPopulateCollectionWithSeveralElements()
     {
         $sut = Collection::collect([
             $this,
@@ -1174,7 +1172,7 @@ class CollectionTest extends TestCase
         $this->assertEquals(2, $sut->count());
     }
 
-    public function test_Invalid_type_in_array_throws_exception()
+    public function testShouldFailWithExceptionsWhenInvalidTypeFound()
     {
         $this->expectException(\UnexpectedValueException::class);
         Collection::collect([
@@ -1183,20 +1181,20 @@ class CollectionTest extends TestCase
         ]);
     }
 
-    public function test_Empty_Collection_maps_to_empty_array()
+    public function testShouldMapEmptyCollectionToEmptyArray()
     {
         $sut = $this->getCollection();
         $this->assertEquals([], $sut->toArray());
     }
 
-    public function test_Collection_can_be_returned_as_array()
+    public function testShouldReturnCollectionAsArray()
     {
         $sample = [$this];
         $sut = Collection::collect($sample);
         $this->assertEquals($sample, $sut->toArray());
     }
 
-    public function test_Collection_can_be_mapped_to_array()
+    public function testShouldMapOneElementCollectionToArray()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -1205,7 +1203,7 @@ class CollectionTest extends TestCase
         }));
     }
 
-    public function test_Collection_with_two_elements_can_be_mapped_to_array()
+    public function testShouldMapSeveralElementsCollectionToArray()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -1215,19 +1213,19 @@ class CollectionTest extends TestCase
         }));
     }
 
-    public function test_Collection_getType()
+    public function testShouldTellCollectionType()
     {
         $sut = Collection::of(CollectionTest::class);
         $this->assertEquals(CollectionTest::class, $sut->getType());
     }
 
-    public function test_Collection_is_empty()
+    public function testShouldTellIfCollectionIsEmpty()
     {
         $sut = $this->getCollection();
         $this->assertTrue($sut->isEmpty());
     }
 
-    public function test_Collection_is_not_empty()
+    public function testShouldTellIfCollectionIsNotEmpty()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -1246,8 +1244,3 @@ class MappedObject
 }
 ```
 
-Por supuesto, se admiten sugerencias de mejora. [Puedes comentar en el repositorio](https://github.com/franiglesias/collections).
-
-Como he comentado en alguna ocasion, el objetivo de esta serie de artículos no es hablar sobre colecciones, sino sobre cómo desarrollar usando la disciplina TDD.
-
-Y eso es todo.

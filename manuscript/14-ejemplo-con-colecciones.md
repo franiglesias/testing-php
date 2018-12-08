@@ -1,18 +1,18 @@
 # TDD en PHP. Un ejemplo con colecciones (2)
 
-Ahora que tenemos una clase Collection a la que podemos añadir objetos de un tipo determinado o sus descendientes, vamos a desarrollar algo de comportamiento. Al fin y al cabo, queremos nuestras colecciones para hacer algo con sus elementos, no sólo para admirarlas… (ejem!).
+Ahora que tenemos una clase Collection a la que podemos añadir objetos de un tipo determinado o sus descendientes, vamos a desarrollar algo de comportamiento. Al fin y al cabo, queremos nuestras colecciones para hacer algo con sus elementos, no sólo para admirarlas.
 
 ## Testing dirigido por Checklist
 
 Antes de continuar con el desarrollo, voy a detenerme en una cuestión práctica: la checklist de tests.
 
-En el libro de <em>TDD by Example</em>, Kent Beck recomienda utilizar una lista de control para ir anotando en ella todas las cosas que queremos testear, tanto las que pensamos a priori, como las que vayan surgiendo a medida que avanzamos en el trabajo.
+En el libro de *TDD by Example*, Kent Beck recomienda utilizar una lista de control para ir anotando en ella todas las cosas que queremos testear, tanto las que pensamos a priori, como las que vayan surgiendo a medida que avanzamos en el trabajo.
 
-El mejor soporte para esto es papel y lápiz. En último término es una especie de <em>backlog</em> de las especificaciones que queremos cubrir con tests. Cada vez que completamos una tarea la tachamos y seleccionamos la que nos parezca más propicia para realizar a continuación.
+El mejor soporte para esto es papel y lápiz. En último término es una especie de *backlog* de las especificaciones que queremos cubrir con tests. Cada vez que completamos una tarea la tachamos y seleccionamos la que nos parezca más propicia para realizar a continuación.
 
 Además, si nos surge alguna idea de algo que deberíamos probar, lo anotamos y nos olvidamos temporalmente del asunto. Lo mismo si, al repasar la lista, observamos que hay algún asunto que podríamos reformular de algún modo.
 
-Esta era nuestra lista incial:
+Esta era nuestra lista inicial:
 
 * Poder añadir elementos a la colección
 * Que estos elementos sean objetos
@@ -46,13 +46,13 @@ Así que voy más bien en la línea de poder recorrer los elementos de las colec
 
 Esto está influenciado por algunos artículos y screencasts de [Adam Wathan](https://adamwathan.me), autor del libro [Refactoring to collections](https://adamwathan.me/refactoring-to-collections/), en el que explica cómo evolucionar el código en estilo imperativo hacia un estilo funcional, eliminado bucles y condicionales gracias al uso de colecciones y "pipelines" de colecciones.
 
-Algunas de las piezas necesarias existen en PHP, como las funciones array_map, array_reduce o array_filter, que nos permiten escribir en estilo funcional lo que, de otra manera haríamos mediante bucles foreach.
+Algunas de las piezas necesarias existen en PHP, como las funciones `array_map`, `array_reduce` o `array_filter`, que nos permiten escribir en estilo funcional lo que, de otra manera haríamos mediante bucles foreach.
 
 En otros lenguajes, sin embargo, los arrays son objetos e incorporan este tipo de métodos, como es el caso de Javascript o Java, y esto es algo que me gustaría reproducir en este proyecto.
 
-Así que podríamos comenzar por <code>each</code>.
+Así que podríamos comenzar por `each`.
 
-## Implementar el método <code>each</code>
+## Implementar el método `each`
 
 Volvamos a nuestra lista de tareas:
 
@@ -84,7 +84,7 @@ Una forma de testear esto podría ser añadir algunos elementos a la lista y def
 Pero en realidad, hay un test que debo realizar antes: una Collection vacía no debería ejecutar nada. Esta es mi primera tentativa en `CollectionTest.php` (sólo incluyo la parte relevante):
 
 ```php
-    public function test_Each_does_nothing_on_empty_collection()
+    public function testEachShouldDoNothingOnEmptyCollection()
     {
         $sut = $this->getCollection();
         $log = '';
@@ -95,7 +95,7 @@ Pero en realidad, hay un test que debo realizar antes: una Collection vacía no 
     }
 ```
 
-Lo primero es hacerme con una instancia de Collection mediante el método <code>getCollection</code> que, como quizá recordéis, utilizaba la técnica de <em>Self-shunt</em>, de modo que la propia clase CollectionTest actúa como elemento coleccionable.
+Lo primero es hacerme con una instancia de Collection mediante el método `getCollection` que, como quizá recordéis, utilizaba la técnica de *Self-shunt*, de modo que la propia clase CollectionTest actúa como elemento coleccionable.
 
 Para poder registrar su actividad, paso por referencia una variable `$log` en la que iré acumulando un asterisco por cada ejecución. En este primer test no debería ocurrir nada. 
 
@@ -110,7 +110,7 @@ Ejecutamos el test y falla, lo que nos indica la necesidad de implementar un mé
 Ahora el test pasa. Estamos en verde, hay que pensar otro test, ahora con, al menos, un elemento.
 
 ```php
-    public function test_It_can_iterate_all_elements()
+    public function testEachShouldIterateOnOneElement()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -136,7 +136,7 @@ Lanzamos el test y pasa, pero ahora se rompe el test anterior. Y esto es bueno, 
 ```php
     public function each(Callable $function)
     {
-        if ($this->count()>0) {
+        if ($this->count() > 0) {
             $function();
         }
     }
@@ -151,7 +151,7 @@ Por otro lado podría ocurrir que tanto el caso "0 elementos" como el "1 element
 En nuestro ejemplo es previsible que la solución general funcione también para los casos de 0 y 1 elementos, pero para eso, nada mejor que hacer un nuevo test y ver qué pasa:
 
 ```php
-    public function test_Each_can_iterate_two_elements()
+    public function testEachShouldIterateTwoElements()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -198,7 +198,7 @@ Podríamos generalizar este test para recorrer un número arbitrario de elemento
 En cambio, quiero detenerme en una situación que no hemos testeado todavía: que la función pasada al método each recibe el elemento correspondiente a la iteración. Todavía no hemos demostrado que eso ocurra. De hecho, hemos utilizado para el test, una función que no recibe parámetros. Necesitamos una nueva que pueda recibir el parámetro.
 
 ```php
-    public function test_Each_element_is_passed_to_function()
+    public function testEachShouldPassEveryElementToCallable()
     {
         $sut = $this->getCollection();
         $sut->append($this);
@@ -243,9 +243,9 @@ Volvemos a verde. Podríamos pensar en refactorizar. Por una parte, nuestro obje
 
 Y esto resulta deliciosamente conciso.
 
-## Recapitulando each
+## Recapitulando `each`
 
-Debo confesar que al empezar a escribir el artículo no las tenía todas conmigo respecto a la posibilidad de testear como es debido tanto el tema de pasar un callable y registrar sus efectos sin complicar en exceso los tests.
+Debo confesar que al empezar a escribir el capítulo no las tenía todas conmigo respecto a la posibilidad de testear como es debido tanto el tema de pasar un callable y registrar sus efectos sin complicar en exceso los tests.
 
 Al final, con pequeños pasos, hemos podido implementar `each` en nuestra clase Collection.
 
@@ -271,4 +271,3 @@ Además, existen una serie de método que podrían ser útiles para conocer el e
 * Alimentar una lista a partir de un array
 * Método isEmpty que nos diga si la colección está vacía
 
-Pero, por hoy ya ha sido bastante. [Puedes ver el proyecto en Github](https://github.com/franiglesias/collections).
