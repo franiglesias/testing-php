@@ -732,13 +732,17 @@ class Dni
 
 ```
 
-De nuevo, posponemos la solución de ese problema a la siguiente iteración. El caso es que, con el último test, hemos definido ya todas las condiciones que debería cumplir una cadena de caracteres para poder ser un DNI aunque, recordemos, en realidad todavía no hemos implementado todo ese comportamiento ya que necesitamos un nuevo tests que nos obligue a ello. Ahora mos toca entrar en el terreno del algoritmo del validación en sí.
+De nuevo, posponemos la solución de ese problema a la siguiente iteración. El caso es que, con el último test, hemos definido ya todas las condiciones que debería cumplir una cadena de caracteres para poder ser un DNI aunque, recordemos, en realidad todavía no hemos implementado todo ese comportamiento ya que necesitamos un nuevo tests que nos obligue a ello. 
+
+Ahora mos toca entrar en el terreno del algoritmo del validación en sí.
 
 Este algoritmo se basa en obtener el resto de la división de la parte numérica del DNI entre 23. Con este resto buscamos la letra de control en la tabla de correspondencias y la comparamos con la que finaliza la cadena. Si coinciden, el DNI es válido. Si no coinciden, lanzaremos una excepción.
 
-A partir de ahora, la validez de la cadena candidata como DNI vendrá determinada por el resultado de aplicar el algoritmo. La duda puede ser si comenzar testeando casos no válidos o, por el contrario, es mejor probar los casos válidos. 
+A partir de ahora, la validez de la cadena candidata como DNI vendrá determinada por el resultado de aplicar el algoritmo. Además, a partir de ahora vamos a seguir un modelo de validación pesimista en el que, por defecto, asumiremos que la cadena de caracteres es inválida salvo que se demuestre lo contrario al aplicar el algoritmo.
 
-Encontrar ejemplos para generar tests es muy fácil, ya que nos basta con utilizar las cadenas desde 00000000 a 00000022. De acuerdo a la siguiente tabla de correspondencias:
+Por tanto en nuestro siguiente test vamos a probar que se lanza excepción cuando la cadena candidata no es válida.
+
+Encontrar ejemplos para generar tests es muy fácil, ya que nos basta con utilizar las cadenas desde 00000000 a 00000022. En la siguiente tabla de correspondencia tenemos los ejemplos válidos:
 
 | Parte numérica | Resto | Letra | DNI |
 |----|------|-------|----|
@@ -766,16 +770,496 @@ Encontrar ejemplos para generar tests es muy fácil, ya que nos basta con utiliz
 | 00000021 | 21 | K | 00000021K |
 | 00000022 | 22 | E | 00000022E |
 
+Para generar un caso no válido, nos basta con tomar cualquiera de las secuencias numéricas y asociarla con cualquier letra excepto la propia. Por ejemplo: 00000000S (o 00000000 con cualquier letra que no sea la T).
 
+Y el test sería más o menos así:
 
+```php
+public function testShouldFailWhenInvalidDni(): void
+{
+    $this->expectException(InvalidArgumentException::class);
+    $dni = new Dni('00000000S');
+}
+```
 
+El cual falla porque no se lanza la excepción esperada:
+
+```
+Failed asserting that exception of type "DomainException" matches expected exception "InvalidArgumentException". Message was: "Starts with invalid letter" at
+/Users/frankie/Sites/dojo/src/Dni.php:27
+/Users/frankie/Sites/dojo/tests/Dojo/DniTest.php:57.
+```
  
-## Cambios de comportamiento: volver al rojo
+De nuevo, para pasar el test debemos resolver primero el problema que dejamos pendiente en el anterior:
 
-El caso es que si observo el código de producción que tengo hasta ahora me doy cuenta de que puedo hacerlo más conciso pero teniendo que modificar levemente el comportamiento del constructor.
+```php
+<?php
+declare(strict_types=1);
 
-El nuevo comportamiento es bastante simple, las DomainException que lanza deberían devolver todas un mensaje "Bad format" ya que realmente no necesito muchos detalles más allá de decir que el DNI ha sido escrito en un formato incorrecto [^1].
+namespace Dojo;
 
-Con todo nos sirve de ejemplo para aprender cómo proceder en caso de que decidamos que necesitamos un cambio de comportamiento del software. Este cambio implica que primero debemos cambiar los tests para que describan el nuevo comportamiento deseado.
+use LengthException;
+
+class Dni
+{
+    private const VALID_LENGTH = 9;
+
+    public function __construct(string $dni)
+    {
+        $this->checkDniHasValidLength($dni);
+
+        if (preg_match('/\d$/', $dni)) {
+            throw new \DomainException('Ends with number');
+        }
+
+        if (preg_match('/[UIOÑ]$/u', $dni)) {
+            throw new \DomainException('Ends with invalid letter');
+        }
+
+        if (! preg_match('/\d{7,7}.$/', $dni)) {
+            throw new \DomainException('Has letters in the middle');
+        }
+
+        if (! preg_match('/^[XYZ0-9]/', $dni)) {
+            throw new \DomainException('Starts with invalid letter');
+        }
+        throw new \InvalidArgumentException('Invalid dni');
+    }
+
+    private function checkDniHasValidLength(string $dni): void
+    {
+        if (\strlen($dni) !== self::VALID_LENGTH) {
+            throw new LengthException('Too long or too short');
+        }
+    }
+}
+```
+
+## Refactor
+
+El caso es que si ahora observamos el código de producción que tenemos es fácil pensar que podría hacerse más conciso. Tenemos cuatro estructuras condicionales que comprueban el match de una expresión regular y, aunque son diferentes patrones, se puede ver que estamos ante una forma de duplicación innecesaria.
+
+Pero para hacerlo tengo que modificar un poco los tests, ya que no quiero depender de los mensajes de las excepciones[^1]. En principio, eliminar la comprobación de los mensajes no afectará al resultado del test.
 
 [^1]: Por eso no es buena práctica que los tests hagan aserciones sobre mensajes, ya que es muy fácil que queramos cambiarlos o que cambien sin que se altere realmente el comportamiento testeado provocando que el test pueda fallar por razones incorrectas.
+
+El TestCase ahora mismo es así:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Tests\Dojo;
+
+use Dojo\Dni;
+use DomainException;
+use InvalidArgumentException;
+use LengthException;
+use PHPUnit\Framework\TestCase;
+
+class DniTest extends TestCase
+{
+    public function testShouldFailWhenDniLongerThanMaxLenght(): void
+    {
+        $this->expectException(LengthException::class);
+        $dni = new Dni('0123456789');
+    }
+
+    public function testShouldFailWhenDniShorterThanMinLenght(): void
+    {
+        $this->expectException(LengthException::class);
+        $dni = new Dni('01234567');
+    }
+
+    public function testShouldFailWhenDniEndsWithANumber(): void
+    {
+        $this->expectException(DomainException::class);
+        $dni = new Dni('012345678');
+    }
+
+    public function testShouldFailWhenDniEndsWithAnInvalidLetter(): void
+    {
+        $this->expectException(DomainException::class);
+        $dni = new Dni('01234567I');
+    }
+
+    public function testShouldFailWhenDniHasLettersInTheMiddle(): void
+    {
+        $this->expectException(DomainException::class);
+        $dni = new Dni('012AB567R');
+    }
+
+    public function testShouldFailWhenDniStartsWithALetterOtherThanXYZ(): void
+    {
+        $this->expectException(DomainException::class);
+        $dni = new Dni('A1234567R');
+    }
+
+    public function testShouldFailWhenInvalidDni(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $dni = new Dni('00000000S');
+    }
+}
+```
+
+Con el test pasando, podemos emprender el refactor. Vamos a ver si podemos unir las expresiones regulares. Lo primero que vamos a intentar es unir las condiciones afirmativas entre sí:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use LengthException;
+
+class Dni
+{
+    private const VALID_LENGTH = 9;
+
+    public function __construct(string $dni)
+    {
+        $this->checkDniHasValidLength($dni);
+
+        if (preg_match('/[UIOÑ\d]$/u', $dni)) {
+            throw new \DomainException('Ends with invalid letter');
+        }
+
+        if (! preg_match('/\d{7,7}.$/', $dni)) {
+            throw new \DomainException('Has letters in the middle');
+        }
+
+        if (!preg_match('/^[XYZ0-9]/', $dni)) {
+            throw new \DomainException('Starts with invalid letter');
+        }
+        throw new \InvalidArgumentException('Invalid dni');
+    }
+
+    private function checkDniHasValidLength(string $dni): void
+    {
+        if (\strlen($dni) !== self::VALID_LENGTH) {
+            throw new LengthException('Too long or too short');
+        }
+    }
+}
+```
+
+Y luego las negativas, aprovechando para hacerla un poco más concisa:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use LengthException;
+
+class Dni
+{
+    private const VALID_LENGTH = 9;
+
+    public function __construct(string $dni)
+    {
+        $this->checkDniHasValidLength($dni);
+
+        if (preg_match('/[UIOÑ\d]$/u', $dni)) {
+            throw new \DomainException('Ends with invalid letter');
+        }
+
+        if (! preg_match('/^[XYZ\d]\d{7,7}.$/', $dni)) {
+            throw new \DomainException('Starts with invalid letter');
+        }
+
+        throw new \InvalidArgumentException('Invalid dni');
+    }
+
+    private function checkDniHasValidLength(string $dni): void
+    {
+        if (\strlen($dni) !== self::VALID_LENGTH) {
+            throw new LengthException('Too long or too short');
+        }
+    }
+}
+```
+
+Ya sólo tenemos dos estructuras `if` y hemos hecho el cambio sin romper la funcionalidad que ya existía gracias a los tests existentes. Ahora vamos a ver si podemos unificarlas, invirtiendo el patrón de una de ellas:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use LengthException;
+
+class Dni
+{
+    private const VALID_LENGTH = 9;
+
+    public function __construct(string $dni)
+    {
+        $this->checkDniHasValidLength($dni);
+        
+        if (! preg_match('/^[XYZ\d]\d{7,7}[^UIOÑ\d]$/u', $dni)) {
+            throw new \DomainException('Bad format');
+        }
+
+        throw new \InvalidArgumentException('Invalid dni');
+    }
+
+    private function checkDniHasValidLength(string $dni): void
+    {
+        if (\strlen($dni) !== self::VALID_LENGTH) {
+            throw new LengthException('Too long or too short');
+        }
+    }
+}
+```
+
+Y aquí tenemos el resultado. Es muy interesante que hemos desarrollado paso a paso una expresión regular para identificar secuencias de caracteres que podrían ser DNI válidos mediante tests. Pero ahí no queda la cosa, podemos ir un paso más lejos.
+
+Si nos fijamos en la expresión regular podemos ver que fuerza una longitud precisa de caracteres en la cadena, haciendo innecesario el control de longitud que encapsulamos en el método `checkDniHasValidLength`. Como tenemos tests, podemos probar que pasa si comentamos la línea donde se llama para que no se ejecute al relanzar los tests.
+
+Falla:
+
+```
+Failed asserting that exception of type "DomainException" matches expected exception "LengthException". Message was: "Bad format" at
+/Users/frankie/Sites/dojo/src/Dni.php:17
+/Users/frankie/Sites/dojo/tests/Dojo/DniTest.php:17
+.
+```
+
+Pero falla porque se lanza una excepción distinta a la esperada, no porque ahora acepte cómo válidas cadenas que no lo son. Recuperamos la línea comentada y vamos a cambiar el test para reflejar el nuevo comportamiento que queremos: que falle con la excepción DomainException:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Tests\Dojo;
+
+use Dojo\Dni;
+use DomainException;
+use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
+
+class DniTest extends TestCase
+{
+    public function testShouldFailWhenDniLongerThanMaxLenght() : void
+    {
+        $this->expectException(DomainException::class);
+        $dni = new Dni('0123456789');
+    }
+
+    public function testShouldFailWhenDniShorterThanMinLenght() : void
+    {
+        $this->expectException(DomainException::class);
+        $dni = new Dni('01234567');
+    }
+
+    public function testShouldFailWhenDniEndsWithANumber() : void
+    {
+        $this->expectException(DomainException::class);
+        $dni = new Dni('012345678');
+    }
+
+    public function testShouldFailWhenDniEndsWithAnInvalidLetter() : void
+    {
+        $this->expectException(DomainException::class);
+        $dni = new Dni('01234567I');
+    }
+
+    public function testShouldFailWhenDniHasLettersInTheMiddle() : void
+    {
+        $this->expectException(DomainException::class);
+        $dni = new Dni('012AB567R');
+    }
+
+    public function testShouldFailWhenDniStartsWithALetterOtherThanXYZ() : void
+    {
+        $this->expectException(DomainException::class);
+        $dni = new Dni('A1234567R');
+    }
+
+    public function testShouldFailWhenInvalidDni() : void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $dni = new Dni('00000000S');
+    }
+}
+```
+
+Lanzamos de nuevo los tests para ver fallar los que se refieren a la longitud de la cadena. Entonces, cambiamos el código de producción para no volver a controlar explícitamente la longitud:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use DomainException;
+use InvalidArgumentException;
+
+class Dni
+{
+    public function __construct(string $dni)
+    {
+        if (!preg_match('/^[XYZ\d]\d{7,7}[^UIOÑ\d]$/u', $dni)) {
+            throw new DomainException('Bad format');
+        }
+
+        throw new InvalidArgumentException('Invalid dni');
+    }
+}
+```
+
+Los tests pasan y nuestra clase Dni es ahora más compacta, podemos mejorar un poquito su legibilidad:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use DomainException;
+use InvalidArgumentException;
+
+class Dni
+{
+    private const VALID_DNI_PATTERN = '/^[XYZ\d]\d{7,7}[^UIOÑ\d]$/u';
+
+    public function __construct(string $dni)
+    {
+        $this->checkIsValidDni($dni);
+
+        throw new InvalidArgumentException('Invalid dni');
+    }
+
+    private function checkIsValidDni(string $dni) : void
+    {
+        if (!preg_match(self::VALID_DNI_PATTERN, $dni)) {
+            throw new DomainException('Bad format');
+        }
+    }
+}
+
+```
+
+## Retomando el desarrollo
+
+Ahora que hemos refactorizado el código hasta dejarlo en la mejor forma posible, estamos en condiciones de seguir desarrollando. En esta ocasión, vamos a empezar con cadenas que sean válidas, las cuales podemos tomar de la tabla que mostramos anteriormente. Podemos empezar por 00000000T.
+
+```php
+public function testShouldConstructValidDNIEndingWithT() : void
+{
+    $dni = new Dni('00000000T');
+    $this->assertEquals('00000000T', (string) $dni);
+}
+```
+
+El test no pasará porque no hay nada implementado:
+
+```
+InvalidArgumentException : Invalid dni
+ /Users/frankie/Sites/dojo/src/Dni.php:17
+ /Users/frankie/Sites/dojo/tests/Dojo/DniTest.php:57
+```
+
+Pero podemos observar que se lanza la excepción InvalidArgumentException, lo que quiere decir que la cadena que hemos pasado para construir el objeto ha superado la validación de formato inicial, señal de que vamos bien.
+
+Lo mínimo para pasar el test podría ser:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use DomainException;
+use InvalidArgumentException;
+
+class Dni
+{
+    private const VALID_DNI_PATTERN = '/^[XYZ\d]\d{7,7}[^UIOÑ\d]$/u';
+    /** @var string */
+    private $dni;
+
+    public function __construct(string $dni)
+    {
+        $this->checkIsValidDni($dni);
+
+        if ('00000000T' !== $dni) {
+            throw new InvalidArgumentException('Invalid dni');
+        }
+        
+        $this->dni = $dni;
+    }
+
+    public function __toString(): string
+    {
+        return $this->dni;
+    }
+
+    private function checkIsValidDni(string $dni) : void
+    {
+        if (!preg_match(self::VALID_DNI_PATTERN, $dni)) {
+            throw new DomainException('Bad format');
+        }
+    }
+}
+```
+
+Y podemos seguir con otros ejemplos:
+
+```php
+public function testShouldConstructValidDNIEndingWithR() : void
+{
+    $dni = new Dni('00000001R');
+    $this->assertEquals('00000001R', (string) $dni);
+}
+```
+
+Resuelto con:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use DomainException;
+use InvalidArgumentException;
+
+class Dni
+{
+    private const VALID_DNI_PATTERN = '/^[XYZ\d]\d{7,7}[^UIOÑ\d]$/u';
+    /** @var string */
+    private $dni;
+
+    public function __construct(string $dni)
+    {
+        $this->checkIsValidDni($dni);
+
+        if ('00000000T' !== $dni && '00000001R' !== $dni) {
+            throw new InvalidArgumentException('Invalid dni');
+        }
+
+        $this->dni = $dni;
+    }
+
+    public function __toString(): string
+    {
+        return $this->dni;
+    }
+
+    private function checkIsValidDni(string $dni) : void
+    {
+        if (!preg_match(self::VALID_DNI_PATTERN, $dni)) {
+            throw new DomainException('Bad format');
+        }
+    }
+}
+```
+
+En este caso es bastante obvio cómo seguiría esta vía, así que vamos a empezar a implementar el algoritmo que, por otra parte, es bastante sencillo. Pero para ello, primero añadiremos otro test:
+
+
