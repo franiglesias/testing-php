@@ -1239,7 +1239,11 @@ class Dni
     {
         $this->checkIsValidDni($dni);
 
-        if ('00000000T' !== $dni && '00000001R' !== $dni) {
+        if ('00000000T' !== $dni) {
+            throw new InvalidArgumentException('Invalid dni');
+        }
+        
+        if ('00000001R' !== $dni) {
             throw new InvalidArgumentException('Invalid dni');
         }
 
@@ -1262,4 +1266,332 @@ class Dni
 
 En este caso es bastante obvio cómo seguiría esta vía, así que vamos a empezar a implementar el algoritmo que, por otra parte, es bastante sencillo. Pero para ello, primero añadiremos otro test:
 
+```php
+public function testShouldConstructValidDNIEndingWithW() : void
+{
+    $dni = new Dni('00000002W');
+    $this->assertEquals('00000002W', (string) $dni);
+}
+```
+
+Y ahora empezamos a tratar la cadena recibida para separarla en partes, manteniendo los tests en verde.
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use DomainException;
+use InvalidArgumentException;
+
+class Dni
+{
+    private const VALID_DNI_PATTERN = '/^[XYZ\d]\d{7,7}[^UIOÑ\d]$/u';
+    /** @var string */
+    private $dni;
+
+    public function __construct(string $dni)
+    {
+        $this->checkIsValidDni($dni);
+
+        $number = (int)substr($dni, 0, - 1);
+        $letter = substr($dni, -1);
+
+        $mod = $number % 23;
+
+        if ($mod === 0 && $letter !== 'T') {
+            throw new InvalidArgumentException('Invalid dni');
+        }
+
+        if ($mod === 1 && $letter !== 'R') {
+            throw new InvalidArgumentException('Invalid dni');
+        }
+
+        if ($mod === 2 && $letter !== 'W') {
+            throw new InvalidArgumentException('Invalid dni');
+        }
+        
+        $this->dni = $dni;
+    }
+
+    public function __toString(): string
+    {
+        return $this->dni;
+    }
+
+    private function checkIsValidDni(string $dni) : void
+    {
+        if (!preg_match(self::VALID_DNI_PATTERN, $dni)) {
+            throw new DomainException('Bad format');
+        }
+    }
+}
+```
+
+Con los tres ejemplos que tenemos podemos ver una estructura: es posible mapear el valor de la variable `$mod` con la letra con la que debería acabar el DNI, así que lo reflejamos en una nueva versión del código.
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use DomainException;
+use InvalidArgumentException;
+
+class Dni
+{
+    private const VALID_DNI_PATTERN = '/^[XYZ\d]\d{7,7}[^UIOÑ\d]$/u';
+    /** @var string */
+    private $dni;
+
+    public function __construct(string $dni)
+    {
+        $this->checkIsValidDni($dni);
+
+        $number = (int)substr($dni, 0, - 1);
+        $letter = substr($dni, -1);
+
+        $mod = $number % 23;
+
+        $map = [
+            0 => 'T',
+            1 => 'R',
+            2 => 'W'
+        ];
+
+
+        if ($letter !== $map[$mod]) {
+            throw new InvalidArgumentException('Invalid dni');
+        }
+        
+        $this->dni = $dni;
+    }
+
+    public function __toString(): string
+    {
+        return $this->dni;
+    }
+
+    private function checkIsValidDni(string $dni) : void
+    {
+        if (!preg_match(self::VALID_DNI_PATTERN, $dni)) {
+            throw new DomainException('Bad format');
+        }
+    }
+}
+```
+
+Como los tests siguen pasando, podemos hacer un par de experimentos para que el código sea más manejable. Por ejemplo, en lugar de un array podemos guardar el mapa como un string:
+
+```php
+$map = 'TRW';
+
+if ($letter !== $map[$mod]) {
+    throw new InvalidArgumentException('Invalid dni');
+}
+```
+
+Y convertirlo en una constante, a la vez que añadimos el resto de letras que nos permitirá validar cualquier posible DNI.
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use DomainException;
+use InvalidArgumentException;
+
+class Dni
+{
+    private const VALID_DNI_PATTERN = '/^[XYZ\d]\d{7,7}[^UIOÑ\d]$/u';
+    private const CONTROL_LETTER_MAP = 'TRWAGMYFPDXBNJZSQVHLCKE';
+    
+    /** @var string */
+    private $dni;
+
+    public function __construct(string $dni)
+    {
+        $this->checkIsValidDni($dni);
+
+        $number = (int)substr($dni, 0, - 1);
+        $letter = substr($dni, -1);
+
+        $mod = $number % 23;
+        
+        if ($letter !== self::CONTROL_LETTER_MAP[$mod]) {
+            throw new InvalidArgumentException('Invalid dni');
+        }
+
+        $this->dni = $dni;
+    }
+
+    public function __toString(): string
+    {
+        return $this->dni;
+    }
+
+    private function checkIsValidDni(string $dni) : void
+    {
+        if (!preg_match(self::VALID_DNI_PATTERN, $dni)) {
+            throw new DomainException('Bad format');
+        }
+    }
+}
+```
+
+Los tests siguen pasando y con esto tenemos casi terminado nuestro Value Object. 
+
+## El curioso problema de los tests que pasan a la primera
+
+Aún nos quedan unos casos que tratar: los DNI especiales que empiezan con los caracteres X, Y, Z. Hagamos un test para tratarlos.
+
+```
+public function testShouldConstructValidNIEStartingWithX() : void
+{
+    $dni = new Dni('X0000000T');
+    $this->assertEquals('X0000000T', (string) $dni);
+}
+```
+
+El test no falla. Y esto es malo porque no nos aporta información ni nos dice qué debemos implementar. Resulta un poco paradójico porque queremos que ese DNI sea reconocido como válido.
+
+En TDD un test puede pasar a la primera por alguna estas razones:
+
+* Nuestra implementación del algoritmo es más general de lo que esperábamos.
+* El caso probado puede tener algún tipo de ambigüedad que no es captada por el código.
+* La implementación tiene algún tipo de problema.
+* No hemos escrito el test correcto.
+
+Seguramente nuestro problema está en la línea:
+
+```php
+$number = (int)substr($dni, 0, - 1);
+```
+
+Que convierte la parte numérica de la cadena en un entero, con lo cual la X es ignorada y se obtiene el número 0 que, por otra parte, es lo que queríamos conseguir.
+
+Pero lo que necesitamos para hacer cambios es un test que falle, así que probamos con un ejemplo que sí debería fallar por la razón correcta que es el no tener implementado nada que maneje esa situación:
+
+```php
+public function testShouldConstructValidNIEStartingWithX() : void
+{
+    $dni = new Dni('Y0000000Z');
+    $this->assertEquals('Y0000000Z', (string) $dni);
+}
+```
+
+El algortimo de validación dice que debemos sustituir la Y por un 1 y proceder de la manera habitual:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use DomainException;
+use InvalidArgumentException;
+
+class Dni
+{
+    private const VALID_DNI_PATTERN = '/^[XYZ\d]\d{7,7}[^UIOÑ\d]$/u';
+    private const CONTROL_LETTER_MAP = 'TRWAGMYFPDXBNJZSQVHLCKE';
+    /** @var string */
+    private $dni;
+
+    public function __construct(string $dni)
+    {
+        $this->checkIsValidDni($dni);
+
+        $numeric = substr($dni, 0, - 1);
+        $number = (int)str_replace('Y', '1', $numeric);
+        $letter = substr($dni, -1);
+
+        $mod = $number % 23;
+
+        if ($letter !== self::CONTROL_LETTER_MAP[$mod]) {
+            throw new InvalidArgumentException('Invalid dni');
+        }
+
+        $this->dni = $dni;
+    }
+
+    public function __toString(): string
+    {
+        return $this->dni;
+    }
+
+    private function checkIsValidDni(string $dni) : void
+    {
+        if (!preg_match(self::VALID_DNI_PATTERN, $dni)) {
+            throw new DomainException('Bad format');
+        }
+    }
+}
+```
+
+La verdad es que no es necesario hacer un nuevo test para implementar lo que queda, que es añadir las dos transformaciones que nos quedan. Hacemos eso y, manteniendo los tests en verde, refactorizamos un poco, extrayendo el método para el cálculo del resto, así como nos deshacemos de todos los números mágicos convirtiéndolos en constantes:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use DomainException;
+use InvalidArgumentException;
+
+class Dni
+{
+    private const VALID_DNI_PATTERN = '/^[XYZ\d]\d{7,7}[^UIOÑ\d]$/u';
+    private const CONTROL_LETTER_MAP = 'TRWAGMYFPDXBNJZSQVHLCKE';
+    private const NIE_INITIAL_LETTERS = ['X', 'Y', 'Z'];
+    private const NIE_INITIAL_REPLACEMENTS = ['0', '1', '2'];
+    private const DIVISOR = 23;
+
+    /** @var string */
+    private $dni;
+
+    public function __construct(string $dni)
+    {
+        $this->checkIsValidDni($dni);
+
+        $mod = $this->calculateModulus($dni);
+
+        $letter = substr($dni, -1);
+
+        if ($letter !== self::CONTROL_LETTER_MAP[ $mod ]) {
+            throw new InvalidArgumentException('Invalid dni');
+        }
+
+        $this->dni = $dni;
+    }
+
+    public function __toString() : string
+    {
+        return $this->dni;
+    }
+
+    private function checkIsValidDni(string $dni) : void
+    {
+        if (!preg_match(self::VALID_DNI_PATTERN, $dni)) {
+            throw new DomainException('Bad format');
+        }
+    }
+
+    private function calculateModulus(string $dni) : int
+    {
+        $numeric = substr($dni, 0, -1);
+        $number = (int) str_replace(self::NIE_INITIAL_LETTERS, self::NIE_INITIAL_REPLACEMENTS, $numeric);
+
+        return $number % self::DIVISOR;
+    }
+}
+```
+
+El resultado es este Value Object, cuyo código está completamente cubierto por tests y responde a todos los requisitos que teníamos inicialmente.
+
+Nuestro siguiente paso sería terminar de testearlo usando, por ejemplo, data providers para verificar todos los casos de la tabla de correspondencias que mostramos antes, así como otros casos no válidos. Pero eso ya no sería una cuestión de TDD, sino de tests de QA.
 
