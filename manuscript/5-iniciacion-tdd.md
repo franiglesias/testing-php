@@ -1595,3 +1595,101 @@ El resultado es este Value Object, cuyo código está completamente cubierto por
 
 Nuestro siguiente paso sería terminar de testearlo usando, por ejemplo, data providers para verificar todos los casos de la tabla de correspondencias que mostramos antes, así como otros casos no válidos. Pero eso ya no sería una cuestión de TDD, sino de tests de QA.
 
+## Resolución de *bugs* mediante TDD
+
+Posiblemente no se te ha escapado un detalle importante: ¿qué ocurre si le pasamos un dni con la letra en minúscula a nuestra clase? Aprovechemos este detalle para ver cómo se trataría un *bug* usando TDD.
+
+Aunque TDD y el testing, en general, nos ayudan a desarrollar software muy sólido, no siempre podemos evitar que se introduzcan errores debido a especificaciones incompletas o defectuosas. Cualquier situación o caso no cubierto por un test es susceptible de fallar al ejecutar el programa.
+
+En un proyecto real, posiblemente nos encontraremos con infinidad de situaciones en las que una definición incompleta o imprecisa de una tarea nos pueda llevar a desplegar código que puede incluir defectos y generar resultados erróneos. 
+
+En nuestro ejemplo, las especificaciones no incluían criterios para actuar en el caso de que las cadenas candidatas a ser un DNI se presentasen en mayúsculas o minúsculas. Por tanto, el comportamiento de nuestro software en este caso no está determinado. Aunque en este caso pueda parecer evidente que hay un problema, la mayor parte de las veces  no se puede predecir y el error se descubre cuando algo falla en producción.
+
+### Lo primero, un test que ponga en evidencia el problema
+
+Una vez que se ha identificado el problema, o un área de comportamiento del software que está indeterminada, lo primero es escribir un test que, fallando, ponga en evidencia que es necesario añadir código para lograr el comportamiento que se desea y solucionar el *bug*. Este test fallará si hemos definido bien la situación problemática.
+
+En nuestro ejemplo haremos un test que pruebe que un DNI escrito con letras minúsculas es válido. Además, queremos asegurarnos de que se normaliza a mayúsculas, por lo que comprobamos que la cadena contenga la letra en el caso adecuado.
+
+```php
+public function testShouldConstructValidDNIWithLowerCaseLetter(): void
+{
+    $dni = new Dni('00000002w');
+    $this->assertEquals('00000002W', (string) $dni);
+}
+```
+
+El test falla, con el siguiente mensaje:
+
+```
+InvalidArgumentException : Invalid dni
+```
+
+Esto es, el Value Object identifica la cadena como un DNI no válido si está en minúscula, lo que nos dice que hemos identificado correctamente el problema y el test prueba la existencia del error.
+
+El código para arreglar esto es bastante sencillo, simplemente pasamos la cadena a mayúsculas antes de nada:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo;
+
+use DomainException;
+use InvalidArgumentException;
+
+class Dni
+{
+    private const VALID_DNI_PATTERN = '/^[XYZ\d]\d{7,7}[^UIOÑ\d]$/u';
+    private const CONTROL_LETTER_MAP = 'TRWAGMYFPDXBNJZSQVHLCKE';
+    private const NIE_INITIAL_LETTERS = ['X', 'Y', 'Z'];
+    private const NIE_INITIAL_REPLACEMENTS = ['0', '1', '2'];
+    private const DIVISOR = 23;
+
+    /** @var string */
+    private $dni;
+
+    public function __construct(string $dni)
+    {
+        $dni = strtoupper($dni);
+        
+        $this->checkIsValidDni($dni);
+
+        $mod = $this->calculateModulus($dni);
+
+        $letter = substr($dni, -1);
+
+        if ($letter !== self::CONTROL_LETTER_MAP[ $mod ]) {
+            throw new InvalidArgumentException('Invalid dni');
+        }
+
+        $this->dni = $dni;
+    }
+
+    public function __toString() : string
+    {
+        return $this->dni;
+    }
+
+    private function checkIsValidDni(string $dni) : void
+    {
+        if (!preg_match(self::VALID_DNI_PATTERN, $dni)) {
+            throw new DomainException('Bad format');
+        }
+    }
+
+    private function calculateModulus(string $dni) : int
+    {
+        $numeric = substr($dni, 0, -1);
+        $number = (int) str_replace(self::NIE_INITIAL_LETTERS, self::NIE_INITIAL_REPLACEMENTS, $numeric);
+
+        return $number % self::DIVISOR;
+    }
+}
+```
+
+Esta línea que hemos añadido soluciona el problema y también lo hace para los NIE, que empiezan con las letras X, Y, Z, por lo que no nos servirá de mucho hacer nuevos tests.
+
+El test, por su parte, demuestra que esta circunstancia está contemplada por nuestro software.
+
+Así que TDD también nos sirve como forma de afrontar la corrección de errores y bugs al permitirnos expresar el comportamiento correcto en forma de test y poner en evidencia la necesidad de escribir el código necesario para que ese comportamiento sea realizado por el software, manteniendo el comportamiento descrito por los tests existentes. Además, el propio tests, nos certifica que el problema ha sido solucionado.
