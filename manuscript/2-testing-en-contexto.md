@@ -1,6 +1,6 @@
 # Testing en contexto
 
-## Taxonomía de tests
+## Taxonomía de tests
 
 Los tests de software se pueden agrupar en dos grandes categorías globales:
 

@@ -72,7 +72,7 @@ Al tener los tests antes que el código conseguimos:
 
 Como ya sabemos hay muchos diseños que hacen especialmente difícil testear un código. En particular, cuando se tiene un alto acoplamiento o dependencias globales.
 
-Esta dificultad puede llevarnos a evitar la etapa de testeo o reducirla solo a la comprobación del *happyu path*.
+Esta dificultad puede llevarnos a evitar la etapa de testeo o reducirla solo a la comprobación del *happy path*.
 
 Aunque hay técnicas específicas para lidiar con estas situaciones, lo ideal es el enfoque *test first*. Para poder cumplir con los tests, nuestro diseño lo tiene en cuenta desde el inicio y las situaciones problemáticas (acoplamiento, dependencias de estado global, etc) se manifiestan de manera inmediata, obligándonos a adoptar soluciones que reducen o evitan esos problemas.
 
