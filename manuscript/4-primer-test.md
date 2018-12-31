@@ -33,14 +33,14 @@ Veamos sus limitaciones más importantes:
 
 * Tener que definir la estructura condicional, que es el meollo del test, para cada test que creamos.
 * Tener que montar algún tipo de *runner* para ejecutar todos los tests de una aplicación de una sola vez, o tener que ejecutarlos uno por uno.
-* No poder recoger información sobre la ejecución de los tests: los que han pasado, o los que han fallado.
-* No poder recoger información acerca de cuáles son las diferencias encontradas entre el resultado obtenido y el esperado.
+* No recoger información sobre la ejecución de los tests: los que han pasado, o los que han fallado.
+* No recoger información acerca de cuáles son las diferencias encontradas entre el resultado obtenido y el esperado.
 
 ## Frameworks al rescate
 
 Para superar estas limitaciones, se han creado frameworks de testing que nos aportan:
 
-**Aserciones o matchers** que nos encapsulan la comparación del resultado esperado y el obtenido, aportándoles significado. Por ejemplo: `assertEquals` comprueba que sean iguales, `assertGreaterThan` verifica que el resultado obtenido sea mayor que un criterio dado, y así muchas más.
+**Aserciones o matchers** que encapsulan la comparación del resultado esperado y el obtenido, aportándoles significado. Por ejemplo: `assertEquals` comprueba que sean iguales, `assertGreaterThan` verifica que el resultado obtenido sea mayor que un criterio dado, `assertTrue` verifica que una condición se cumple, y así muchas más.
 
 **Runner**: los frameworks de tests utilizan un runner que recopila todos nuestros tests, o el subconjunto que indiquemos mediante algún tipo de criterio, y los ejecuta con una sola orden, optimizando el tiempo.
 
@@ -52,7 +52,7 @@ Por tanto, la mejor manera de escribir tests es utilizar un framework que nos pr
 
 En los ejemplos de este libro utilizamos PhpUnit que es prácticamente el estándar, aunque ciertamente hay otros frameworks. Algunos de ellos parten de ciertos planteamientos metodológicos, como puede ser el Behavior Driven Development, una variante de TDD. Otros se especializan en tipos de tests específicos o complementan de algún modo el trabajo que podemos hacer con PhpUnit, o incluso se basan en él.
 
-Sobre la instalación y puesta en marcha de PHP, además de la documentación propia del framework, puedes recurrir a los apéndices del libro, donde lo explicamos.
+Sobre la instalación y puesta en marcha de PHPUnit, además de la documentación propia del framework, puedes recurrir a los apéndices del libro, donde lo explicamos.
 
 ## El primer test
 
@@ -79,12 +79,15 @@ Aquí tienes: **src/Shop/Cart.php**
 
 ### Testeando la instanciación
 
-Tiene bastante sentido comenzar testeando que el carrito se instancia correctamente y tal cómo esperamos. Para plantear el test debemos plantearnos dos cosas:
+Tiene bastante sentido comenzar testeando que el carrito se instancia correctamente tal y cómo esperamos. Para plantear el test debemos pensar en tres cosas:
 
-* La primera es de qué modo tenemos que accionar el objeto bajo test.
-* La segunda es cómo vamos a obtener el resultado o consecuencias observables de esa acción.
+* En qué escenario o precondiciones se va a ejecutar el test.
+* De qué modo tenemos que accionar el objeto bajo test.
+* Cómo vamos a obtener el resultado o consecuencias observables de esa acción.
 
-En nuestro ejemplo, un carro nuevo se obtiene mediante un named constructor:
+En nuestro ejemplo, el primer escenario es que vamos a crear un carro desde cero, sin ningún requisito previo.
+
+Un carro nuevo se obtiene mediante un named constructor:
 
 ```php
 $cart = Cart::pickUp();
@@ -102,6 +105,8 @@ Con estas piezas podemos montar nuestro primer test.
 En PhpUnit solemos agrupar los tests relativos a una misma clase en un TestCase. Se trata de una clase que extiende de `TestCase`, una clase básica para test que te proporciona todas las herramientas que necesitas para trabajar.
 
 La convención dice que el nombre del Test Case es el mismo que el de la clase con el sufijo `Test`. Esto es necesario para que la configuración por defecto de **phpunit** pueda encontrar tests para ejecutar.
+
+Ahora bien, esto es una convención. No implica ningún tipo de obligación o requisito técnico. Puede que te interese tener varios Test Case para probar la misma clase, pero agrupando casos por diferentes criterios que a ti o a tu equipo le resulten significativos.
 
 Aquí está **tests/Dojo/Shop/CartTest.php**
 
@@ -159,16 +164,18 @@ class CartTest extends TestCase
 }
 ```
 
-¿Es mejor uno de los sistemas? No, es una cuestión de preferencia personal. Así que haz lo que más te guste.
+¿Es mejor uno que otro de los dos sistemas? No, es una cuestión de preferencia personal. Así que haz lo que más te guste o lo que te parezca más legible.
 
-En cuanto al nombre del test, debería ser descriptivo de lo que se va a probar en el test. Una forma de hacerlo es empezar todos los tests escribiendo "should" (debería) lo que te va enfocando hacia definir un comportamiento observable y concreto. En el ejemplo que acabamos de poner, el test dice que debería instanciarse un carro vacío con un id.
+En cuanto al nombre del test, debería ser descriptivo de lo que se va a probar en él. Últimamente, mi forma de hacerlo es empezar todos los tests escribiendo "should" (debería) lo que te va enfocando hacia definir un comportamiento observable y concreto. En el ejemplo que acabamos de poner, el test dice que debería instanciarse un carro vacío con un id.
 
 No hay problema en cambiar el nombre del test si creemos que se puede describir mejor el comportamiento probado, normalmente no va a afectar a nada a nivel técnico.
 
 Si no tienes claro cómo expresar lo que estás testeando tienes dos posibilidades:
 
-* No sabes cómo expresarlo. En ese caso, pon un nombre al test que refleje tu forma de decirlo actualmente y reescríbelo luego, cuando lo tengas más claro.
+* No sabes cómo expresarlo. En ese caso, pon un nombre al test que refleje tu forma de pensar en él actualmente y reescríbelo luego, cuando lo tengas más claro.
 * Honradamente, no tienes ni idea de lo que estás testeando. En ese caso, intenta concretar primero una prueba que sí quieras y puedas hacer.
+
+Como alternativa, puedes ponerle al test un nombre provisional como `shouldDoSomething` y cambiarlo cuando tengas más claras las cosas.
 
 Por ejemplo, quizá el nombre del test pueda ser un poco más preciso:
 
@@ -231,7 +238,7 @@ Las aserciones encapsulan una comparación entre lo que esperamos y lo que obten
 
 En este caso, si ambas aserciones se cumplen, el test pasa e indicaría que, efectivamente, nuestro carrito se instancia con un identificador y vacío de productos.
 
-Y eso es lo que ocurre al ejecutar
+Y eso es lo que ocurre al ejecutar:
 
 ```
 bin/phpunit Dojo\Shop\CartTest tests/Dojo/Shop/CartTest.php
@@ -239,7 +246,7 @@ bin/phpunit Dojo\Shop\CartTest tests/Dojo/Shop/CartTest.php
 
 ### Testeando la instanciación alternativa
 
-La segunda forma de instanciación del carrito nos permite hacerlo añadiendo un producto preseleccionado por el usuario, para lo cual existe otro named constructor que admite parámetros que especifican el producto y la cantidad inicial del mismo.
+La segunda forma de instanciación del carrito nos permite hacerlo añadiendo un producto previamente seleccionado por el usuario, para lo cual existe otro named constructor que admite parámetros que especifican el producto y la cantidad inicial del mismo.
 
 Para probar esta segunda forma de instanciación lo que necesitamos es tener un producto, pasarlo al constructor y comprobar que el carrito tiene algún producto.
 
@@ -398,11 +405,225 @@ Con lo anterior hemos comprobado que podemos instanciar el carro y podemos tacha
 
 Sin embargo, cuando hacemos tests unitarios, deberíamos considerar la clase bajo test como una caja negra y no pensar en su implementación, sino en su comportamiento observable. Podría ocurrir que la forma de añadir productos al carro fuese distinta en la creación que durante el resto de su ciclo de vida, por lo que testear explícitamente el método para añadir productos es mucho más seguro.
 
-En este caso tenemos varios escenarios ya que necesitamos probar varias cosas en realidad:
+En este caso tenemos varios escenarios ya que necesitamos probar varias cosas:
 
-* Que podamos añadir un producto en distintas cantidades
-* Que podamos añadir distintos productos y en distintas cantidades
+* Que podamos añadir una unidad de un producto.
+* Que podamos añadir varias unidades del mismo producto.
+* Que podamos añadir una unidad de más de un producto.
+* Que podamos añadir varias unidades de más de un producto.
+
+En realidad, por lo que podemos ver de la interfaz pública, podemos añadir de una sola vez un producto, variando la cantidad.
+
+Así que realmente podríamos testear estas situaciones:
+
+* Añadir una unidad de producto.
+* Añadir más de una unidad de producto.
+* Añadir una unidad de dos productos distintos.
+
+Existen varias formas de testear que hemos añadido productos al carro. La más obvia sería obtener los productos que tiene el carro y comprobar que están los que hemos introducido y que veremos luego.
+
+La otra forma es mucho más sencilla. Consiste simplemente en ver si la cantidad de productos en el carro es la que esperamos según los que hemos ido añadiendo. Si sólo añadimos un producto, debería haber sólo un producto o una sola línea de producto, que es lo que realmente nos dice el método `count`.
+
+```php
+public function testShouldAddAProduct(): void
+{
+    $product = $this->getProduct('product-1', 10);
+    $cart = Cart::pickUp();
+
+    $cart->addProductInQuantity($product, 1);
+    
+    $this->assertCount(1, $cart);
+}
+```
+
+Si queremos testear que podemos añadir una cantidad de productos mayor que uno, nos encontramos que no nos vale el mismo test. `count` nos dice cuántos productos distintos hay, mientras que `totalProducts` nos dice cuántas unidades de productos hay en total. Primero veremos el test y luego analizaremos algunas cosas intersantes:
+
+```php
+public function testShouldAddAProductInQuantity(): void
+{
+    $product = $this->getProduct('product-1', 10);
+    $cart = Cart::pickUp();
+
+    $cart->addProductInQuantity($product, 10);
+    
+    $this->assertCount(1, $cart);
+    $this->assertEquals(10, $cart->totalProducts());
+}
+```
 
 
+**Triangulación**. En este test hacemos dos aserciones que verifican dos aspectos similares del mismo problema. Decimos que hacemos triangulación en un test precisamente cuando hacemos varias aserciones que por sí solas podrían tener una interpretación ambigua, mientras que si las hacemos juntas reflejan con precisión lo que queremos comprobar.
 
+En este caso, añadir un producto en una cantidad distinta de uno implica que se añade una única línea de producto en el carrito, pero que éste contiene diez unidades en total. Si sólo comprobásemos que hay diez unidades, no sabríamos si se corresponden con una única línea o con cinco o diez, lo que sería incorrecto según cómo debería funcionar nuestro carrito de la compra.
 
+**Detección de problemas**. Cuando estamos haciendo un test y lo que queremos testear nos hace dudar, habitualmente es señal de que hay algún punto mejorable en el código. De hecho, cualquier dificultad al testear nos podría estar dando pistas de un problema de diseño.
+
+Por ejemplo, el significado de `count` como número de líneas o productos distintos en el carro no es muy intuitivo. Si `count` devolviese el número de productos en total dentro del carro seguramente nos parecería más natural. La interfaz de `Cart` podría quedar así:
+
+* `Cart::count()`: número de productos
+* `Cart::totalLines()`: número de líneas
+
+El tercer test relacionado con añadir productos al carro sería uno en el que añadimos varios productos en distintas cantidades. Eso generará una línea por cada producto distinto y hará que el total de productos sea la suma de las cantidades.
+
+```php
+public function testShouldAddSeveralProductsInQuantity(): void
+{
+    $product1 = $this->getProduct('product-1', 10);
+    $product2 = $this->getProduct('product-2', 15);
+    
+    $cart = Cart::pickUp();
+
+    $cart->addProductInQuantity($product1, 5);
+    $cart->addProductInQuantity($product2, 7);
+
+    $this->assertCount(2, $cart);
+    $this->assertEquals(12, $cart->totalProducts());
+}
+```
+
+De nuevo hemos aplicado triangulación, ya que queremos que no haya ambigüedad al interpretar lo que ocurre aquí.
+
+Esto nos lleva a otra cuestión: ¿qué ocurre si añado productos de un tipo, luego de otro y luego del primer tipo? Deberían generarse dos líneas de productos, no tres. Y debería acumularse el total de unidades. Probémoslo:
+
+```php
+public function testShouldAddSameProductsInDifferentMoments(): void
+{
+    $product1 = $this->getProduct('product-1', 10);
+    $product2 = $this->getProduct('product-2', 15);
+
+    $cart = Cart::pickUp();
+
+    $cart->addProductInQuantity($product1, 5);
+    $cart->addProductInQuantity($product2, 7);
+    $cart->addProductInQuantity($product2, 3);
+
+    $this->assertCount(2, $cart);
+    $this->assertEquals(15, $cart->totalProducts());
+}
+```
+
+Y este test falla. De nuevo, la triangulación resulta importante. Si sólo hiciésemos una aserción sobre el número de líneas, el test pasaría:
+
+```php
+public function testShouldAddSameProductsInDifferentMoments(): void
+{
+    $product1 = $this->getProduct('product-1', 10);
+    $product2 = $this->getProduct('product-2', 15);
+
+    $cart = Cart::pickUp();
+
+    $cart->addProductInQuantity($product1, 5);
+    $cart->addProductInQuantity($product2, 7);
+    $cart->addProductInQuantity($product2, 3);
+
+    $this->assertCount(2, $cart);
+}
+```
+
+Y esto nos daría una visión engañosa de lo que hace el código. Por eso, es importante definir bien lo que estamos testeando y cómo lo vamos a observar o medir.
+
+**Detección de errores**. Por otro lado, este ejercicio nos revela el poder del testing para detectar bugs que no son aparentes o que se manifiestan sólo en ciertos casos de uso. Un vistazo rápido al código podría no revelar ningún problema y, por otro lado, el caso de uso de que un usuario añade un producto y, más tarde, añade más de ese producto puede no ser evidente a primera vista.
+
+En cualquier caso, lo que nos dice el resultado del test es que debemos modificar el código para hacerlo pasar. En este ejemplo, nos dice que al añadir un producto tendríamos que comprobar ya estaba en el carrito y añadir las unidades extra.
+
+```php
+private function addCartLine(Cartline $cartLine): void
+{
+    $product = $cartLine->product();
+    
+    if (! isset($this->lines[$product->id()])) {
+        $this->lines[$product->id()] = $cartLine;
+
+        return;
+    }
+    
+    $newCartLine = new CartLine(
+        $product,
+        $cartLine->quantity() + $this->lines[$product->id()]->quantity()
+    );
+
+    $this->lines[$product->id()] = $newCartLine;
+}
+```
+
+Con este código el test pasa y la prestación de añadir productos al carro está ahora correctamente implementada.
+
+## Redundancia de tests
+
+Con los tests que hemos escrito hasta ahora hemos cubierto dos de los comportamientos más importantes del carrito:
+
+* Que el usuario pueda tomar un carrito e iniciar las compras
+* Que pueda añadir objetos al carrito
+
+Para poder verificar esos comportamientos hemos necesitado recurrir a algunos métodos que nos proporcionan recuentos del contenido del carrito. Estos métodos, por su parte, estaban en la lista de requisitos con la que habíamos empezado a trabajar.
+
+La cuestión es que esos métodos no han sido testeados explícitamente, sino que los hemos verificado de forma implícita en los tests que hemos escrito para comprobar el comportamiento de la clase.
+
+La pregunta que surge aquí es si deberíamos tener tests que los prueben explícitamente o no. 
+
+La respuesta es una cuestión de enfoque:
+
+En un enfoque orientado al comportamiento tendríamos suficiente con los tests que ya hemos realizado. Los métodos de recuento ya están cubiertos implícitamente y la información que pueda aportar tests específicos sería redundantes. Al fin y al cabo estos métodos simplemente recogen datos del estado del objeto al realizar sus comportamientos.
+
+En el enfoque alternativo, los tests específicos de estos métodos serían necesarios para eliminar cualquier ambigüedad y poder diagnosticar de forma precisa en caso de problemas. Puede resultar difícil aislar estos métodos para que los tests no resulten redundantes y se limiten a probar lo mismo que ya está probado en otros.
+
+La redundancia en los tests no suele merecer la pena *per se* ya que no aporta nueva información. Es lo que ocurre en el ejemplo que tenemos entre manos, los tests de los métodos de recuento no nos van a proporcionar una información diferente de la que ya tenemos.
+
+## Otros test
+
+Uno de los comportamientos que se espera de Cart es darnos información sobre el importe total de los productos en el carrito, que obtenemos mediante el método `amount`. Una buena idea es empezar con un caso extremo y asegurarnos de que un carro vacío cuesta cero, lo que garantizar que no se han introducido importes inesperados al crear el carro.
+
+```php
+public function testEmptyCartShouldHaveZeroAmount(): void
+{
+    $cart = Cart::pickUp();
+
+    $this->assertEquals(0, $cart->amount());
+}
+```
+
+Obviamente, a continuación deberíamos testear que se contabilizan los precios de los productos que añadimos.
+
+```php
+public function testShouldCalculateAmountWhenAddingProduct(): void
+{
+    $cart = Cart::pickUp();
+
+    $product = $this->getProduct('product-01', 10);
+    $cart->addProductInQuantity($product, 1);
+
+    $this->assertEquals(10, $cart->amount());
+}
+```
+
+Así como que tiene en cuenta las cantidades.
+
+```php
+public function testShouldTakeCareOfQuantitiesToCalculateAmount(): void
+{
+    $cart = Cart::pickUp();
+
+    $product = $this->getProduct('product-01', 10);
+    $cart->addProductInQuantity($product, 3);
+
+    $this->assertEquals(30, $cart->amount());
+}
+```
+
+Y que podemos combinar productos y cantidades:
+
+```php
+public function testShouldTakeCareOfQuantitiesAndDifferentProductsToCalculateAmount(): void
+{
+    $cart = Cart::pickUp();
+
+    $product1 = $this->getProduct('product-01', 10);
+    $product2 = $this->getProduct('product-02', 7);
+    
+    $cart->addProductInQuantity($product1, 3);
+    $cart->addProductInQuantity($product2, 4);
+
+    $this->assertEquals(58, $cart->amount());
+}
+```
+ 
