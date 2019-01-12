@@ -56,12 +56,137 @@ Sobre la instalación y puesta en marcha de PHPUnit, además de la documentació
 
 ## El primer test
 
-Vamos a suponer el siguiente código en el que se modela un carro de la compra para una tienda online. En este capítulo no vamos a discutir los detalles de su desarrollo, sino que vamos a ver cómo podríamos poner bajo test un código ya escrito.
+Vamos a suponer el siguiente código en el que se modela un carro de la compra para una tienda online. 
+
+La implementación es bastante mala y es a propósito. En este capítulo no vamos a discutir los detalles de su desarrollo, sino que vamos a ver cómo podríamos poner bajo test un código ya escrito y cómo eso nos puede servir para detectar problemas en un código ya existente.
 
 Aquí tienes: **src/Shop/Cart.php**
 
 ```php
+<?php
+declare(strict_types=1);
 
+namespace Dojo\Shop;
+
+use ArrayIterator;
+use Countable;
+use DomainException;
+use Iterator;
+use IteratorAggregate;
+use UnderflowException;
+
+class Cart implements IteratorAggregate, Countable
+{
+    /** @var string */
+    private $id;
+    /** @var array */
+    private $lines;
+
+    public function __construct(string $id)
+    {
+        $this->id = $id;
+        $this->lines = [];
+    }
+
+    public static function pickUp(): Cart
+    {
+        $id = md5(uniqid('cart.', true));
+
+        return new static($id);
+    }
+
+    public static function pickUpWithProduct(
+        ProductInterface $product,
+        int $quantity
+    ): Cart {
+        $cart = static::pickUp();
+
+        $cart->addCartLine(new CartLine($product, $quantity));
+
+        return $cart;
+    }
+    
+    public function drop()
+    {
+        $this->lines = [];
+    }
+
+    public function id(): string
+    {
+        return $this->id;
+    }
+
+    public function addProductInQuantity(
+        ProductInterface $product,
+        int $quantity
+    ): void {
+        $this->addCartLine(new CartLine($product, $quantity));
+    }
+
+    public function removeProduct(ProductInterface $product): void
+    {
+        if (!isset($this->lines[$product->id()])) {
+            throw new UnderflowException(
+                sprintf('Product %s not in this cart', $product->id())
+            );
+        }
+
+        unset($this->lines[$product->id()]);
+    }
+    
+    public function amount(): float
+    {
+        return array_reduce(
+            $this->lines,
+            function (
+                float $accumulated,
+                CartLine $line
+            ) {
+                $product = $line->product();
+                $accumulated += $product->price() * $line->quantity();
+                return $accumulated;
+            },
+            0
+        );
+    }
+
+    public function totalProducts(): int
+    {
+        return array_reduce(
+            $this->lines,
+            function (
+                int $accumulated,
+                CartLine $line
+            ) {
+                $accumulated += $line->quantity();
+
+                return $accumulated;
+            },
+            0
+        );
+    }
+
+    public function isEmpty()
+    {
+        return 0 === $this->count();
+    }
+
+    public function count(): int
+    {
+        return \count($this->lines);
+    }
+
+    public function getIterator(): Iterator
+    {
+        return new ArrayIterator($this->lines);
+    }
+
+    private function addCartLine(Cartline $cartLine): void
+    {
+        $product = $cartLine->product();
+        $this->lines[$product->id()] = $cartLine;
+    }
+}
 ```
 
 ¿Qué es lo que podríamos testear primero? Lo mejor es empezar un poco antes, tratando de tener claro cuál es el comportamiento que esperamos de nuestro carro. Podemos escribir una lista de especificaciones que sería más o menos como esta:
@@ -85,9 +210,9 @@ Tiene bastante sentido comenzar testeando que el carrito se instancia correctame
 * De qué modo tenemos que accionar el objeto bajo test.
 * Cómo vamos a obtener el resultado o consecuencias observables de esa acción.
 
-En nuestro ejemplo, el primer escenario es que vamos a crear un carro desde cero, sin ningún requisito previo.
+En nuestro ejemplo, tenemos dos escenarios posibles para la instanciación. En uno de ellos el carrito se crea vacío, mientras que en el otro, se crea añadiendo un producto.
 
-Un carro nuevo se obtiene mediante un named constructor:
+Observando el código, podemos ver que un carro nuevo se obtiene mediante un named constructor:
 
 ```php
 $cart = Cart::pickUp();
@@ -102,9 +227,9 @@ $numberOfProducts = $cart->count();
 
 Con estas piezas podemos montar nuestro primer test.
 
-En PhpUnit solemos agrupar los tests relativos a una misma clase en un TestCase. Se trata de una clase que extiende de `TestCase`, una clase básica para test que te proporciona todas las herramientas que necesitas para trabajar.
+En PhpUnit solemos agrupar los tests relativos a una misma clase en un Test Case. Un Test Case extiende de `TestCase`, una clase básica para test que te proporciona todas las herramientas que necesitas para trabajar.
 
-La convención dice que el nombre del Test Case es el mismo que el de la clase con el sufijo `Test`. Esto es necesario para que la configuración por defecto de **phpunit** pueda encontrar tests para ejecutar.
+La convención dice que el nombre del Test Case es el mismo que el de la clase con el sufijo `Test`. Este sufijo es necesario para que la configuración por defecto de **phpunit** pueda encontrar los tests que debe ejecutar. Puedes definir otro sufijo si lo deseas, pero no vamos a entrar en eso ahora.
 
 Ahora bien, esto es una convención. No implica ningún tipo de obligación o requisito técnico. Puede que te interese tener varios Test Case para probar la misma clase, pero agrupando casos por diferentes criterios que a ti o a tu equipo le resulten significativos.
 
@@ -164,20 +289,17 @@ class CartTest extends TestCase
 }
 ```
 
-¿Es mejor uno que otro de los dos sistemas? No, es una cuestión de preferencia personal. Así que haz lo que más te guste o lo que te parezca más legible.
+¿Es mejor uno que otro de los dos sistemas? No. Es una cuestión de preferencia personal o de equipo. Así que haz lo que más te guste o lo que te parezca más legible.
 
 En cuanto al nombre del test, debería ser descriptivo de lo que se va a probar en él. Últimamente, mi forma de hacerlo es empezar todos los tests escribiendo "should" (debería) lo que te va enfocando hacia definir un comportamiento observable y concreto. En el ejemplo que acabamos de poner, el test dice que debería instanciarse un carro vacío con un id.
 
-No hay problema en cambiar el nombre del test si creemos que se puede describir mejor el comportamiento probado, normalmente no va a afectar a nada a nivel técnico.
+No hay problema en cambiar el nombre del test si creemos que se puede describir mejor el comportamiento probado, normalmente no va a afectar a nada a nivel técnico. Considéralo un refactor básico del mismo.
 
-Si no tienes claro cómo expresar lo que estás testeando tienes dos posibilidades:
+Si no tienes claro cómo expresar lo que estás testeando es posible que eso refleje que no sabes con precisión qué es lo que quieres testear, por lo que tal vez debas darle unas vueltas a tu objetivo y definirlo mejor.
 
-* No sabes cómo expresarlo. En ese caso, pon un nombre al test que refleje tu forma de pensar en él actualmente y reescríbelo luego, cuando lo tengas más claro.
-* Honradamente, no tienes ni idea de lo que estás testeando. En ese caso, intenta concretar primero una prueba que sí quieras y puedas hacer.
+Por otro lado, podrías estar en una fase exploratoria mientras tratas de comprender cómo funciona el software, por lo que puedes ponerle al test un nombre provisional como `shouldDoSomething` y cambiarlo cuando tengas más claras las cosas.
 
-Como alternativa, puedes ponerle al test un nombre provisional como `shouldDoSomething` y cambiarlo cuando tengas más claras las cosas.
-
-Por ejemplo, quizá el nombre del test pueda ser un poco más preciso:
+En nuestro ejemplo, vamos a hacer un poco más preciso el nombre del test:
 
 ```php
 <?php
@@ -196,13 +318,13 @@ class CartTest extends TestCase
 }
 ```
 
-Bien, es hora de empezar a poner código. Lo que va a hacer este test es instanciar un carro y comprobar que cumple las condiciones expresadas. Recuerda que un test tiene tres partes principales:
+Bien, es hora de empezar a poner código. Lo que va a hacer este test es instanciar un carro y comprobar que cumple las condiciones expresadas. Recuerda, de nuevo, que un test tiene tres partes principales:
 
-El escenario (la parte Given o Arrange del test) es que el usuario va a tomar un carro nuevo, por lo tanto, no tiene productos preseleccionados.
+El **escenario** (la parte Given o Arrange del test) es que el usuario va a tomar un carro nuevo, por lo tanto, no tiene productos preseleccionados.
 
-La acción (When o Action del test) es crear un carro nuevo.
+La **acción** (When o Action del test) es crear un carro nuevo.
 
-El resultado (Then o Assert del test) es que el carro tiene un identificador y que no contiene productos:
+El **resultado** (Then o Assert del test) es que el carro tiene un identificador y que no contiene productos:
 
 ```php
 <?php
@@ -246,9 +368,9 @@ bin/phpunit Dojo\Shop\CartTest tests/Dojo/Shop/CartTest.php
 
 ### Testeando la instanciación alternativa
 
-La segunda forma de instanciación del carrito nos permite hacerlo añadiendo un producto previamente seleccionado por el usuario, para lo cual existe otro named constructor que admite parámetros que especifican el producto y la cantidad inicial del mismo.
+La segunda forma de instanciar el carrito nos permite hacerlo añadiendo un producto previamente seleccionado por el usuario, para lo cual existe otro named constructor que admite parámetros que especifican el producto y la cantidad inicial del mismo.
 
-Para probar esta segunda forma de instanciación lo que necesitamos es tener un producto, pasarlo al constructor y comprobar que el carrito tiene algún producto.
+Para probar esta segunda forma de instanciación lo que necesitamos es tener un producto, pasarlo al constructor y comprobar que el carrito contiene ese producto.
 
 ```php
 $cart = Cart::pickUpWithProduct($product, 1);
@@ -259,11 +381,11 @@ $id = $cart->id();
 $numberOfProducts = $cart->count();
 ```
 
-Nuestro escenario require que obtengamos algún producto.
+Nuestro **escenario** require que exista algún producto que podamos adquirir.
 
-Nuestra acción será instanciar el carro con el método que nos permite pasarle el producto inicial.
+Nuestra **acción** será instanciar el carro con el método que nos permite pasarle el producto inicial.
 
-Nuestra aserción será ver si se ha creado el id y si el producto ha sido añadido efectivamente al carro.
+Nuestra **aserción** será ver si se ha creado el id y si el producto ha sido añadido efectivamente al carro.
 
 Algo así:
 
@@ -290,7 +412,7 @@ Ahora mismo estamos escribiendo un test unitario, lo que implica que lo que esta
 En el test que estamos tratando ahora necesitaremos un objeto producto para pasarle inicialmente al carro. Tenemos varias formas de usar ese objeto:
 
 * Utilizar una instancia cualquiera de la clase Product.
-* Utilizar un doble de la clase Product. A su vez, el doble podemos obtenerlo creando una subclase de Product apta para test, o bien usar un Doble, creado con una utilidad.
+* Utilizar un doble de la clase Product. A su vez, el doble podemos obtenerlo creando una subclase de Product apta para test, o bien usar un doble creado con una alguna utilidad.
 
 En nuestro ejemplo, tenemos una interfaz ProductInterface que implementan todas las clases Product de nuestra tienda online:
 
@@ -308,7 +430,7 @@ interface ProductInterface
 }
 ```
 
-ProductInterface nos garantiza que los objetos que le pasamos a Cart tengan un método `id` y un método `price`, que necesitamos para las operaciones propias de Cart.
+`ProductInterface` nos garantiza que los objetos que le pasamos a Cart tengan un método `id` y un método `price`, que necesitamos para las operaciones propias de Cart.
 
 #### Usando objetos reales
 
@@ -395,6 +517,11 @@ El objeto `$product` devuelto es tanto un `ProductInterface` como un `MockObject
 
 Con `method` le indicamos a `$product` que vamos a especificar el comportamiento de uno de sus métodos, forzándolo a devolver una respuesta prefijada mediante `willReturn`.
 
+Por ejemplo, esto sería como tener un Product cuyo `id` es el especificado en `$id`.
+
+```php
+$product->method('id')->willReturn($id);
+```
 En otro capítulo veremos algunas cosas con más detalle.
 
 Finalmente, si ejecutamos el test, veremos que también pasa.
@@ -524,7 +651,7 @@ Y esto nos daría una visión engañosa de lo que hace el código. Por eso, es i
 
 **Detección de errores**. Por otro lado, este ejercicio nos revela el poder del testing para detectar bugs que no son aparentes o que se manifiestan sólo en ciertos casos de uso. Un vistazo rápido al código podría no revelar ningún problema y, por otro lado, el caso de uso de que un usuario añade un producto y, más tarde, añade más de ese producto puede no ser evidente a primera vista.
 
-En cualquier caso, lo que nos dice el resultado del test es que debemos modificar el código para hacerlo pasar. En este ejemplo, nos dice que al añadir un producto tendríamos que comprobar ya estaba en el carrito y añadir las unidades extra.
+En cualquier caso, lo que nos dice el resultado del test es que debemos modificar el código para hacerlo pasar. En este ejemplo, nos dice que al añadir un producto tendríamos que comprobar si ya estaba en el carrito y añadir las unidades extra.
 
 ```php
 private function addCartLine(Cartline $cartLine): void
@@ -555,7 +682,7 @@ Con los tests que hemos escrito hasta ahora hemos cubierto dos de los comportami
 * Que el usuario pueda tomar un carrito e iniciar las compras
 * Que pueda añadir objetos al carrito
 
-Para poder verificar esos comportamientos hemos necesitado recurrir a algunos métodos que nos proporcionan recuentos del contenido del carrito. Estos métodos, por su parte, estaban en la lista de requisitos con la que habíamos empezado a trabajar.
+Para poder verificar esos comportamientos hemos tenido que recurrir a algunos métodos que nos proporcionan recuentos del contenido del carrito. Estos métodos, por su parte, estaban en la lista de requisitos con la que habíamos empezado a trabajar.
 
 La cuestión es que esos métodos no han sido testeados explícitamente, sino que los hemos verificado de forma implícita en los tests que hemos escrito para comprobar el comportamiento de la clase.
 
@@ -563,15 +690,15 @@ La pregunta que surge aquí es si deberíamos tener tests que los prueben explí
 
 La respuesta es una cuestión de enfoque:
 
-En un enfoque orientado al comportamiento tendríamos suficiente con los tests que ya hemos realizado. Los métodos de recuento ya están cubiertos implícitamente y la información que pueda aportar tests específicos sería redundantes. Al fin y al cabo estos métodos simplemente recogen datos del estado del objeto al realizar sus comportamientos.
+En un **enfoque orientado al comportamiento** tendríamos suficiente con los tests que ya hemos realizado. Los métodos de recuento ya están cubiertos implícitamente y la información que pueda aportar tests específicos sería redundantes. Al fin y al cabo estos métodos simplemente recogen datos del estado del objeto al realizar sus comportamientos.
 
-En el enfoque alternativo, los tests específicos de estos métodos serían necesarios para eliminar cualquier ambigüedad y poder diagnosticar de forma precisa en caso de problemas. Puede resultar difícil aislar estos métodos para que los tests no resulten redundantes y se limiten a probar lo mismo que ya está probado en otros.
+En el **enfoque alternativo**, los tests específicos de estos métodos serían necesarios para eliminar cualquier ambigüedad y poder diagnosticar de forma precisa en caso de problemas. Puede resultar difícil aislar estos métodos para que los tests no resulten redundantes y se limiten a probar lo mismo que ya está probado en otros.
 
 La redundancia en los tests no suele merecer la pena *per se* ya que no aporta nueva información. Es lo que ocurre en el ejemplo que tenemos entre manos, los tests de los métodos de recuento no nos van a proporcionar una información diferente de la que ya tenemos.
 
 ## Otros test
 
-Uno de los comportamientos que se espera de Cart es darnos información sobre el importe total de los productos en el carrito, que obtenemos mediante el método `amount`. Una buena idea es empezar con un caso extremo y asegurarnos de que un carro vacío cuesta cero, lo que garantizar que no se han introducido importes inesperados al crear el carro.
+Uno de los comportamientos que se espera de `Cart` es darnos información sobre el importe total de los productos en el carrito, que obtenemos mediante el método `amount`. Una buena idea es empezar con un caso extremo y asegurarnos de que un carro vacío cuesta cero, lo que garantizará que no se han introducido importes inesperados al crear el carro.
 
 ```php
 public function testEmptyCartShouldHaveZeroAmount(): void
@@ -626,4 +753,338 @@ public function testShouldTakeCareOfQuantitiesAndDifferentProductsToCalculateAmo
     $this->assertEquals(58, $cart->amount());
 }
 ```
- 
+
+## Descubriendo implementaciones incorrectas
+
+En la lista de requisitos se nos dice que debemos poder retirar productos del carro, decrementando su cantidad. Si pensamos en los posibles escenarios veremos que son tres:
+
+* El carro no tiene el producto previamente, por lo que no hay nada que decrementar.
+* El carro tiene una unidad del producto, así que debería retirarse sin problema, quedando el carro con ninguna unidad de ese producto.
+* El carro tiene más de unidad del producto (n), por lo que debería retirarse una sin problemas, lo que se reflejaría en que quedan n-1 en el carro.
+
+Así que planteamos los tests correspondientes:
+
+El método `removeProduct` lanzará una excepción si no tenemos el producto indicado. Podemos testear fácilmente que se lanzan excepciones mediante el método `expectException` del `TestCase` de PHPUnit.
+
+```php
+public function testShouldFailRemovingNonExistingProduct() : void
+{
+    $cart = Cart::pickUp();
+
+    $product = $this->getProduct('product-1', 10);
+
+    $this->expectException(UnderflowException::class);
+    $cart->removeProduct($product);
+}
+```
+
+Este test pasa, lo que indica que este requisito está bien implementado. 
+
+Veamos el segundo. Primero ponemos un producto en el carro y luego lo retiramos, comprobando si queda alguno:
+
+```php
+public function testShouldLeaveNoProductWhenRemovingTheLastOne(): void
+{
+    $cart = Cart::pickUp();
+
+    $product = $this->getProduct('product-1', 10);
+
+    $cart->addProductInQuantity($product, 1);
+    $cart->removeProduct($product);
+
+    $this->assertEquals(0, $cart->count());
+}
+```
+
+Este test también pasa. Si dejásemos de hacer tests aquí podríamos decir que el requisito se cumple y que la feature está implementada. Es por esa razón que hemos definido los tres escenarios: carro vacío, carro con un único producto y carro con más de una unidad del producto.
+
+En nuestro ejemplo se puede prever que el tercer test no pasará tal y como está implementado el método. Sin embargo, es muy posible que el código real que tienes que testear no sea tan fácil de leer y la única manera de asegurarte de que funciona como es debido es precisamente haciendo un test que lo verifique.
+
+Lo probaremos añadiendo dos productos y quitando uno de ellos. El carro debería contener todavía un producto:
+
+```php
+public function testShouldLeaveOneProduct(): void
+{
+    $cart = Cart::pickUp();
+
+    $product = $this->getProduct('product-1', 10);
+
+    $cart->addProductInQuantity($product, 2);
+    $cart->removeProduct($product);
+
+    $this->assertEquals(1, $cart->count());
+}
+```
+
+Pero no ocurre eso, si no que se eliminan todas las unidades del mismo producto, lo que demuestra que la feature no está implementada correctamente. 
+
+He aquí una implementación sencilla que hace pasar el test, corrigiendo el problema:
+
+```php
+public function removeProduct(ProductInterface $product): void
+{
+    if (!isset($this->lines[$product->id()])) {
+        throw new UnderflowException(
+            sprintf('Product %s not in this cart', $product->id())
+        );
+    }
+
+    $line = $this->lines[$product->id()];
+
+    $newQuantity = $line->quantity() - 1;
+
+    $this->lines[$product->id()] = new CartLine($product, $newQuantity);
+}
+```
+
+En resumen. Es muy importante definir bien los escenarios que debemos probar en los tests, para lo que podemos utilizar las distintas técnicas de análisis que comentamos en un capítulo anterior, a fin de asegurarnos de que implementamos las features que se nos ha pedido de forma correcta.
+
+## Últimos tests
+
+Tenemos pendiente el test de que podemos vaciar por completo el carro, el cual podría quedar así:
+
+```php
+public function testShouldEmptyTheCart() : void
+{
+    $cart = Cart::pickUp();
+
+    $product = $this->getProduct('product-1', 10);
+    $cart->addProductInQuantity($product, 2);
+
+    $cart->drop();
+    
+    $this->assertEmpty($cart);
+}
+```
+
+Nos queda por crear un test sobre si podemos preguntarle al carro explícitamente si está vacío, lo que supone la existencia de un método `isEmpty` o similar. Este test implica que debemos probar tanto que el caso positivo (está vacío):
+
+```php
+public function testShouldReportIsEmpty() : void
+{
+    $cart = Cart::pickUp();
+    
+    $this->assertTrue($cart->isEmpty());
+}
+```
+
+Como el negativo (contiene algún producto):
+
+```php
+public function testShouldReportIsNotEmpty() : void
+{
+    $cart = Cart::pickUp();
+    
+    $product = $this->getProduct('product-1', 10);
+    $cart->addProductInQuantity($product, 2);
+    
+    $this->assertFalse($cart->isEmpty());
+}
+```
+
+## Hemos terminado… de momento
+
+Este es el TestCase con el que hemos probado que Cart funciona, o en algunos casos no lo hace como se desea:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace Dojo\Shop;
+
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use UnderflowException;
+
+class CartTest extends TestCase
+{
+    public function testShouldInstantiateAnEmptyCartIdentifiedWithAnId(): void
+    {
+        $cart = Cart::pickUp();
+
+        $this->assertNotEmpty($cart->id());
+        $this->assertEquals(0, $cart->totalProducts());
+    }
+
+    public function testShouldInstantiateCartWithAPreselectedProduct(): void
+    {
+        $product = $this->getProduct('product-1', 10);
+        $cart = Cart::pickUpWithProduct($product, 1);
+
+        $this->assertNotEmpty($cart->id());
+        $this->assertEquals(1, $cart->totalProducts());
+    }
+
+    public function testShouldAddAProduct(): void
+    {
+        $product = $this->getProduct('product-1', 10);
+        $cart = Cart::pickUp();
+
+        $cart->addProductInQuantity($product, 1);
+        $this->assertCount(1, $cart);
+    }
+
+    public function testShouldAddAProductInQuantity(): void
+    {
+        $product = $this->getProduct('product-1', 10);
+        $cart = Cart::pickUp();
+
+        $cart->addProductInQuantity($product, 10);
+        $this->assertCount(1, $cart);
+        $this->assertEquals(10, $cart->totalProducts());
+    }
+
+    public function testShouldAddSeveralProductsInQuantity(): void
+    {
+        $product1 = $this->getProduct('product-1', 10);
+        $product2 = $this->getProduct('product-2', 15);
+        $cart = Cart::pickUp();
+
+        $cart->addProductInQuantity($product1, 5);
+        $cart->addProductInQuantity($product2, 7);
+
+        $this->assertCount(2, $cart);
+        $this->assertEquals(12, $cart->totalProducts());
+    }
+
+    public function testShouldAddSameProductsInDifferentMoments(): void
+    {
+        $product1 = $this->getProduct('product-1', 10);
+        $product2 = $this->getProduct('product-2', 15);
+
+        $cart = Cart::pickUp();
+
+        $cart->addProductInQuantity($product1, 5);
+        $cart->addProductInQuantity($product2, 7);
+        $cart->addProductInQuantity($product2, 3);
+
+        $this->assertCount(2, $cart);
+        $this->assertEquals(15, $cart->totalProducts());
+    }
+
+    public function testEmptyCartShouldHaveZeroAmount(): void
+    {
+        $cart = Cart::pickUp();
+
+        $this->assertEquals(0, $cart->amount());
+    }
+
+    public function testShouldCalculateAmountWhenAddingProduct(): void
+    {
+        $cart = Cart::pickUp();
+
+        $product = $this->getProduct('product-01', 10);
+        $cart->addProductInQuantity($product, 1);
+
+        $this->assertEquals(10, $cart->amount());
+    }
+
+    public function testShouldTakeCareOfQuantitiesToCalculateAmount(): void
+    {
+        $cart = Cart::pickUp();
+
+        $product = $this->getProduct('product-01', 10);
+        $cart->addProductInQuantity($product, 3);
+
+        $this->assertEquals(30, $cart->amount());
+    }
+
+    public function testShouldTakeCareOfQuantitiesAndDifferentProductsToCalculateAmount(): void
+    {
+        $cart = Cart::pickUp();
+
+        $product1 = $this->getProduct('product-01', 10);
+        $product2 = $this->getProduct('product-02x', 7);
+
+        $cart->addProductInQuantity($product1, 3);
+        $cart->addProductInQuantity($product2, 4);
+
+        $this->assertEquals(58, $cart->amount());
+    }
+
+    public function testShouldFailRemovingNonExistingProduct() : void
+    {
+        $cart = Cart::pickUp();
+
+        $product = $this->getProduct('product-1', 10);
+
+        $this->expectException(UnderflowException::class);
+        $cart->removeProduct($product);
+    }
+
+    public function testShouldLeaveNoProductWhenRemovingTheLastOne(): void
+    {
+        $cart = Cart::pickUp();
+
+        $product = $this->getProduct('product-1', 10);
+
+        $cart->addProductInQuantity($product, 1);
+        $cart->removeProduct($product);
+
+        $this->assertEquals(0, $cart->count());
+    }
+
+    public function testShouldLeaveOneProduct(): void
+    {
+        $cart = Cart::pickUp();
+
+        $product = $this->getProduct('product-1', 10);
+
+        $cart->addProductInQuantity($product, 2);
+        $cart->removeProduct($product);
+
+        $this->assertEquals(1, $cart->count());
+    }
+
+    public function testShouldEmptyTheCart() : void
+    {
+        $cart = Cart::pickUp();
+
+        $product = $this->getProduct('product-1', 10);
+        $cart->addProductInQuantity($product, 2);
+
+        $cart->drop();
+
+        $this->assertEmpty($cart);
+    }
+
+    public function testShouldReportIsEmpty() : void
+    {
+        $cart = Cart::pickUp();
+
+        $this->assertTrue($cart->isEmpty());
+    }
+
+    public function testShouldReportIsNotEmpty() : void
+    {
+        $cart = Cart::pickUp();
+
+        $product = $this->getProduct('product-1', 10);
+        $cart->addProductInQuantity($product, 2);
+
+        $this->assertFalse($cart->isEmpty());
+    }
+
+    private function getProduct(
+        $id,
+        $price
+    ): ProductInterface {
+        /** @var ProductInterface | MockObject $product */
+        $product = $this->createMock(ProductInterface::class);
+        $product->method('id')->willReturn($id);
+        $product->method('price')->willReturn($price);
+
+        return $product;
+    }
+}
+```
+
+¿Cómo seguir a partir de ahora? Al tener el código de `Cart` bajo test ganamos varias cosas:
+
+**Podemos hablar con propiedad de lo que hace `Cart`**. El primer beneficio  de tener el software cubierto con tests es justamente que ahora tenemos una definición concreta y reproducible de lo que `Cart` hace y cuáles son sus límites. Cualquier afirmación que podamos hacer sobre su comportamiento o bien está demostrada por un test, o bien podemos hacer un test para demostrarla.
+
+Por ejemplo, si ocurre algún tipo de *bug*, podemos crear un nuevo test que al poner en evidencia el error nos indique dónde tenemos que intervenir y cuál es el resultado que debemos lograr. Por otro lado, el test podría demostrar que el error no es causado por `Cart`, sino por otro elemento del código.
+
+**Refactor: podemos cambiar `Cart` sin riesgo**. Otro beneficio es que podemos modificar la implementación de Cart con la seguridad de que no romperemos su comportamiento. Mientras los tests sigan pasando podemos hacer todos los cambios que nos lleven a una mejor arquitectura.
+
+Si lo que necesitamos es una reescritura los tests nos servirán para hacerlo con seguridad, aunque quizá tengamos que retocarlos para responder a las nuevas decisiones de diseño.
