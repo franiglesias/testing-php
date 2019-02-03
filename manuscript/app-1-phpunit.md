@@ -60,7 +60,7 @@ Por último, configuraremos los namespaces del proyecto en **composer.json**, qu
 }
 ```
 
-También hemos añadido la clave config, con bin-dir, de este modo, los paquetes como `phpunit` y otros crearán un alias de su ejecutable en la carpeta bin, con lo que podremos lanzarlos fácilmente con `bin/phpunit`.
+También hemos añadido la clave config, con bin-dir, de este modo, los paquetes como `phpunit` y otros crearán un alias de su ejecutable en la carpeta `bin`, con lo que podremos lanzarlos fácilmente con `bin/phpunit`.
 
 Después de este cambio puedes hacer un `composer install` o un `composer dump-autoload`, para ponerte en marcha.
 
@@ -70,13 +70,13 @@ composer install
 
 ## Configuración básica
 
-`phpunit` necesita un poco de configuración, así que vamos a prepararla ejecutando lo siguiente. Es un interactivo y normalmente nos servirán las respuestas por defecto.
+`phpunit` necesita un poco de configuración, así que vamos a prepararla ejecutando lo siguiente. Es un interactivo y normalmente nos servirán las respuestas por defecto:
 
 ```bash
 bin/phpunit --generate-configuration
 ```
 
-Esto generará un archivo de configuración por defecto `phpunit.xml` ([más información en este artículo](https://franiglesias.github.io/code-coverage-para-mejores-tests/)). Normalmente hago un pequeño cambio para poder tener medida de cobertura en cualquier código y no tener que pedir explícitamente en cada test, poniendo el parámetro `forceCoversAnnotation` a `false`:
+Esto generará un archivo de configuración por defecto `phpunit.xml` ([más información en este artículo](https://franiglesias.github.io/code-coverage-para-mejores-tests/)). Normalmente hago un pequeño cambio para poder tener medida de cobertura en cualquier código y no tener que pedirlo explícitamente en cada test, poniendo el parámetro `forceCoversAnnotation` a `false`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

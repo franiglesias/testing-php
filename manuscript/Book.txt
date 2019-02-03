@@ -20,5 +20,6 @@
 app-0-apendices.md
 app-1-phpunit.md
 app-2-phpspec.md
+app-3-codeception.md
 app-5-dojo.md
 
