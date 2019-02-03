@@ -839,9 +839,9 @@ class Dni
 
 El caso es que si ahora observamos el código de producción que tenemos es fácil pensar que podría hacerse más conciso. Tenemos cuatro estructuras condicionales que comprueban el match de una expresión regular y, aunque son diferentes patrones, se puede ver que estamos ante una forma de duplicación innecesaria.
 
-Pero para hacerlo tengo que modificar un poco los tests, ya que no quiero depender de los mensajes de las excepciones[^1]. En principio, eliminar la comprobación de los mensajes no afectará al resultado del test.
+Pero para hacerlo tengo que modificar un poco los tests, ya que no quiero depender de los mensajes de las excepciones[^501]. En principio, eliminar la comprobación de los mensajes no afectará al resultado del test.
 
-[^1]: Por eso no es buena práctica que los tests hagan aserciones sobre mensajes, ya que es muy fácil que queramos cambiarlos o que cambien sin que se altere realmente el comportamiento testeado provocando que el test pueda fallar por razones incorrectas.
+[^501]: Por eso no es buena práctica que los tests hagan aserciones sobre mensajes, ya que es muy fácil que queramos cambiarlos o que cambien sin que se altere realmente el comportamiento testeado provocando que el test pueda fallar por razones incorrectas.
 
 El TestCase ahora mismo es así:
 

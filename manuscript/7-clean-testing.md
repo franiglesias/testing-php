@@ -124,9 +124,9 @@ public function testShouldNotAllowNifsLongerThanMaxCharacters
 }
 ```
 
-Por tanto, una buena forma de afrontar esto es redactar una `checklist` de reglas de dominio e invariantes que nos guíe para decidir qué tenemos que testear en un momento dado [^1]
+Por tanto, una buena forma de afrontar esto es redactar una `checklist` de reglas de dominio e invariantes que nos guíe para decidir qué tenemos que testear en un momento dado [^701]
 
-[^1]: Lo que podría ser una forma de aproximarse al problema que señalaba al principio de no cubrir correctamente algunos casos en los tests de integración.
+[^701]: Lo que podría ser una forma de aproximarse al problema que señalaba al principio de no cubrir correctamente algunos casos en los tests de integración.
 
 ## Eliminar los números mágicos
 
@@ -323,9 +323,9 @@ public function prepareClassRepository()
 
 Lo que hemos hecho ha sido extraer la preparación de los dobles de los repositorios a sus propios métodos, lo que nos permite escribir el test de una forma más concisa y clara.
 
-Obviamente, en un proyecto real, es posible que pudiésemos extraer gran parte de la preparación a métodos `setUp`, incluyendo la instanciación del servicio, o incluso parametrizar de algún modo los métodos `prepare*`, pero creo que la idea queda clara en cuanto a que el cuerpo del test tenga líneas con un mismo nivel de abstracción [^2].
+Obviamente, en un proyecto real, es posible que pudiésemos extraer gran parte de la preparación a métodos `setUp`, incluyendo la instanciación del servicio, o incluso parametrizar de algún modo los métodos `prepare*`, pero creo que la idea queda clara en cuanto a que el cuerpo del test tenga líneas con un mismo nivel de abstracción [^702].
 
-[^2]: Los Mocks me plantean un problema, pues se llevan las aserciones fuera del flujo Given-When-Then del test hasta el punto de tener tests sin aserciones explícitas y, de hecho, acoplan el test a la implementación del *subject under test*, algo que me fastidia sobremanera porque revientan cuando necesitas hacer un cambio.
+[^702]: Los Mocks me plantean un problema, pues se llevan las aserciones fuera del flujo Given-When-Then del test hasta el punto de tener tests sin aserciones explícitas y, de hecho, acoplan el test a la implementación del *subject under test*, algo que me fastidia sobremanera porque revientan cuando necesitas hacer un cambio.
 
 ## Esperar excepciones
 

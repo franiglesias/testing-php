@@ -1,8 +1,8 @@
-# Introducción: Del ojímetro al tdd
+# Introducción: Del *ojímetro* al tdd
 
 Porque todos tenemos spaghetti apestando en el armario y en algún momento hay que limpiarlo.
 
-Cuando empiezas a programar en PHP (y cualquier otro lenguaje, para el caso) sin tener una formación sistemática muchas veces te guías por ocurrencias: abres un editor y comienzas a picar código como si te fuera la vida en ello. Al final del día obtienes una gran bola de lodo que, más o menos, funciona y que a ti te parece la versión informática de la Gioconda. O algo así.
+Cuando empiezas a programar en PHP (o en cualquier otro lenguaje, para el caso) sin tener una formación sistemática muchas veces te guías por ocurrencias: abres un editor y comienzas a picar código como si te fuera la vida en ello. Al final del día obtienes una gran bola de lodo que, más o menos, funciona y que a ti te parece la versión informática de la Gioconda. O algo así.
 
 Claro que, al día siguiente, algo falla. Siempre falla. Vuelves a la gran bola de lodo, te pringas, y arreglas lo que fallaba.
 
@@ -14,23 +14,23 @@ Y el ciclo se repite.
 
 Todos y todas tenemos código basura en alguna parte. Da igual los años de experiencia: las prisas, un análisis descuidado del problema, el enrocarnos en una solución y otros muchos motivos hacen que hagamos código que, visto en retrospectiva, nos parece una basura.
 
-Y eso está bien. Lo importante es tener la capacidad de aprender a partir de eso.
+Y eso está bien. Lo importante es tener la capacidad de aprender a partir de ahí.
 
-Ocurre lo mismo con el testing. Es posible que hayas pasado años escribiendo código que funciona en producción sin  haber escrito un sólo test que lo cubra. Simplemente ocurre que ahora quieres tener más garantías, por ti, por tu equipo y por tu proyecto.
+Ocurre lo mismo con el testing. Es posible que hayas pasado años escribiendo código que funciona en producción sin haber escrito un sólo test que lo cubra. Simplemente ocurre que ahora quieres tener más garantías, por ti, por tu equipo y por tu proyecto.
 
 ## Entonces descubres los tests
 
-Mi primer contacto con las suites de tests fue con SimpleTest, indirectamente a través de la suite de tests de CakePHP.
+Mi primer contacto con las suites de tests fue con [SimpleTest](http://simpletest.sourceforge.net), indirectamente a través de la suite de tests de [CakePHP](https://cakephp.org).
 
-No puedo decir que fuese una *epifanía*. Al principio no entendía ni torta, con todo el rollo de las aserciones y los mocks. Al fin y al cabo, testear ActiveRecord no es precisamente ni lo más fácil para uno que empieza ni lo más recomendable, y en un framework MVC es casi inevitable. Incluso algo tan simple como la idea de ejecutar un trozo de código dentro de otro código (el test) resultaba extraña.
+No puedo decir que fuese una *epifanía*. Al principio no entendía ni torta, con todo el rollo de las aserciones y los mocks. Al fin y al cabo, testear *ActiveRecord* no es precisamente ni lo más fácil para uno que empieza ni lo más recomendable, y en un *framework MVC* es casi inevitable. Incluso algo tan simple como la idea de ejecutar un trozo de código dentro de otro código (el test) resultaba extraña.
 
 Sencillamente dicho: **un test no es más que un programa simple que comprueba si el resultado de otro programa (o unidad de software, ya sea una función o un método de un objeto) devuelve el resultado que se espera tras pasarle unos parámetros**.
 
-Al principio haces post-tests: tienes un montón de código escrito y te has dado cuenta de que es necesario saber si cada unidad funciona como esperas en los casos que debería manejar.
+Al principio haces *post-tests:* tienes un montón de código escrito y te has dado cuenta de que es necesario saber si cada unidad funciona como esperas en los casos que debería manejar.
 
-Los post-tests no son perfectos pero son útiles y son el primer paso para poner un poco de orden en lo que escribes. Gracias a esos tests empiezas a manejar el refactoring, aunque no lo llames así todavía.
+Los *post-tests* no son perfectos pero son útiles y son el primer paso para poner un poco de orden en lo que escribes. Gracias a esos tests empiezas a manejar el *refactoring*, aunque no lo llames así todavía.
 
-[Michael Feathers](https://michaelfeathers.silvrback.com), que de refactoring y legacy sabe un rato, llama a estos tests "[Tests de caracterización](https://michaelfeathers.silvrback.com/characterization-testing)". Son los que se hacen para describir y/o descubrir el comportamiento actual de un módulo de software *legacy* y como primer paso para reescribirlo. Con este test tendríamos una red de seguridad para ir haciendo los cambios necesarios.
+[Michael Feathers](https://michaelfeathers.silvrback.com), que de *refactoring* y *legacy* sabe un rato, llama a estos tests "[Tests de caracterización](https://michaelfeathers.silvrback.com/characterization-testing)". Son los que se hacen para describir y/o descubrir el comportamiento actual de un módulo de software *legacy* y como primer paso para reescribirlo. Con este test tendríamos una red de seguridad para ir haciendo los cambios necesarios.
 
 Pero en realidad, estoy siendo demasiado impreciso. Es necesario parar un momento y ser un poco más sistemático.
 
@@ -52,7 +52,7 @@ El hecho de simplemente observar el output de nuestro programa no suele ser sufi
 
 Para empezar, no estamos definiendo de forma precisa, objetiva y reproducible (operacional) lo que queremos observar.
 
-Lo que vemos al recargar una página es el resultado de un conjunto de operaciones, una de las cuales es la pieza concreta de código de la cual queremos saber si funciona. Por lo tanto, no tenemos garantía de que el resultado se produce por las razones que pensamos, por efecto del algoritmo que hemos escrito, sino que podría haber efectos colaterales de diversos componentes del programa.
+Lo que vemos al recargar una página es el resultado de un conjunto de operaciones, y sólo una de ellas es la pieza concreta de código de la cual queremos saber si funciona. Por lo tanto, no tenemos garantía de que el resultado se produce por las razones que pensamos, es decir, por efecto del algoritmo que hemos escrito, sino que podría haber efectos colaterales de diversos componentes del programa.
 
 Digámoslo honestamente: no tenemos ni idea de lo que estamos midiendo.
 
@@ -68,7 +68,7 @@ Existen varios tipos de tests funcionales y aquí me voy a centrar en algunos. E
 
 En último término es frecuente tener dependencias de otras unidades de software, por lo que en situación de tests tenemos que usar "dobles" en su lugar, de modo que podamos mantener bajo control sus efectos.
 
-Por poner un ejemplo un poco bruto: si tenemos una clase que utiliza un Logger para comunicar el resultado de una operación y observamos que no se añade nada al log, tenemos que poder diferenciar si el problema es de la clase o del Logger. El Logger tiene diversos motivos para fallar que no tienen nada que ver con la clase que estamos probando, así que necesitamos un Logger que no falle, preferiblemente **uno que no haga nada de nada**, neutralizando así sus efectos colaterales. Ese falso Logger es el que usamos en la situación de test.
+Por poner un ejemplo un poco bruto: si tenemos una clase que utiliza un `Logger` para comunicar el resultado de una operación y observamos que no se añade nada al log, tenemos que poder diferenciar si el problema es de la clase o del `Logger`. El `Logger` tiene diversos motivos para fallar que no tienen nada que ver con la clase que estamos probando, así que necesitamos un `Logger` que no falle, preferiblemente **uno que no haga nada de nada**, neutralizando así sus efectos colaterales. Ese falso Logger es el que usamos en la situación de test.
 
 Hablaremos de ello dentro de un rato.
 
@@ -76,15 +76,15 @@ De este modo, podemos afirmar que el resultado devuelto por la unidad es produc
 
 **Tests de integración:** evalúan lo que hacen las unidades de software en interacción. Es posible que nuestras unidades funcionen bien por separado, pero ¿qué ocurre si las juntamos? Los tests de integración dan respuesta a esa pregunta.
 
-Volviendo al ejemplo de antes, si tanto la clase probada como el Logger funcionan bien por separado, probamos a hacerlas funcionar juntas, para ver si aparecen fallos en su comunicación.
+Volviendo al ejemplo de antes, si tanto la clase probada como el `Logger` funcionan bien por separado, probamos a hacerlas funcionar juntas, para ver si aparecen fallos en su comunicación.
 
-**Tests de caracterización:** ya los mencionamos antes. Los tests de caracterización son tests que se escriben para tratar de describir el comportamiento de una unidad de software ya escrita. En muchos casos llamar unidad de software a cierto código Legacy puede ser un poco impreciso, lo correcto sería denominarlo "bola de lodo", ya que seguramente se trata de código muy acoplado y desestructurado.
+**Tests de caracterización:** ya los mencionamos antes. Los tests de caracterización son tests que se escriben para tratar de describir el comportamiento de una unidad de software ya escrita. En muchos casos llamar unidad de software a cierto código *legacy* puede ser un poco impreciso, lo correcto sería denominarlo "bola de lodo", ya que seguramente se trata de código muy acoplado y desestructurado.
 
 **Tests de regresión:** son tests que detectan los efectos negativos de los cambios que realizamos en el software. Es decir, si estos tests fallan es que hemos tocado algo que no debíamos.
 
 Hasta cierto punto podríamos decir que todo test, una vez que ha pasado, se convierte en un test de regresión a partir del momento en que comenzamos a modificar un software.
 
-**Tests de aceptación:** responden a la pregunta de si la funcionalidad está implementada en términos de los interesados en el software, también llamados <em>stakeholders</em>. Los tests de aceptación son, también, tests de integración.
+**Tests de aceptación:** responden a la pregunta de si la funcionalidad está implementada en términos de los interesados en el software, también llamados *stakeholders*. Los tests de aceptación son, también, tests de integración.
 
 ## Anatomía de un test
 
@@ -108,23 +108,23 @@ En POO es habitual que una clase utilice colaboradores para realizar un compor
 
 Por otra parte, algunas de esas dependencias pueden ser bastante complicadas de obtener en una situación de desarrollo, como pueden ser el acceso a servicios web, servidores de correo, etc. Por no hablar, de la posibilidad de que haya fallos, de las distintas respuestas posibles, de la lentitud, del proceso de instanciación, de la configuración y un largo etcétera de dificultades.
 
-Para eso, están los "dobles" o "test doubles".
+Para eso, están los *dobles* o *test doubles*.
 
 Se trata de objetos creados para reemplazar las dependencias en situación de test. Son éstos:
 
 **Dummies**: son objetos que no hacen nada más que implementar una interfaz, pero sin añadir comportamiento. Los usamos porque necesitamos pasar la dependencia para poder instancias el objeto bajo test.
 
-Por cierto, los Test Doubles, en general, ponen en valor el principio de Inversión de Dependencias. Si nuestro objeto bajo test depende de una interfaz, crear un Dummy es trivial. Si la dependencia es de una implementación completa la cosa puede complicarse, porque tendrías que extender la clase y neutralizar todo su comportamiento.
+Por cierto, los *test doubles*, en general, ponen en valor el principio de Inversión de Dependencias. Si nuestro objeto bajo test depende de una interfaz, crear un Dummy es trivial. Si la dependencia es de una implementación completa la cosa puede complicarse, porque tendrías que extender la clase y neutralizar todo su comportamiento.
 
 Así que suele ser mejor estrategia, en ese caso, extraer la interfaz y crear un Dummy. Y esto es bueno, porque te ayuda a reconsiderar tu diseño.
 
-**Stubs**: los dummies son útiles, pero muchas veces necesitamos que la dependencia nos de una respuesta. Los Stubs son como los dummies en el sentido de que implementan una interfaz, pero también devuelven respuestas fijas y conocidas cuando los llamamos.
+**Stubs**: los *dummies* son útiles, pero muchas veces necesitamos que la dependencia nos de una respuesta. Los Stubs son como los dummies en el sentido de que implementan una interfaz, pero también devuelven respuestas fijas y conocidas cuando los llamamos.
 
-Por ejemplo, podemos tener una dependencia de una clase Mailer que devuelve true cuando un mensaje ha sido enviado con éxito. Para testear nuestra clase consumidora de Mailer, podemos tener un MailerStub que devuelve true (o false) sin tener que enviar ningún mensaje real, permitiéndonos hacer el test sin necesidad de configurar servidor de correo, ni importunar a media empresa con un correo de pruebas que se te escapa, ni tener conexión de red, si me apuras.
+Por ejemplo, podemos tener una dependencia de una clase `Mailer` que devuelve true cuando un mensaje ha sido enviado con éxito. Para testear nuestra clase consumidora de `Mailer`, podemos tener un MailerStub que devuelve `true` (o `false`) sin tener que enviar ningún mensaje real, permitiéndonos hacer el test sin necesidad de configurar servidor de correo, ni importunar a media empresa con un correo de pruebas que se te escapa, ni tener conexión de red, si me apuras.
 
-Así que podríamos decir que los Stubs tienen un poco de comportamiento "superficial" a medida para los fines del test.
+Así que podríamos decir que los *Stubs* tienen un poco de comportamiento superficial a medida para los fines del test.
 
-**Spies**: los spies son test doubles capaces de recoger información sobre cómo son usados y con ellos empezamos a movernos en aguas un poco cenagosas. Por ejemplo, los spies podrían registrar el número de veces que los hemos llamado. De este modo, al final del test obtenemos esa información y la comparamos con el número de llamadas esperado.
+**Spies**: los spies son *test doubles* capaces de recoger información sobre cómo son usados y con ellos empezamos a movernos en aguas un poco cenagosas. Por ejemplo, los *spies* podrían registrar el número de veces que los hemos llamado. De este modo, al final del test obtenemos esa información y la comparamos con el número de llamadas esperado.
 
 El problema es que este tipo estrategias de test implican un acoplamiento del test a la implementación, lo que genera un **test frágil**. Y esto merece una explicación:
 
@@ -134,19 +134,19 @@ Por tanto, un test basado en cómo o cuándo se llama a un método en un colabor
 
 Nuestros siguientes dobles, tienen el mismo problema, pero agravado:
 
-**Mocks**: por desgracia el término mock se usa mucho para referirse a todo tipo de test double, pero en realidad es un tipo particular y no demasiado conveniente. Un Mock es un Spy con expectativas, es decir, los Mocks esperan específicamente ser llamados de cierta manera, con ciertos parámetros o con cierta frecuencia, de modo que ellos mismos realizan la prueba o aserción.
+**Mocks**: por desgracia el término *mock* se usa mucho para referirse a todo tipo de *test double*, pero en realidad es un tipo particular y no demasiado conveniente. Un *Mock* es un *Spy* con expectativas, es decir, los *Mocks* esperan específicamente ser llamados de cierta manera, con ciertos parámetros o con cierta frecuencia, de modo que ellos mismos realizan la prueba o aserción.
 
-De nuevo, tenemos el problema de acoplamiento a la implementación, pero agravado, ya que el Mock puede comprobar que lo has llamado con tal o cual argumento y no con otro, o que has llamado antes a tal método o a tal otro, etc. Si con un Spy el test es frágil, con Mock puede ser un "mírame y no me toques".
+De nuevo, tenemos el problema de acoplamiento a la implementación, pero agravado, ya que el *Mock* puede comprobar que lo has llamado con tal o cual argumento y no con otro, o que has llamado antes a tal método o a tal otro, etc. Si con un *Spy* el test es frágil, con *Mock* puede ser un "mírame y no me toques".
 
 Al final, el test reproduce prácticamente el algoritmo que estás probando por lo que no nos vale de mucho. En el momento en que hagas un cambio en la implementación, el test fallará.
 
-El uso de spies y mocks en los tests puede revelar problemas de diseño. Por ejemplo, podrían indicar que una unidad de software tiene un exceso de dependencias o de responsabilidades. O tal vez, te está diciendo que deberías encapsular alguna funcionalidad que estás pidiendo a las dependencias.
+El uso de *spies* y *mocks* en los tests puede revelar problemas de diseño. Por ejemplo, podrían indicar que una unidad de software tiene un exceso de dependencias o de responsabilidades. O tal vez, te está diciendo que deberías encapsular alguna funcionalidad que estás pidiendo a las dependencias.
 
-**Fake**: El último miembro de la familia de los Tests Doubles es el Fake, un impostor. En realidad es una implementación de la dependencia creada a medida para la situación de test.
+**Fake**: El último miembro de la familia de los *Tests Doubles* es el *Fake*, un impostor. En realidad es una implementación de la dependencia creada a medida para la situación de test.
 
-Es decir, tú quieres probar una unidad de software que tiene una dependencia complicada, como puede ser una base de datos o el sistema de archivos. Pues tú vas y creas una implementación de esa base de datos "pero más sencilla" para poder testar tu clase. Lo malo, es que el Fake en sí también necesita tests, porque no sólo es la implementación tonta de la interfaz (como un Dummy) o de un comportamiento básico (como un Stub), sino que es una implementación funcional concreta y completa, que hasta podría llegar a usarse en producción.
+Es decir, tú quieres probar una unidad de software que tiene una dependencia complicada, como puede ser una base de datos o el sistema de archivos. Pues tú vas y creas una implementación de esa base de datos "pero más sencilla" para poder testar tu clase. Lo malo, es que el *Fake* en sí también necesita tests, porque no sólo es la implementación tonta de la interfaz (como un *Dummy*) o de un comportamiento básico (como un *Stub*), sino que es una implementación funcional concreta y completa, que hasta podría llegar a usarse en producción.
 
-El ejemplo clásico, son las implementaciones en memoria de repositorios, bases de datos, sistemas de archivos, etc.
+Los ejemplos clásicos son las implementaciones en memoria de repositorios, bases de datos, sistemas de archivos, etc.
 
 Robert C. Martin explica toda [la problemática de los test doubles en este artículo bastante socrático](https://8thlight.com/blog/uncle-bob/2014/05/14/TheLittleMocker.html).
 
@@ -160,11 +160,11 @@ Si lo piensas bien es muy lógico: antes de escribir el código tienes unas espe
 
 Psicológicamente hablando, los tests creados después del código pueden resultar más difíciles de hacer por la sensación de "trabajo terminado" e incluso el miedo a que aparezca algún fallo inesperado. Por el contrario, los tests previos proporcionan una guía de trabajo y un refuerzo positivo al ir marcando nuestros éxitos a medida que vamos escribiendo el código.
 
-Llevada al extremo, esa idea se denomina "Test Driven Development" o TDD.
+Llevada al extremo, esa idea se denomina *Test Driven Development* o *TDD*.
 
 ## Test Driven Development
 
-El Test Driven Development es un modelo o disciplina de desarrollo que se basa en la creación de tests previamente a la escritura de código pero siguiendo un bucle de cambios mínimos y reescritura.
+El *Test Driven Development* es un modelo o disciplina de desarrollo que se basa en la creación de tests previamente a la escritura de código pero siguiendo un bucle de cambios mínimos y reescritura.
 
 Me explico:
 
@@ -184,7 +184,7 @@ Pues no. Primero escribes el test suficiente para **fallar**. El **test tiene qu
 
 >No escribirás más de un test unitario suficiente para fallar (y no compilar es fallar)
 
-Bueno, en PHP lo de no compilar como que no, pero podemos asumir que errores del tipo "class not found" equivalen a esto. En general, cualquier error de "escritura" nos vale.
+Bueno, en PHP lo de no compilar como que no, pero podemos asumir que errores del tipo "class not found" equivalen a esto. En general, cualquier error nos vale.
 
 La filosofía es la siguiente: cada test que falla te dice qué es lo que tienes que hacer a continuación. No tienes que poner nada nuevo hasta que no tengas un test que te pida hacerlo, ni siquiera el esqueleto de la nueva clase. Si la clase no se encuentra, es que tienes que crearla; si no tiene un método, es que tienes que crearlo; si el método no hace nada con el parámetro que recibe, es que tienes que escribir código que lo maneje...
 
@@ -208,15 +208,15 @@ Lo cierto es que si escribimos un nuevo test y vemos que no falla no nos dice n
 
 Nuestro siguiente test tal vez tenga que probar la condición de que si instanciamos la clase con cierto parámetro el valor devuelto por el método será otro.
 
-Así que tendremos que reescribir ese método para tener en cuenta esa circunstancia. Ahí empezarás a sentirte mejor porque vas a escribir comportamiento, pero no te aceleres: ve paso por paso. Aunque este ciclo parece un coñazo, en realidad cada iteración es muy rápida. Algunas herramientas, como PHPSpec, incluyen un generador de código que automatiza algunos de estos pasos.
+Así que tendremos que reescribir ese método para tener en cuenta esa circunstancia. Ahí empezarás a sentirte mejor porque vas a escribir comportamiento, pero no te aceleres: ve paso por paso. Aunque este ciclo parece un coñazo, en realidad cada iteración es muy rápida. Algunas herramientas, como **PHPSpec**, incluyen un generador de código que automatiza algunos de estos pasos.
 
 [TDD es una disciplina](http://blog.cleancoder.com/uncle-bob/2014/12/17/TheCyclesOfTDD.html). No digo que sea fácil conseguirla, incluso al principio suena un poco descabellada. Si consigues convertirla en un hábito mental tienes una herramienta muy poderosa en tus manos.
 
-A partir de cierto momento, comienzas a introducir el refactoring. Cuando el código alcanza cierta complejidad, comienzas a plantearte soluciones más generales y debes comenzar a ajustar la arquitectura. Creas métodos privados para resolver casos específicos, cláusulas de guarda, etc, etc. Los tests que ya has hecho te protegen para realizar esos cambios, aunque en algún momento puede que decidas refactorizar los test porque la solución ha avanzado hacia otro planteamiento diferente.
+A partir de cierto momento, comienzas a introducir el *refactoring*. Cuando el código alcanza cierta complejidad, comienzas a plantearte soluciones más generales y debes comenzar a ajustar la arquitectura. Creas métodos privados para resolver casos específicos, cláusulas de guarda, etc, etc. Los tests que ya has hecho te protegen para realizar esos cambios, aunque en algún momento puede que decidas refactorizar los test porque la solución ha avanzado hacia otro planteamiento diferente.
 
 TDD favorece lo que se llama diseño emergente: al ir añadiendo tests, que evalúan que nuestro diseño cumpla ciertas especificaciones, van definiéndose diferentes aspectos del problema y nos impulsa hacia soluciones cada vez más generales.
 
-La consecuencia de seguir la disciplina TDD es que tu código está automáticamente documentado y respaldado por tests en todo momento. No hay que esperar. Si un cambio introduce un problema, habrá un test que falle. El código estará listo para funcionar casi en el mismo momento de escribirlo. ¿Qué no te gusta la arquitectura y podrías hacerlo mejor? Los  tests te protegen de los cambios porque cuando rompas algo lo sabrás de inmediato.
+La consecuencia de seguir la disciplina TDD es que tu código está automáticamente documentado y respaldado por tests en todo momento. No hay que esperar. Si un cambio introduce un problema, habrá un test que falle. El código estará listo para funcionar casi en el mismo momento de escribirlo. ¿Qué no te gusta la arquitectura y podrías hacerlo mejor? Los tests te protegen de los cambios porque cuando rompas algo lo sabrás de inmediato.
 
 Las consecuencias en la calidad de tu código también se notarán. Para escribir tests de esta manera tienes que crear código desacoplado. Seguir [los principios SOLID](/principios-solid/) como guía en la toma de decisiones es lo que te va a permitir lograr justamente eso.
 
@@ -258,6 +258,6 @@ El Code Coverage es una buena herramienta para decidir qué testear, ya que pode
 
 Esta introducción ha quedado casi como un resumen del libro. No está mal. A partir de aquí, los diferentes capítulos te mostrarán una visión más detallada de cada aspecto del testing, sobre todo desde un punto de vista del test driven development.
 
-Habrá capítulos más teóricos y otros más orientados a la práctica. Cosas con las que estarás de acuerdo y cosas con las que no. Podemos discutirlas cuando quieras en el blog http://franiglesias.github.io o en twitter #talkingbit1.
+Habrá capítulos más teóricos y otros más orientados a la práctica. Cosas con las que estarás de acuerdo y cosas con las que no. Podemos discutirlas cuando quieras en el [blog](http://franiglesias.github.io) o en [twitter @talkingbit1](https://twitter.com/talkingbit1).
 
 Gracias por seguir leyendo.
