@@ -63,7 +63,7 @@ La idea es algo más o menos así:
 
 O dicho de otra forma:
 
-Dada una feature de nuestro software tendríamos:
+Dada una *feature* de nuestro software tendríamos:
 
 * Unos pocos tests de aceptación que cubran los escenarios definidos por los stakeholders.
 * Un número mayor de tests de integración que aseguren que los componentes del sistema funcionan correctamente en interacción y que saben reaccionar a los fallos de los demás.
@@ -88,7 +88,7 @@ Por estas razones, lo lógico es tener muchos tests unitarios que puedan ejecuta
 
 ¿Más es mejor? Como en tantos aspectos de la vida, más no es necesariamente mejor, pero nos interesa que entre todos los tests de una unidad de software se cubran todas las casuísticas relevantes, de modo que cuando uno de ellos falla podamos saber qué cambio concreto hemos realizado que ha provocado el problema.
 
-En los tests unitarios, los comportamientos de otras unidades de software que pudiesen intervenir se simulan mediante tests doubles, los cuales se limitan a devolver respuestas prefijadas de modo que el output de la unidad de software sólo pueda ser atribuido a su propio comportamiento, manteniendo controlado el de los colaboradores.
+En los tests unitarios, los comportamientos de otras unidades de software que pudiesen intervenir se simulan mediante *test doubles*, los cuales se limitan a devolver respuestas prefijadas de modo que el output de la unidad de software sólo pueda ser atribuido a su propio comportamiento, manteniendo controlado el de los colaboradores.
 
 ### Un número medio de tests de integración
 
@@ -104,7 +104,7 @@ El test de integración no tiene que verificar que cada una de las unidades real
 
 ### Un número pequeño de tests de aceptación
 
-Los tests de aceptación prueban el sistema desde el punto de visto de sus usuarios o stakeholders, por tanto, ejercitan todos los componentes del sistema implicados en una acción concreta. En los tests de aceptación no se simulan comportamientos de nuestro sistema, aunque es posible que tengamos que simular otras sistemas externos o condiciones de ejecución. 
+Los tests de aceptación prueban el sistema desde el punto de visto de sus usuarios o *stakeholders*, por tanto, ejercitan todos los componentes del sistema implicados en una acción concreta. En los tests de aceptación no se simulan comportamientos de nuestro sistema, aunque es posible que tengamos que simular otras sistemas externos o condiciones de ejecución. 
 
 Nuestras pruebas de aceptación se ejecutan en un entorno específico de tests que sería idéntico al de producción.
 
@@ -120,9 +120,9 @@ Muchos tests de aceptación pueden realizarse con este simple modelo:
 * Input incorrecto del usuario + sistema correcto -> output informativo del sistema
 * Input correcto del usuario + sistema incorrecto -> output informativo del sistema
 
-Obviamente muchos procesos tienen una diversidad de escenarios para considerar que aumentan el número de tests necesarios. Sin embargo, su número será menor que el de todas las combinaciones de casos de los tests unitarios que ejercitan las mismas unidades de software implicadas.
+Obviamente muchos procesos tienen una diversidad de escenarios para considerar que aumentan el número de tests necesarios. Sin embargo, su número será menor que el de todas las combinaciones de casos de los tests unitarios que ejercitan las unidades de software implicadas.
 
-Los tests de aceptación se pueden escribir con lenguaje Gherkin, que es una forma estructurada de definir features mediante escenarios usando lenguaje natural. De este modo, los stakeholders o los product owners pueden contribuir a definirlos conjuntamente con los desarrolladores. Posteriormente se *traducen* a un lenguaje de programación usando herramientas como Cucumber o Behat.
+Los tests de aceptación se pueden escribir con lenguaje *Gherkin*, que es una forma estructurada de definir features mediante escenarios usando lenguaje natural. De este modo, los *stakeholders* o los *product owners* pueden contribuir a definirlos conjuntamente con los desarrolladores. Posteriormente se traducen a un lenguaje de programación usando herramientas como **Cucumber** o **Behat**.
 
 ## Utilidad de la pirámide de tests
 
@@ -146,15 +146,15 @@ A veces es más informativa la ausencia de fallos:
 
 La pirámide, por otra parte, nos ayuda a controlar que la ejecución de los tests se mantenga en un nivel que la haga práctico:
 
-* Los tests de aceptación son muy lentos. Si tenemos relativamente pocos (siempre que sean suficientes, claro) lograremos que se ejecuten en el menor tiempo posible y podremos lanzarlos automáticamente antes de cada deploy.
-* Los tests de integración son medianamente rápidos, si los mantenemos en un nivel adecuado podríamos ejecutarlos automáticamente en cada pull request.
-* Los tests unitarios son muy rápidos, por lo que podríamos ejecutarlos en cada commit.
+* Los tests de aceptación son muy lentos. Si tenemos relativamente pocos (siempre que sean suficientes, claro) lograremos que se ejecuten en el menor tiempo posible y podríamos lanzarlos automáticamente antes de cada *deploy*.
+* Los tests de integración son medianamente rápidos, si los mantenemos en un nivel adecuado podríamos ejecutarlos automáticamente en cada *pull request*.
+* Los tests unitarios son muy rápidos, por lo que podríamos ejecutarlos en cada *commit*.
 
 Para que esta estructura sea realmente eficaz, tendríamos que asegurarnos de que un fallo en un nivel se refleja en los otros dos.
 
 Obviamente podemos optimizar la ejecución de tests mediante herramientas que nos ayuden a ejecutar sólo aquellos afectados por los últimos cambios.
 
-## Smells en la pirámide de los tests funcionales
+## *Smells* en la pirámide de los tests funcionales
 
 Observando la proporción entre los tests en los tres niveles podemos diagnosticar si nuestra batería de tests está bien proporcionada. En caso de que no sea así, el objetivo debería ser incrementar la cantidad de tests en los niveles que lo necesitan así como revisar aquellos niveles que podrían tener tests redundantes.
 
@@ -172,7 +172,7 @@ Pocos tests unitarios hacen difícil o imposible determinar con facilidad dónde
 
 ### Pirámide aplastada
 
-La pirámide aplastada indicaría que hay demasiado pocos tests de aceptación respecto a los tests unitarios. Si suponemos una situación en que la cobertura de tests unitarios es adecuada, lo que nos está diciendo este *smell* es que tenemos que realizar más pruebas de integración y de aceptación.
+La pirámide aplastada indicaría que hay demasiados pocos tests de aceptación respecto a los tests unitarios. Si suponemos una situación en que la cobertura de tests unitarios es adecuada, lo que nos está diciendo este *smell* es que tenemos que realizar más pruebas de integración y de aceptación.
 
 En esta situación los tests no nos dicen mucho acerca de cómo se comporta la aplicación como un todo y probablemente estamos confiando demasiado en tests manuales. En consecuencia no podremos identificar casos problemáticos que estarán relacionados con mala comunicación entre las diversas unidades de software.
 
