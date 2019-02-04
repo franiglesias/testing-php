@@ -4,9 +4,9 @@ Mi primer contacto con los tests, con el propio concepto de test para ser precis
 
 Al principio conseguí desarrollar una noción bastante vaga de la idea y necesidad de testear software, la cual, afortunadamente, fui elaborando y perfeccionando con el tiempo. Aún hoy sigo trabajando en refinarla.
 
-Asimismo me costó entrar en la técnica del testing. En aquel momento había pocas referencias en el mundo PHP y tampoco es que hubiese mucho interés en hacer pedagogía sobre cómo escribir tests, no digamos ya buenos tests. Toda  mi documentación era la que proveía [SimpleTest](http://simpletest.org), un framework de la familia JUnit del que no sé si se acordará alguien todavía.
+Asimismo me costó entrar en la técnica del testing. En aquel momento había pocas referencias en el mundo PHP y tampoco es que hubiese mucho interés en hacer pedagogía sobre cómo escribir tests, no digamos ya buenos tests. Toda  mi documentación era la que proveía [SimpleTest](http://simpletest.org), un framework de la familia **JUnit** del que no sé si se acordará alguien todavía.
 
-Ni te cuento el shock mental que supuso encontrarme con las metodologías test-first y test driven development. Por entonces, no me cabía en la cabeza la idea de no tener que preparar un montón de cosas antes de plantearme siquiera poder empezar a escribir el test más simple. En aquella época, un 'Class Not Found' era un error, no una indicación de mi siguiente tarea.
+Ni te cuento el shock mental que supuso encontrarme con las metodologías *test-first* y *test driven development*. Por entonces, no me cabía en la cabeza la idea de no tener que preparar un montón de cosas antes de plantearme siquiera poder empezar a escribir el test más simple. En aquella época, un 'Class Not Found' era un error, no una indicación de mi siguiente tarea.
 
 Hoy por hoy, después de varios años, ha llegado un punto en el que me cuesta escribir software sin empezar por los tests. Con ellos defino mis objetivos al escribir código o tiendo redes de seguridad para realizar modificaciones y rediseños. Como programador, mi vida es ciertamente mejor con tests.
 
@@ -53,7 +53,7 @@ Otra cuestión sería la discusión de si estamos midiendo de la forma correcta 
 
 Tendemos a sentir apego por nuestro código. Puede ser feo, pero es el nuestro. En realidad nunca lo vemos feo, nos parece un unicornio blanco y hermoso.
 
-Para decirlo de forma más técnica y menos dramática: todos tenemos un cierto prejuicio a favor de nuestro propio código, así que puede costarnos esfuerzo ponerlo a prueba. No por las dificultades técnicas que pueda suponer, de lo que trataremos más adelante, sino por la disonancia que nos genera ser críticos con nuestra propia obra.
+Para decirlo de forma más técnica y menos dramática: todos tenemos un cierto prejuicio a favor de nuestro propio código, así que puede costarnos esfuerzo ponerlo a prueba. No por las dificultades técnicas que supone, de lo que trataremos más adelante, sino por la disonancia que nos genera ser críticos con nuestra propia obra.
 
 En particular, señalaría estos factores que influyen en la dificultad psicológica de poner a prueba el código creado por nosotros:
 
@@ -92,13 +92,13 @@ Ese tiempo que hemos tenido que dedicar a corregir errores hubiera podido dedica
 
 En la visión popular de la ciencia es habitual pensar que un experimento exitoso demuestra el acierto de una teoría. Pero esto no es así, el objetivo de los experimentos es justamente lo contrario. Es lo que se denomina **falsabilidad**.
 
-Siguiendo la idea de la falsabilidad, un experimento exitoso no demuestra que la teoría en la que se basa es verdadera, sino que no es falsa hasta donde ha sido probada. Y ese cambio de visión es fundamental: el experimento se diseña con la idea de refutar la teoría, de modo que si funciona nos aporte información y podamos aceptarla provisionalmente.
+Siguiendo la idea de la falsabilidad, un experimento exitoso no demuestra que la teoría en la que se basa es verdadera, sino que no es falsa hasta donde ha sido probada. Y ese cambio de visión es fundamental: el experimento se diseña con la idea de refutar la teoría, de modo que si no funciona nos aporte información, señalando cuáles son sus límites, y podamos aceptarla o rechazarla provisionalmente.
 
 Con los tests de software pasa algo parecido. Un test determinado puede pasar, pero eso no garantiza que el software funcione bien, ya que puede haber casos en los que no. Los test deberían buscar el fallo del software, es decir, probar aquellos casos que pondrían en cuestión su funcionamiento. Cuantos más de estos casos podamos expresar en forma de test, con más solidez podremos afirmar que el software funciona.
 
 Un test de *happy path*, es decir, un test que sólo ejercita el flujo perfecto de nuestro código no nos garantiza el funcionamiento del mismo, aunque ciertamente nos ayuda proporcionando una representación formal de cuál debería ser su comportamiento.
 
-## Responsabilidad y testeo
+## Responsabilidad ética y testeo
 
 Nuestro mundo está cada vez más basado en el software. ¿Te has parado a pensar alguna vez en las consecuencias de que tu código funcione como se espera o no?
 
