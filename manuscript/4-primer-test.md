@@ -42,23 +42,23 @@ Para superar estas limitaciones, se han creado frameworks de testing que nos apo
 
 **Aserciones o matchers** que encapsulan la comparación del resultado esperado y el obtenido, aportándoles significado. Por ejemplo: `assertEquals` comprueba que sean iguales, `assertGreaterThan` verifica que el resultado obtenido sea mayor que un criterio dado, `assertTrue` verifica que una condición se cumple, y así muchas más.
 
-**Runner**: los frameworks de tests utilizan un runner que recopila todos nuestros tests, o el subconjunto que indiquemos mediante algún tipo de criterio, y los ejecuta con una sola orden, optimizando el tiempo.
+**Runner**: los frameworks de tests utilizan un *runner* que recopila todos nuestros tests, o el subconjunto que indiquemos mediante algún tipo de criterio, y los ejecuta con una sola orden, optimizando el tiempo.
 
-**Estadísticas**: los runners recogen estadísticas acerca de la ejecución de los tests. Pueden seguir corriendo, o no, cuando alguno de los tests falla y nos muestra información de qué tests se han ejecutado, cuáles han pasado, cuáles han fallado, o pueden analizar la cantidad de código cubierto por los mismos.
+**Estadísticas**: los *runners* recogen estadísticas acerca de la ejecución de los tests. Pueden seguir corriendo, o no, cuando alguno de los tests falla y nos muestran información de qué tests se han ejecutado, cuáles han pasado, cuáles han fallado, o pueden analizar la cantidad de código cubierto por los mismos.
 
 **Análisis de diferencias**: las aserciones que no se cumplen nos muestran comparaciones de los valores esperados con los obtenidos, lo que nos puede ayudar a analizar qué errores podemos haber cometido o dónde debemos intervenir para corregir el código.
 
-Por tanto, la mejor manera de escribir tests es utilizar un framework que nos proporcionará todas las herramientas que podamos necesitar.
+Por tanto, la mejor manera de escribir tests es utilizar un *framework* que nos proporcionará todas las herramientas que podamos necesitar.
 
-En los ejemplos de este libro utilizamos PhpUnit que es prácticamente el estándar, aunque ciertamente hay otros frameworks. Algunos de ellos parten de ciertos planteamientos metodológicos, como puede ser el Behavior Driven Development, una variante de TDD. Otros se especializan en tipos de tests específicos o complementan de algún modo el trabajo que podemos hacer con PhpUnit, o incluso se basan en él.
+En los ejemplos de este libro utilizamos **phpunit** que es prácticamente el estándar, aunque ciertamente hay otros *frameworks*. Algunos de ellos parten de ciertos planteamientos metodológicos, como puede ser el *Behavior Driven Development*, una variante de TDD. Otros se especializan en tipos de tests específicos o complementan de algún modo el trabajo que podemos hacer con **phpunit**, o incluso se basan en él.
 
-Sobre la instalación y puesta en marcha de PHPUnit, además de la documentación propia del framework, puedes recurrir a los apéndices del libro, donde lo explicamos.
+Sobre la instalación y puesta en marcha de **phpunit**, además de la documentación propia del *framework*, puedes recurrir a los apéndices del libro, donde lo explicamos.
 
 ## El primer test
 
 Vamos a suponer el siguiente código en el que se modela un carro de la compra para una tienda online. 
 
-La implementación es bastante mala y es a propósito. En este capítulo no vamos a discutir los detalles de su desarrollo, sino que vamos a ver cómo podríamos poner bajo test un código ya escrito y cómo eso nos puede servir para detectar problemas en un código ya existente.
+La implementación es bastante mala y esto es a propósito, así que no te fijes mucho en ella. En este capítulo no vamos a discutir los detalles de su desarrollo, sino que vamos a ver cómo podríamos poner bajo test un código ya escrito y cómo eso nos puede servir para detectar problemas en un código ya existente.
 
 Aquí tienes: **src/Shop/Cart.php**
 
@@ -227,7 +227,7 @@ $numberOfProducts = $cart->count();
 
 Con estas piezas podemos montar nuestro primer test.
 
-En PhpUnit solemos agrupar los tests relativos a una misma clase en un Test Case. Un Test Case extiende de `TestCase`, una clase básica para test que te proporciona todas las herramientas que necesitas para trabajar.
+En **phpunit** solemos agrupar los tests relativos a una misma clase en un Test Case. Un Test Case extiende de `TestCase`, una clase básica para test que te proporciona todas las herramientas que necesitas para trabajar.
 
 La convención dice que el nombre del Test Case es el mismo que el de la clase con el sufijo `Test`. Este sufijo es necesario para que la configuración por defecto de **phpunit** pueda encontrar los tests que debe ejecutar. Puedes definir otro sufijo si lo deseas, pero no vamos a entrar en eso ahora.
 
@@ -241,7 +241,7 @@ declare(strict_types=1);
 
 namespace Dojo\Shop;
 
-use PHPUnit\Framework\TestCase;
+use Phpunit\Framework\TestCase;
 
 class CartTest extends TestCase
 {
@@ -256,7 +256,7 @@ declare(strict_types=1);
 
 namespace Dojo\Shop;
 
-use PHPUnit\Framework\TestCase;
+use Phpunit\Framework\TestCase;
 
 class CartTest extends TestCase
 {
@@ -267,7 +267,7 @@ class CartTest extends TestCase
 }
 ```
 
-El nombre del método comienza con el prefijo `test` y debe ser público. De este modo, PhpUnit sabe que es un método de test y lo recolecta cuando decide qué tests tiene que ejecutar.
+El nombre del método comienza con el prefijo `test` y debe ser público. De este modo, **phpunit** sabe que es un método de test y lo recolecta cuando decide qué tests tiene que ejecutar.
 
 Otra forma de indicarlo es mediante anotaciones, lo que deja más limpio el nombre del método:
 
@@ -277,7 +277,7 @@ declare(strict_types=1);
 
 namespace Dojo\Shop;
 
-use PHPUnit\Framework\TestCase;
+use Phpunit\Framework\TestCase;
 
 class CartTest extends TestCase
 {
@@ -307,7 +307,7 @@ declare(strict_types=1);
 
 namespace Dojo\Shop;
 
-use PHPUnit\Framework\TestCase;
+use Phpunit\Framework\TestCase;
 
 class CartTest extends TestCase
 {
@@ -320,11 +320,11 @@ class CartTest extends TestCase
 
 Bien, es hora de empezar a poner código. Lo que va a hacer este test es instanciar un carro y comprobar que cumple las condiciones expresadas. Recuerda, de nuevo, que un test tiene tres partes principales:
 
-El **escenario** (la parte Given o Arrange del test) es que el usuario va a tomar un carro nuevo, por lo tanto, no tiene productos preseleccionados.
+El **escenario** (la parte *Given* o *Arrange* del test) es que el usuario va a tomar un carro nuevo, por lo tanto, no tiene productos preseleccionados.
 
-La **acción** (When o Action del test) es crear un carro nuevo.
+La **acción** (*When* o *Action* del test) es crear un carro nuevo.
 
-El **resultado** (Then o Assert del test) es que el carro tiene un identificador y que no contiene productos:
+El **resultado** (*Then* o *Assert* del test) es que el carro tiene un identificador y que no contiene productos:
 
 ```php
 <?php
@@ -332,7 +332,7 @@ declare(strict_types=1);
 
 namespace Dojo\Shop;
 
-use PHPUnit\Framework\TestCase;
+use Phpunit\Framework\TestCase;
 
 class CartTest extends TestCase
 {
@@ -348,11 +348,11 @@ class CartTest extends TestCase
 
 En este caso no necesitamos preparar nada previamente a obtener el carro.
 
-La acción es el hecho de inicializar el carro. Puesto que tenemos un named constructor estático no tenemos más que asignar una variable `$cart` con `Cart::pickUp()`.
+La acción es el hecho de inicializar el carro. Puesto que tenemos un *named constructor* estático no tenemos más que asignar una variable `$cart` con `Cart::pickUp()`.
 
 Ahora `$cart` contiene un carrito nuevo. Lo que hacemos a continuación es verificar ciertas condiciones mediante el uso de Aserciones. 
 
-Las aserciones encapsulan una comparación entre lo que esperamos y lo que obtenemos, realizando otras operaciones internas de recogida de información que serán útiles para la batería de tests. PhpUnit ofrece una buena cantidad de aserciones. Las que hemos usado aquí son:
+Las aserciones encapsulan una comparación entre lo que esperamos y lo que obtenemos, realizando otras operaciones internas de recogida de información que serán útiles para la batería de tests. **phpunit** ofrece una buena cantidad de aserciones. Las que hemos usado aquí son:
 
 `assertNotEmpty` verifica si el parámetro que le pasamos, que resulta ser el **id** del carrito recién creado, no está vacío.
 
@@ -414,7 +414,7 @@ En el test que estamos tratando ahora necesitaremos un objeto producto para pasa
 * Utilizar una instancia cualquiera de la clase Product.
 * Utilizar un doble de la clase Product. A su vez, el doble podemos obtenerlo creando una subclase de Product apta para test, o bien usar un doble creado con una alguna utilidad.
 
-En nuestro ejemplo, tenemos una interfaz ProductInterface que implementan todas las clases Product de nuestra tienda online:
+En nuestro ejemplo, tenemos una interfaz *ProductInterface* que implementan todas las clases Product de nuestra tienda online:
 
 ```php
 <?php
@@ -430,7 +430,7 @@ interface ProductInterface
 }
 ```
 
-`ProductInterface` nos garantiza que los objetos que le pasamos a Cart tengan un método `id` y un método `price`, que necesitamos para las operaciones propias de Cart.
+`ProductInterface` nos garantiza que los objetos que le pasamos a `Cart` tengan un método `id` y un método `price`, que necesitamos para las operaciones propias de Cart.
 
 #### Usando objetos reales
 
@@ -491,9 +491,9 @@ Además de controlar con exactitud el comportamiento del colaborador, puede ser 
 En ese caso, debemos crear "dobles" que representen a esos objetos necesarios con comportamientos que nosotros predefinimos. Para crear dobles podemos usar dos estrategias:
 
 * Definir una clase que implemente la misma interfaz del colaborador o que extienda la clase, escribiendo métodos con un comportamiento nulo o prefijado para el test.
-* Utilizar una utilidad para generar dobles como la que ofrece el propio PhpUnit, con la cual simularemos comportamientos específicos del colaborador.
+* Utilizar una utilidad para generar dobles como la que ofrece el propio **phpunit**, con la cual simularemos comportamientos específicos del colaborador.
 
-La segunda opción es la más práctica ya que no tenemos que escribir una clase a propósito para el test, sino que simplemente simulamos sus comportamientos indicando que debería responder cada método al ser invocado. Sobre cómo hacer esto nos extenderemos en otro capítulo.
+La segunda opción es la más práctica ya que no tenemos que escribir una clase a propósito para el test, sino que simplemente simulamos sus comportamientos indicando que debería responder cada método al ser invocado.
 
 En el test que nos ocupa no es necesario utilizar esta estrategia, pero podemos hacerlo. El método `getProduct` podría quedar así:
 
@@ -528,7 +528,7 @@ Finalmente, si ejecutamos el test, veremos que también pasa.
 
 ## Testeando que podemos añadir productos al carro
 
-Con lo anterior hemos comprobado que podemos instanciar el carro y podemos tachar dos requisitos de nuestra lista. Nuestro objetivo ahora es probar que podemos añadir productos. En cierto modo ya sabemos que podemos puesto tenemos un test que muestra que podemos instanciar el carro añadiendo un producto. Además, si vemos el código podemos comprobar que internamente se llama al método que añade productos, lo que implica que el test existente prueba, indirectamente, el comportamiento que vamos a examinar ahora.
+Con lo anterior hemos comprobado que podemos instanciar el carro y podemos tachar dos requisitos de nuestra lista. Nuestro objetivo ahora es probar que podemos añadir productos. En cierto modo ya sabemos que esto se cumple puesto tenemos un test que muestra que podemos instanciar el carro añadiendo un producto. Además, si vemos el código podemos comprobar que internamente se llama al método que añade productos, lo que implica que el test existente prueba, indirectamente, el comportamiento que vamos a examinar ahora.
 
 Sin embargo, cuando hacemos tests unitarios, deberíamos considerar la clase bajo test como una caja negra y no pensar en su implementación, sino en su comportamiento observable. Podría ocurrir que la forma de añadir productos al carro fuese distinta en la creación que durante el resto de su ciclo de vida, por lo que testear explícitamente el método para añadir productos es mucho más seguro.
 
@@ -563,7 +563,7 @@ public function testShouldAddAProduct(): void
 }
 ```
 
-Si queremos testear que podemos añadir una cantidad de productos mayor que uno, nos encontramos que no nos vale el mismo test. `count` nos dice cuántos productos distintos hay, mientras que `totalProducts` nos dice cuántas unidades de productos hay en total. Primero veremos el test y luego analizaremos algunas cosas intersantes:
+Si queremos testear que podemos añadir una cantidad de productos mayor que uno, nos encontramos que no nos vale el mismo test. `count` nos dice cuántos productos distintos hay, mientras que `totalProducts` nos dice cuántas unidades de productos hay en total. Primero veremos el test y luego analizaremos algunas cosas interesantes:
 
 ```php
 public function testShouldAddAProductInQuantity(): void
@@ -649,7 +649,7 @@ public function testShouldAddSameProductsInDifferentMoments(): void
 
 Y esto nos daría una visión engañosa de lo que hace el código. Por eso, es importante definir bien lo que estamos testeando y cómo lo vamos a observar o medir.
 
-**Detección de errores**. Por otro lado, este ejercicio nos revela el poder del testing para detectar bugs que no son aparentes o que se manifiestan sólo en ciertos casos de uso. Un vistazo rápido al código podría no revelar ningún problema y, por otro lado, el caso de uso de que un usuario añade un producto y, más tarde, añade más de ese producto puede no ser evidente a primera vista.
+**Detección de errores**. Por otro lado, este ejercicio nos revela el poder del testing para detectar bugs que no son aparentes o que se manifiestan sólo en ciertos casos de uso. Un vistazo rápido al código podría no revelar ningún problema y, por otro lado, el caso de uso de que un usuario añade un producto y, más tarde, añade más unidades de ese producto puede no ser evidente a primera vista.
 
 En cualquier caso, lo que nos dice el resultado del test es que debemos modificar el código para hacerlo pasar. En este ejemplo, nos dice que al añadir un producto tendríamos que comprobar si ya estaba en el carrito y añadir las unidades extra.
 
@@ -696,7 +696,7 @@ En el **enfoque alternativo**, los tests específicos de estos métodos serían 
 
 La redundancia en los tests no suele merecer la pena *per se* ya que no aporta nueva información. Es lo que ocurre en el ejemplo que tenemos entre manos, los tests de los métodos de recuento no nos van a proporcionar una información diferente de la que ya tenemos.
 
-## Otros test
+## Otros tests
 
 Uno de los comportamientos que se espera de `Cart` es darnos información sobre el importe total de los productos en el carrito, que obtenemos mediante el método `amount`. Una buena idea es empezar con un caso extremo y asegurarnos de que un carro vacío cuesta cero, lo que garantizará que no se han introducido importes inesperados al crear el carro.
 
@@ -764,7 +764,7 @@ En la lista de requisitos se nos dice que debemos poder retirar productos del ca
 
 Así que planteamos los tests correspondientes:
 
-El método `removeProduct` lanzará una excepción si no tenemos el producto indicado. Podemos testear fácilmente que se lanzan excepciones mediante el método `expectException` del `TestCase` de PHPUnit.
+El método `removeProduct` lanzará una excepción si no tenemos el producto indicado. Podemos testear fácilmente que se lanzan excepciones mediante el método `expectException` del `TestCase` de phpunit.
 
 ```php
 public function testShouldFailRemovingNonExistingProduct() : void
@@ -796,7 +796,7 @@ public function testShouldLeaveNoProductWhenRemovingTheLastOne(): void
 }
 ```
 
-Este test también pasa. Si dejásemos de hacer tests aquí podríamos decir que el requisito se cumple y que la feature está implementada. Es por esa razón que hemos definido los tres escenarios: carro vacío, carro con un único producto y carro con más de una unidad del producto.
+Este test también pasa. Si dejásemos de hacer tests aquí podríamos decir que el requisito se cumple y que la *feature* está implementada. Es por esa razón que hemos definido los tres escenarios: carro vacío, carro con un único producto y carro con más de una unidad del producto.
 
 En nuestro ejemplo se puede prever que el tercer test no pasará tal y como está implementado el método. Sin embargo, es muy posible que el código real que tienes que testear no sea tan fácil de leer y la única manera de asegurarte de que funciona como es debido es precisamente haciendo un test que lo verifique.
 
@@ -816,7 +816,7 @@ public function testShouldLeaveOneProduct(): void
 }
 ```
 
-Pero no ocurre eso, si no que se eliminan todas las unidades del mismo producto, lo que demuestra que la feature no está implementada correctamente. 
+Pero no ocurre eso, si no que se eliminan todas las unidades del mismo producto, lo que demuestra que la *feature* no está implementada correctamente. 
 
 He aquí una implementación sencilla que hace pasar el test, corrigiendo el problema:
 
@@ -884,7 +884,7 @@ public function testShouldReportIsNotEmpty() : void
 
 ## Hemos terminado… de momento
 
-Este es el TestCase con el que hemos probado que Cart funciona, o en algunos casos no lo hace como se desea:
+Este es el `TestCase` con el que hemos probado que `Cart` funciona, o en algunos casos no lo hace como se desea:
 
 ```php
 <?php
@@ -892,8 +892,8 @@ declare(strict_types=1);
 
 namespace Dojo\Shop;
 
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Phpunit\Framework\MockObject\MockObject;
+use Phpunit\Framework\TestCase;
 use UnderflowException;
 
 class CartTest extends TestCase
