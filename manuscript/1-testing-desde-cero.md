@@ -8,7 +8,7 @@ Hace falta, por tanto, una metodología sistemática para verificar el funcionam
 
 ## Qué es software testing
 
-Software testing define un conjunto de actividades y técnicas que se utilizan para comprobar o certificar que un software desarrollado cumple las especificaciones de funcionamiento establecidas. En otras palabras: testear un software es asegurarse de que hace lo que queremos o esperamos que haga.
+**Software testing** define un conjunto de actividades y técnicas que se utilizan para comprobar o certificar que un software desarrollado cumple las especificaciones de funcionamiento establecidas. En otras palabras: testear un software es asegurarse de que hace lo que queremos o esperamos que haga.
 
 Por supuesto, esta definición es bastante vaga y deberíamos matizar algunas cosas.
 
@@ -36,7 +36,7 @@ El testeo manual consiste simplemente en preparar una serie de casos para probar
 
 Sus limitaciones deberían ser evidentes:
 
-* Examinamos un número limitado de posibles caso, pero puede haber decenas de ellos.
+* Examinamos un número limitado de posibles casos, pero puede haber decenas de ellos.
 * No tenemos ni idea de qué otros factores podrían estar influyendo en el resultado, ni podemos tenerlos realmente bajo control.
 * No podemos garantizar que el mismo test, realizado por otra persona y en otras condiciones, vaya a dar el mismo resultado.
 
@@ -89,7 +89,7 @@ Los **tests end-to-end** o **de aceptación**, buscan probar que el sistema hace
 
 Los **tests de integración** buscan probar que los elementos que forman un módulo interactúan de forma correcta, manteniéndolos aislados del resto del sistema. Si asumimos que los elementos individuales funcionan correctamente, estos tests nos ayudan a diagnosticar los problemas de comunicación entre ellos.
 
-Finalmente, los **tests unitarios** prueban en aislamiento las unidades de software que, como hemos dicho, son clases y funciones. De este modo, es posible localizar con precisión problemas en su funcionamiento. Estos tests se ejecutan rápidamente, por lo que nos devuelven feedback muy pronto y tiene especial valor cuando estamos desarrollando.
+Finalmente, los **tests unitarios** prueban en aislamiento las unidades de software que, como hemos dicho, son clases y funciones. De este modo, es posible localizar con precisión problemas en su funcionamiento. Estos tests se ejecutan rápidamente, por lo que nos devuelven feedback muy pronto y tienen especial valor cuando estamos desarrollando.
 
 Todos estos tipos de tests se agrupan, junto con otros, en los denominados **tests funcionales**, los cuales tratan sobre qué hace la aplicación.
 
@@ -104,7 +104,7 @@ Hacer un test, como hemos dicho, es comprobar si una pieza de software hace aque
 
 Un test, en resumen, no es más que un programa que ejecuta una pieza de software y comprueba si su resultado, en el caso de las *queries*, o su efecto, en el caso de los *commands*, es el que se espera.
 
-Normalmente escribimos los tests con ayuda de un framework o librería especializada, que nos aporta herramientas con las que gestionar y escribir más fácilmente nuestros tests, así como para ejecutarlos y obtener información útil de cada uno de ellos y del conjunto.
+Normalmente escribimos los tests con ayuda de un *framework* o librería especializada, que nos aporta herramientas con las que gestionar y escribir más fácilmente nuestros tests, así como para ejecutarlos y obtener información útil de cada uno de ellos y del conjunto.
 
 ## Estructura básica de un test
 
@@ -120,7 +120,7 @@ Fundamentalmente, los tests tienen tres partes principales:
 
 * **Given** o **Arrange**: La primera parte consiste en poner el sistema en un estado conocido, lo cual supone ajustar todas las variables que pueden afectar al test en un valor arbitrario determinado. En esta fase se disponen datos en una base de datos, se preparan los parámetros que se pasarán a la unidad probada, etc.
 * **When** o **Act**: La segunda es la ejecución de la unidad de software y la obtención del resultado.
-* **Then** o **Assert**: La tercera fase consiste en comparar el resultado obtenido con el resultado esperado. Normalmente esta operación se realiza con **asserts** o **matchers**, según el entorno de tests con el que trabajemos. Asserts y Matchers son utilidades de los frameworks de test que nos permiten verificar que el resultado obtenido coincide con el deseado.
+* **Then** o **Assert**: La tercera fase consiste en comparar el resultado obtenido con el resultado esperado. Normalmente esta operación se realiza con **asserts** o **matchers**, según el entorno de tests con el que trabajemos. *Asserts* y *Matchers* son utilidades de los frameworks de test que nos permiten verificar que el resultado obtenido coincide con el deseado.
 
 Por otro lado, los tests deben estar aislados entre sí, de modo que unos no dependan o se vean afectados por el resultado de los otros.
 
@@ -192,9 +192,9 @@ En el gráfico se puede ver fácilmente que todos los valores que sean menores q
 
 #### Boundary Value Analysis (Análisis de valor de límite)
 
-Aunque la metodología anterior es perfectamente válida se nos plantea una duda: ¿cómo podemos tener la seguridad de se devuelve el resultado correcto en los valores límite de los intervalos?
+Aunque la metodología anterior es perfectamente válida se nos plantea una duda: ¿cómo podemos tener la seguridad de que se devuelve el resultado correcto en los valores límite de los intervalos?
 
-Usando Equivalence Class Partitioning seleccionamos un valor cualquiera dentro de cada intervalo. En Boundary Value Analysis vamos a escoger dos valores, correspondientes a los extremos de cada intervalo, excepto en los intervalos que no están limitados en uno de los lados:
+Usando *Equivalence Class Partitioning* seleccionamos un valor cualquiera dentro de cada intervalo. En *Boundary Value Analysis* vamos a escoger dos valores, correspondientes a los extremos de cada intervalo, excepto en los intervalos que no están limitados en uno de los lados:
 
 | Intervalo | Valor a probar | Resultado |
 |:---------:|:--------------:|:---------:|
@@ -205,13 +205,13 @@ Usando Equivalence Class Partitioning seleccionamos un valor cualquiera dentro d
 |   50-99   |       99       |   15%     |
 |   100+    |      120       |   20%     |
 
-Los dos valores escogidos para la prueba son válidos dentro de la definición de Equivalence Class Partitioning, con la particularidad de que al ser los extremos de los intervalos nos permiten chequear condiciones del tipo "igual o mayor".
+Los dos valores escogidos para la prueba son válidos dentro de la definición de *Equivalence Class Partitioning*, con la particularidad de que al ser los extremos de los intervalos nos permiten chequear condiciones del tipo "igual o mayor".
 
 #### Decision table (tabla de decisión)
 
 En las estrategias anteriores partíamos de la base de trabajar con un único parámetro. Cuando son varios parámetros los casos para probar se generan combinando los posibles valores de cada uno de ellos en una tabla de decisiones.
 
-Retomando un viejo ejemplo de este mismo blog, imaginemos una tienda online de impresión de camisetas en la que el precio depende del modelo de camiseta (Masculino o Femenino), la talla (Pequeña, Mediana y Grande) y el tamaño de la ilustración (Pequeña o Grande). En ese caso, el número de posibles casos es 2 * 3 * 2 = 12, suponiendo que no habrá casos inválidos.
+Imaginemos una tienda online de impresión de camisetas en la que el precio depende del modelo de camiseta (Masculino o Femenino), la talla (Pequeña, Mediana y Grande) y el tamaño de la ilustración (Pequeña o Grande). En ese caso, el número de posibles casos es 2 * 3 * 2 = 12, suponiendo que no habrá casos inválidos.
 
 Esta casuística se representa en una tabla, más o menos como ésta:
 
@@ -229,7 +229,7 @@ Esta tabla nos permite generar todas las combinaciones de tal modo que cada colu
 
 #### Basic path
 
-Basic path es un tipo de diseño de tests que presupone el conocimiento del algoritmo que estamos testeando, de tal modo que diseñamos los casos de test en función de los caminos que sigue el flujo de ejecución del código. Por lo tanto, la cantidad de casos estará directamente relacionada con la complejidad ciclomática del mismo.
+*Basic path* es un tipo de diseño de tests que presupone el conocimiento del algoritmo que estamos testeando, de tal modo que diseñamos los casos de test en función de los caminos que sigue el flujo de ejecución del código. Por lo tanto, la cantidad de casos estará directamente relacionada con la complejidad ciclomática del mismo.
 
 Por ejemplo, un código en el que no haya ninguna decisión, necesitaría un único caso de test. Si hay una decisión que crea dos caminos de ejecución, se necesitarán dos casos.
 
@@ -237,13 +237,13 @@ Normalmente, lo mejor es representar el diagrama de flujo del código para ident
 
 #### Code coverage o Line Coverage
 
-El índice de Code Coverage indica qué líneas de un código han sido ejecutadas o no por los tests. Normalmente se indica en porcentaje de líneas ejecutadas sobre líneas totales. Obviamente esta medida no nos dice nada acerca de la funcionalidad del código (si lo que hace es correcto o no) pero sí nos ayuda a detectar casos no testeados porque ciertas partes del código no se han llegado a ejecutar con las pruebas que tenemos.
+El índice de *Code Coverage* indica qué líneas de un código han sido ejecutadas o no por los tests. Normalmente se indica en porcentaje de líneas ejecutadas sobre líneas totales. Obviamente esta medida no nos dice nada acerca de la funcionalidad del código (si lo que hace es correcto o no) pero sí nos ayuda a detectar casos no testeados porque ciertas partes del código no se han llegado a ejecutar con las pruebas que tenemos.
 
 #### Branch coverage
 
 Aunque está estrechamente relacionado con el anterior, el branch coverage es un poco diferente. Su función es indicarnos si los posibles cursos de acción (o branches) de un código se han ejecutado.
 
-Por ejemplo, una cláusula if…then que evalúa una condición tiene dos ramas, por tanto, ambas ramas deberían haberse ejecutado al menos una vez para asegurarnos de que han sido correctamente cubiertas. Si se evalúan dos condiciones, tendremos cuatro posibles combinaciones lógicas.
+Por ejemplo, una cláusula `if…then` que evalúa una condición tiene dos ramas, por tanto, ambas ramas deberían haberse ejecutado al menos una vez para asegurarnos de que han sido correctamente cubiertas. Si se evalúan dos condiciones, tendremos cuatro posibles combinaciones lógicas.
 
 ## Frameworks para testing
 
@@ -294,7 +294,7 @@ Aunque el código es muy similar, usar un framework de tests aporta varias venta
 * Recopila información sobre la ejecución de los tests, mostrando estadísticas, tiempo de ejecución, etc.
 * Facilita localizar los test que fallan.
 
-Las aserciones (asserts o matchers) son funciones provistas por el framework de testing que encapsulan la comparación del resultado de la pieza de software probada con el criterio, junto con otras operaciones que permiten al sistema de testeo recopilar esa información. En último término una aserción no es otra cosa que una función que verifica que se cumple una condición. La variedad de aserciones nos permite que el código de nuestro tests sea más expresivo y conciso.
+Las aserciones (*asserts* o *matchers*) son funciones provistas por el framework de testing que encapsulan la comparación del resultado de la pieza de software probada con el criterio, junto con otras operaciones que permiten al sistema de testeo recopilar esa información. En último término una aserción no es otra cosa que una función que verifica que se cumple una condición. La variedad de aserciones nos permite que el código de nuestro tests sea más expresivo y conciso.
 
 Existen varios tipos o familias de frameworks, según su orientación:
 
@@ -306,7 +306,7 @@ Existen varios tipos o familias de frameworks, según su orientación:
 
 ### Después de escribir el código
 
-Testear después de desarrollar el código es una de las formas más habituales de trabajar, especialmente en la orientación que podríamos denominar de QA. La idea es probar que el código cumple las especificaciones y detectar posibles fallos o casos no cubiertos.
+Testear después de desarrollar el código es una de las formas más habituales de trabajar, especialmente en la orientación que podríamos denominar de *Quality Assurance* (QA). La idea es probar que el código cumple las especificaciones y detectar posibles fallos o casos no cubiertos.
 
 En resumen, consiste en escribir los tests una vez que hemos terminado de desarrollar el código de tal forma que podamos probar que cumple con las especificaciones y que no tiene fallos.
 
@@ -314,15 +314,17 @@ Esto presenta dos problemas principales:
 
 El primero tiene que ver con la dificultad psicológica de poner a prueba nuestro código una vez lo consideramos terminado, ya que el test implica un trabajo extra que no siempre es fácil de realizar.
 
-El segundo tiene que ver con la dificultad técnica de escribir buenos tests para un código que puede estar en un estado difícil de testear. Esto puede ocurrir cuando en el desarrollo no se ha realizado una buena gestión de la dependencias y se da alto acoplamiento entre clases.
+El segundo tiene que ver con la dificultad técnica de escribir buenos tests para un código que puede estar en un estado difícil de testear. Esto ocurre cuando en el desarrollo no se ha realizado una buena gestión de la dependencias y tenemos alto acoplamiento entre clases.
 
 ### Antes de escribir el código
 
-La idea de tener los tests antes que el código (Test first development) es históricamente bastante antigua. Consiste en que los tests se escriben o definen antes de iniciar el desarrollo, de modo que su objetivo es conseguir que los tests se cumplan.
+La idea de tener los tests antes que el código (*test first development*) es históricamente bastante antigua. Consiste en que los tests se escriben o definen antes de iniciar el desarrollo, de modo que su objetivo es conseguir que los tests se cumplan.
+
+[Why does Kent Beck refer to the "rediscovery" of test-driven development? What's the history of test-driven development before Kent Beck's rediscovery?](https://www.quora.com/Why-does-Kent-Beck-refer-to-the-rediscovery-of-test-driven-development-Whats-the-history-of-test-driven-development-before-Kent-Becks-rediscovery)
 
 Obviamente al principio no se cumplirá ningún test puesto que no hay código que ejecutar. A la vez, esto es una guía que nos va indicando qué pasos debemos ir realizando.
 
-Estrechamente ligada con esta idea está la metodología Test Driven Development. Las principales diferencias entre Test First Development y Test Driven Development son que, en TDD:
+Estrechamente ligada con esta idea está la metodología *Test Driven Development* (TDD). Las principales diferencias entre *Test First Development* y *Test Driven Development* son que, en TDD:
 
 * Los tests se escriben uno a uno (no todos de una vez).
 * Se escriben implementaciones lo más sencillas posible de código que consigan hacer pasar el test.
@@ -330,17 +332,15 @@ Estrechamente ligada con esta idea está la metodología Test Driven Development
 
 [tcagley: Test First and Test Driven Development: Is There a Difference?](https://tcagley.wordpress.com/2016/07/26/test-first-and-test-driven-development-is-there-a-difference/)
 
-[Why does Kent Beck refer to the "rediscovery" of test-driven development? What's the history of test-driven development before Kent Beck's rediscovery?](https://www.quora.com/Why-does-Kent-Beck-refer-to-the-rediscovery-of-test-driven-development-Whats-the-history-of-test-driven-development-before-Kent-Becks-rediscovery)
-
 ### Para describir un bug
 
-Cuando detectamos un bug o un error en el código desplegado o en la fase de QA es buena idea escribir un test que, fallando, ponga de manifiesto el problema observado.
+Cuando detectamos un bug o un error en el código desplegado o en la fase de QA es buena idea escribir un test que, al fallar, ponga de manifiesto el problema observado.
 
 A continuación, revisaremos el código para corregir el error y así hacer que el test que hemos escrito pase, manteniendo los otros tests pasando también. De este modo, nos aseguramos tanto de corregir el problema como de mantener el resto del sistema funcionando correctamente.
 
 ### Para refactorizar un código
 
-Cuando arrastramos deuda técnica, es decir código antiguo que es difícil de comprender y por tanto de mantener, es tentador tratar de reescribirlo para mejorar su inteligibilidad. Para esos casos es útil introducir los llamados tests de caracterización.
+Cuando arrastramos deuda técnica, es decir código antiguo que es difícil de comprender y por tanto de mantener, es tentador tratar de reescribirlo para mejorar su inteligibilidad. Para esos casos es útil introducir los llamados **tests de caracterización**.
 
 Se trata de tests que creamos a partir del funcionamiento actual de la pieza de software que estamos estudiando. Usando su resultado actual como criterio de comparación del test. La idea es no alterar ese resultado con los cambios que hagamos en el código.
 
