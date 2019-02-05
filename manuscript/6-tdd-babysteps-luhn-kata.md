@@ -1,16 +1,16 @@
 # Desarrollar un algoritmo paso a paso con TDD: Luhn Test kata
 
-[Originalmente, hice esta kata con php en el blog](https://franiglesias.github.io/luhn-kata-php/), pero voy a trasponerla a PHP para este capítulo. Los principios en que se basa son exactamente los mismos, pero he tratado de eliminar todas las referencias a php y a como organizar el entorno de trabajo en ese lenguaje.
+[Originalmente, hice esta kata con python en el blog](https://franiglesias.github.io/luhn-kata-php/), pero voy a trasponerla a PHP para este capítulo. Los principios en que se basa son exactamente los mismos, pero he tratado de eliminar todas las referencias a python y a como organizar el entorno de trabajo en ese lenguaje.
 
 ## Sobre la Luhn Test kata
 
-La idea es desarrollar una función que testee números de tarjetas de crédito para ver si son válidos o simplemente cifras escogidas al azar.
+La idea es desarrollar una función que compruebe números de tarjetas de crédito para ver si son válidos o simplemente cifras escogidas al azar.
 
 [Puedes ver el ejercicio y sus detalles en este Gist de Manuel Rivero](https://gist.github.com/trikitrok/c2944e1bbbca51127854491ae3720559), quien presentó la kata en uno de los meetups de la Software Crafters de Barcelona, con una complejidad añadida: crear una única función o método para hacer la validación, testeando únicamente la interfaz pública y hacerlo en *baby-steps*.
 
 Esto significa no recurrir a objetos colaboradores, que podrían testearse aisladamente, o a trampear los tests probando métodos privados o similar. También significa no generar todo el algoritmo en una primera iteración, sino forzarse a ir paso a paso.
 
-Tiene su miga y eso es lo que voy a intentar hacer en este artículo.
+El reto tiene su miga y eso es lo que voy a intentar mostrar en este capítulo.
 
 ## Empecemos con un test
 
@@ -57,7 +57,7 @@ Al analizar este flujo podemos ver que las operaciones son sumas y productos y, 
 
 ## Empezando con el código de producción
 
-El test que he mostrado arriba no pasará obviamente. Primero nos reclama crear la clase LuhnValidator.
+El test que he mostrado arriba no pasará obviamente. Primero nos reclama crear la clase `LuhnValidator`.
 
 ### Código mínimo para pasar el test
 
@@ -161,7 +161,7 @@ Lo primero es invertir la cadena, cosa que en PHP se puede hacer así:
 ```php
 $inverted = strrev($luhnCode);
 ```
-Pero esto no hace pasar el test, hay que implementar una mínima parte del algoritmo, que simplemente es ver el valor del primer dígito de la cadena invertida. Si no es `0` devolvemos False porque sería inválido:
+Pero esto no hace pasar el test, hay que implementar una mínima parte del algoritmo, que simplemente es ver el valor del primer dígito de la cadena invertida. Si no es `0` devolvemos `false` porque sería inválido:
 
 ```php
 <?php
@@ -184,7 +184,7 @@ class LuhnValidator
 
 ```
 
-Este ha sido un primer paso, y puede que no sea suficiente para demostrar todo lo que queremos. Pero lo interesante es que estamos avanzando en pequeños pasos, que es la intención del ejercicio.
+Este ha sido un primer q, y puede que no sea suficiente para demostrar todo lo que queremos. Pero lo interesante es que estamos avanzando en pequeños pasos, que es la intención del ejercicio.
 
 Tal cual está el código en este momento no tendríamos por qué hacer mucho más. A primera vista tendríamos la opción de realizar un pequeño refactor:
 

@@ -46,9 +46,9 @@ La tabla en cuestión es esta:
 
 Value Object es un tipo de objeto que representa un concepto importante de un dominio el cual nos interesa por su valor, y no por su identidad. Esto quiere decir que dos Value Object del mismo tipo se consideran iguales e intercambiables si representan el mismo valor.
 
-En el mundo físico tenemos un gran ejemplo de Value Object: el dinero. Los billetes de 10 euros, por ejemplo, representan todos la misma cantidad, y da igual el ejemplar concreto que tengamos, siempre representará 10 euros y lo podremos cambiar por otro del mismo valor, o por una combinación de billetes y monedas que sumen el mismo valor. Los billetes, de hecho, tienen una identidad (tienen un número de serie) pero no se tiene en cuenta para su utilización como medio de pago.
+En el mundo físico tenemos un gran ejemplo de Value Object: el dinero. Los billetes de 10 euros, por ejemplo, representan todos la misma cantidad, y da igual el ejemplar concreto que tengamos, siempre representará 10 euros y lo podremos cambiar por otro del mismo valor, o por una combinación de billetes y monedas que sumen el mismo valor. Los billetes, de hecho, tienen una identidad (se les asigna un número de serie) pero no se tiene en cuenta para su utilización como medio de pago.
 
-El valor representado por un billete no cambia. En el ámbito de la programación, los Value Objects tampoco pueden cambiar de valor a lo largo de su ciclo de vida: son inmutables. Se instancian con un valor determinado que no puede cambiarse. Para tener un valor nuevo se debe instanciar un objeto nuevo de ese tipo con el nuevo valor.
+El valor representado por un billete no cambia. En el ámbito de la programación, los Value Objects tampoco pueden cambiar de valor a lo largo de su ciclo de vida: son **inmutables**. Se instancian con un valor determinado que no puede cambiarse. Para tener un valor nuevo se debe instanciar un objeto nuevo de ese tipo con el nuevo valor.
 
 Para instanciar un Value Object debemos asegurarnos de que los valores que le pasamos nos permiten hacerlo de forma consistente, por lo que serán importantes las validaciones. Lo bueno, es que una vez creado, siempre podemos confiar en que ese Value Object será válido y lo podemos usar sin ningún problema.
 
@@ -62,11 +62,11 @@ Repasemos las leyes de TDD. Son tres, en la formulación de Robert C. Martin:
 
 **La primera regla** nos dice que siempre hemos de empezar con un test. El test especifica lo que queremos conseguir que haga el código de producción que escribiremos posteriormente. Nos indica un objetivo en el que nos vamos a centrar durante los minutos siguientes, sin preocuparnos de nada más.
 
-**La segunda regla** nos pide que sólo escribamos un sólo test cada vez y que sea lo bastante concreto como para fallar por un motivo específico, y lo hará porque todavía no hemos escrito código que resuelva esa situación que estamos definiendo con el test.
+**La segunda regla** nos pide que sólo escribamos un único test cada vez y que sea lo bastante concreto como para fallar por un motivo específico, y lo hará inicialmente orque todavía no hemos escrito código que resuelva esa situación que estamos definiendo con el test.
 
 Una vez que tenemos el test tenemos que ejecutarlo y verlo fallar. Literalmente: "verlo fallar". No basta con "saber" que va a fallar. Tenemos que verlo fallar y que, así, nos diga cosas.
 
-**La tercera regla** nos pide que al escribir el código de producción nos limitemos al estrictamente necesario para hacer pasar el test, ni más ni menos, de la manera más inmediata y obvia posible en las condiciones actuales del código. 
+**La tercera regla** nos pide que al escribir el código de producción nos limitemos al estrictamente necesario para hacer pasar el test, ni más, ni menos, de la manera más inmediata y obvia posible en las condiciones actuales del código. 
 
 Si la manera más obvia es devolver la respuesta esperada por el test, eso es lo que debemos hacer. 
 
@@ -108,7 +108,7 @@ Esencialmente, un DNI no es más que una cadena de caracteres con un formato esp
 * El primer carácter puede ser X, Y o Z, lo que indica un NIE (Número de identificación para personas extranjeras).
 * Para la validación, las letras XYZ se reemplazan por 0, 1 ó 2, respectivamente.
 
-En caso de que alguna de las condiciones no se cumple, el DNI no es válido.
+En caso de que alguna de las condiciones no se cumpla, el DNI no es válido.
 
 Si nos fijamos en las condiciones recogidas en la lista anterior, vemos que cada una de ellas reduce el número de cadenas de caracteres candidatas a ser un DNI.
 
@@ -418,7 +418,7 @@ class Dni
 }
 ```
 
-Aplicamos este cambio y ejecutamos los testa para comprobar que siguen pasando.
+Aplicamos este cambio y ejecutamos los tests para comprobar que siguen pasando.
 
 Otra duplicación la podemos ver en las dos condicionales que controlan la longitud de la cadena. Lo cierto es que nos bastaría con lanzar la excepción si la longitud es distinta de nueve. Por ejemplo, así:
 
@@ -488,7 +488,7 @@ En este punto me gustaría plantear una cuestión interesante. El refactor tambi
 
 Por eso, en la fase de refactor, podemos modificarlos siempre y cuando los mantengamos en verde.
 
-Por ejemplo, podríamos decidir que no necesitamos chequear el mensaje de la excepción LengthException ya que para este proyecto no nos aporta nada significativo saber que la cadena sea demasiado corta o demasiado larga. Simplemente tiene el tamaño inadecuado. Si quitamos esa línea en los tests, éstos siguen pasando, que es como decir que siguen testeando lo mismo.
+Por ejemplo, podríamos decidir que no necesitamos chequear el mensaje de la excepción `LengthException` ya que para este proyecto no nos aporta nada significativo saber que la cadena sea demasiado corta o demasiado larga. Simplemente tiene el tamaño inadecuado. Si quitamos esa línea en los tests, éstos siguen pasando, que es como decir que siguen testeando lo mismo.
 
 De hecho, no es buena práctica hacer tests basados en los mensajes de las excepciones, pero nos están siendo útiles temporalmente para poder lanzar y esperar el mismo tipo de excepción producida por causas diferentes.
 
@@ -581,7 +581,7 @@ Test que, al ejecutarlo, falla:
 Failed asserting that exception message 'Ends with number' contains 'Ends with invalid letter'.
 ```
 
-Que un test falle es una gran noticia. Nos dice lo que necesitamos saber y lo que tenemos que hacer: resolver el problema que hemos pospuesto antes: comprobar que el último carácter no es un número, cosa que aquí he decidido hacer con una expresión regular:
+Que un test falle es una gran noticia. Nos dice lo que necesitamos saber y lo que tenemos que hacer: resolver el problema que hemos pospuesto antes, o sea, comprobar que el último carácter no es un número, cosa que aquí he decidido hacer con una expresión regular:
 
 ```php
 <?php
@@ -675,7 +675,7 @@ class Dni
 
 De nuevo: no tenemos que preocuparnos mucho por la calidad de la implementación. Simplemente escribimos código de producción que haga pasar el test y mantenga los test anteriores pasando, de manera que seguimos teniendo el comportamiento deseado en todo momento.
 
-En cualquier caso, con esta implementación, el test está pasando y es ahora cuando podríamos pararnos a mejorar la implementación. Pero eso lo vamos a dejar para dentro de un rato. No tenemos que hacerlo a cada paso si no nos convence o no vemos claro cómo hacer ese refactor. Tenemos un código que no sólo funciona, sino que su funcionamiento está completamente respaldado por tests.
+En cualquier caso, con esta implementación, el test está pasando y es ahora cuando podríamos pararnos a mejorarla. Pero eso lo vamos a dejar para dentro de un rato. No tenemos que hacerlo a cada paso si no nos convence o no vemos claro cómo hacer ese refactor. Tenemos un código que no sólo funciona, sino que su funcionamiento está completamente respaldado por tests.
 
 Ahora vamos a probar otra condición. Esta vez, trata sobre cómo debería ser el principio de la cadena. O mejor dicho: cómo no debería ser. Y la cuestión es que no debería empezar por nada que no sea un número o las letras [X, Y, Z].
 
@@ -732,7 +732,7 @@ class Dni
 
 ```
 
-De nuevo, posponemos la solución de ese problema a la siguiente iteración. El caso es que, con el último test, hemos definido ya todas las condiciones que debería cumplir una cadena de caracteres para poder ser un DNI aunque, recordemos, en realidad todavía no hemos implementado todo ese comportamiento ya que necesitamos un nuevo tests que nos obligue a ello. 
+De nuevo, posponemos la solución de ese problema a la siguiente iteración. El caso es que, con el último test, hemos definido ya todas las condiciones que debería cumplir una cadena de caracteres para poder ser un DNI aunque, recordemos, en realidad todavía no hemos implementado todo ese comportamiento ya que necesitamos un nuevo test que nos obligue a ello. 
 
 Ahora mos toca entrar en el terreno del algoritmo del validación en sí.
 
@@ -1029,7 +1029,7 @@ Failed asserting that exception of type "DomainException" matches expected excep
 .
 ```
 
-Pero falla porque se lanza una excepción distinta a la esperada, no porque ahora acepte cómo válidas cadenas que no lo son. Recuperamos la línea comentada y vamos a cambiar el test para reflejar el nuevo comportamiento que queremos: que falle con la excepción DomainException:
+Pero falla porque se lanza una excepción distinta a la esperada, no porque ahora acepte como válidas cadenas que no lo son. Recuperamos la línea comentada y vamos a cambiar el test para reflejar el nuevo comportamiento que queremos: que falle con la excepción `DomainException`:
 
 ```php
 <?php
@@ -1264,7 +1264,7 @@ class Dni
 }
 ```
 
-En este caso es bastante obvio cómo seguiría esta vía, así que vamos a empezar a implementar el algoritmo que, por otra parte, es bastante sencillo. Pero para ello, primero añadiremos otro test:
+En este caso es bastante obvio como seguiría esta vía, así que vamos a empezar a implementar el algoritmo que, por otra parte, es bastante sencillo. Pero para ello, primero añadiremos otro test:
 
 ```php
 public function testShouldConstructValidDNIEndingWithW() : void
@@ -1383,7 +1383,7 @@ class Dni
 }
 ```
 
-Como los tests siguen pasando, podemos hacer un par de experimentos para que el código sea más manejable. Por ejemplo, en lugar de un array podemos guardar el mapa como un string:
+Como los tests siguen pasando, podemos hacer un par de experimentos para que el código sea más manejable. Por ejemplo, en lugar de un *array* podemos guardar el mapa como un *string*:
 
 ```php
 $map = 'TRW';
@@ -1532,7 +1532,7 @@ class Dni
 }
 ```
 
-La verdad es que no es necesario hacer un nuevo test para implementar lo que queda, que es añadir las dos transformaciones que nos quedan. Hacemos eso y, manteniendo los tests en verde, refactorizamos un poco, extrayendo el método para el cálculo del resto, así como nos deshacemos de todos los números mágicos convirtiéndolos en constantes:
+La verdad es que no es necesario hacer un nuevo test para implementar lo que queda, que es añadir las dos transformaciones que nos faltan. Hacemos eso y, manteniendo los tests en verde, refactorizamos un poco, extrayendo el método para el cálculo del resto, así como nos deshacemos de todos los números mágicos convirtiéndolos en constantes:
 
 ```php
 <?php
@@ -1593,7 +1593,7 @@ class Dni
 
 El resultado es este Value Object, cuyo código está completamente cubierto por tests y responde a todos los requisitos que teníamos inicialmente.
 
-Nuestro siguiente paso sería terminar de testearlo usando, por ejemplo, data providers para verificar todos los casos de la tabla de correspondencias que mostramos antes, así como otros casos no válidos. Pero eso ya no sería una cuestión de TDD, sino de tests de QA.
+Nuestro siguiente paso sería terminar de testearlo usando, por ejemplo, *data providers* para verificar todos los casos de la tabla de correspondencias que mostramos antes, así como otros casos no válidos. Pero eso ya no sería una cuestión de TDD, sino de tests de QA.
 
 ## Resolución de *bugs* mediante TDD
 
@@ -1603,11 +1603,11 @@ Aunque TDD y el testing, en general, nos ayudan a desarrollar software muy sóli
 
 En un proyecto real, posiblemente nos encontraremos con infinidad de situaciones en las que una definición incompleta o imprecisa de una tarea nos pueda llevar a desplegar código que puede incluir defectos y generar resultados erróneos. 
 
-En nuestro ejemplo, las especificaciones no incluían criterios para actuar en el caso de que las cadenas candidatas a ser un DNI se presentasen en mayúsculas o minúsculas. Por tanto, el comportamiento de nuestro software en este caso no está determinado. Aunque en este caso pueda parecer evidente que hay un problema, la mayor parte de las veces  no se puede predecir y el error se descubre cuando algo falla en producción.
+En nuestro ejemplo, las especificaciones no incluían criterios para actuar en el caso de que las cadenas candidatas a ser un DNI se presentasen en mayúsculas o minúsculas. Por tanto, el comportamiento de nuestro software en este caso no está determinado. Aunque en este caso pueda parecer evidente que hay un problema, la mayor parte de las veces no se puede predecir y el error se descubre cuando algo falla en producción.
 
 ### Lo primero, un test que ponga en evidencia el problema
 
-Una vez que se ha identificado el problema, o un área de comportamiento del software que está indeterminada, lo primero es escribir un test que, fallando, ponga en evidencia que es necesario añadir código para lograr el comportamiento que se desea y solucionar el *bug*. Este test fallará si hemos definido bien la situación problemática.
+Una vez que se ha identificado el problema, o un área de comportamiento del software que está indeterminada, el primer paso es escribir un test que, fallando, ponga en evidencia que es necesario añadir código para lograr el comportamiento que se desea y solucionar el *bug*. Este test fallará si hemos definido bien la situación problemática.
 
 En nuestro ejemplo haremos un test que pruebe que un DNI escrito con letras minúsculas es válido. Además, queremos asegurarnos de que se normaliza a mayúsculas, por lo que comprobamos que la cadena contenga la letra en el caso adecuado.
 
@@ -1692,4 +1692,4 @@ Esta línea que hemos añadido soluciona el problema y también lo hace para los
 
 El test, por su parte, demuestra que esta circunstancia está contemplada por nuestro software.
 
-Así que TDD también nos sirve como forma de afrontar la corrección de errores y bugs al permitirnos expresar el comportamiento correcto en forma de test y poner en evidencia la necesidad de escribir el código necesario para que ese comportamiento sea realizado por el software, manteniendo el comportamiento descrito por los tests existentes. Además, el propio tests, nos certifica que el problema ha sido solucionado.
+Así que TDD también nos sirve como forma de afrontar la corrección de errores y bugs al permitirnos expresar el comportamiento correcto en forma de test y poner en evidencia la necesidad de escribir el código necesario para que ese comportamiento sea realizado por el software, manteniendo el ya descrito por los tests existentes. Además, el propio test nos certifica que el problema ha sido solucionado.
