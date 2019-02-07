@@ -1,10 +1,10 @@
-# Resolver problemas con baby-steps
+# Resolver problemas con *baby-steps*
 
 Una de las características de trabajar con metodología TDD es que nos forzamos a avanzar en pasos muy pequeños hacia la solución del problema. Estos pequeños pasos se conocen como *baby-steps*. De hecho, es una de la cosas que distinguen TDD de otras formas de escribir tests antes que el código.
 
 A muchas personas que comienzan a utilizar TDD les preocupa la dimensión de estos pasos. Dicho de otra forma: ¿cómo de pequeños deberían ser?
 
-No hay una respuesta definitiva. Kent Beck, en su libro [Test Driven Development by Example](https://www.amazon.es/Driven-Development-Example-Addison-Wesley-Signature/dp/0321146530) explica que los *baby-steps* se han de ir adaptando a la experiencia y a la dificultad del problema: En resumen:
+No hay una respuesta definitiva. Kent Beck, en su libro [Test Driven Development by Example](https://www.amazon.es/Driven-Development-Example-Addison-Wesley-Signature/dp/0321146530) explica que los *baby-steps* se han de ir adaptando a la experiencia y a la dificultad del problema. En resumen:
 
 * Con la experiencia en TDD aprendemos a juzgar qué tamaño de paso nos viene bien y la seguridad adquirida nos permite avanzar en saltos más largos.
 * Pero cuando un problema resulta complicado, una buena solución es tratar de avanzar en pasos más pequeños.
@@ -516,7 +516,7 @@ Ahora está un poquito mejor, así que: ¡sigamos adelante!
 
 En el sistema educativo español hay varias etapas educativas, como son Infantil, Primaria, Secundaria o Bachillerato. Cada etapa se divide, a su vez, en niveles educativos, que es lo que solemos llamar "cursos". Lo cierto es que para expresar con propiedad el curso en el que se encuentra un estudiante concreto siempre tendríamos que decir a qué etapa pertenece, como 3º de Primaria, 4º de Secundaria, 1º de Infantil, etc. 
 
-Pero no estamos aquí para diseñar aplicaciones educativas sino para explicar TDD. Sin embargo, la parrafada anterior es necesaria para entender que ahora nos toca generar el fragmento de ruta que representa la etapa educativa, y esa información la podremos obtener sabiendo curso en el que se encuentre matriculado nuestro estudiante, Por tanto, necesitaremos obtener un objeto Student al cual preguntarle todos esos datos.
+Pero no estamos aquí para diseñar aplicaciones educativas sino para explicar TDD. Sin embargo, la parrafada anterior es necesaria para entender que ahora nos toca generar el fragmento de ruta que representa la etapa educativa, y esa información la podremos obtener sabiendo el curso en el que se encuentre matriculado nuestro estudiante, Por tanto, necesitaremos obtener un objeto `Student` al cual preguntarle todos esos datos.
 
 En nuestro diseño, seguramente **Student** sea un agregado, una Entidad que incluye diversas entidades y *value objects* relacionados con una determinada identidad. Para obtener nuestro estudiante concreto preguntaremos a un repositorio de estudiantes por aquél cuya identidad viene especificada en la request. Para simplificar, vamos a imaginar que nuestra clase **Student** es más o menos así (sí, soy consciente de que simplifico mucho):
 
@@ -558,7 +558,7 @@ class Student
     /**
      * @return string
      */
-    public function Id() : string
+    public function id() : string
     {
         return $this->id;
     }
@@ -566,7 +566,7 @@ class Student
     /**
      * @return string
      */
-    public function Name() : string
+    public function name() : string
     {
         return $this->name;
     }
@@ -574,7 +574,7 @@ class Student
     /**
      * @return string
      */
-    public function Level() : string
+    public function level() : string
     {
         return $this->level;
     }
@@ -582,7 +582,7 @@ class Student
     /**
      * @return string
      */
-    public function Stage() : string
+    public function stage() : string
     {
         return $this->stage;
     }
@@ -590,7 +590,7 @@ class Student
     /**
      * @return string
      */
-    public function Group() : string
+    public function group() : string
     {
         return $this->group;
     }
@@ -638,7 +638,7 @@ Por supuesto, no va a pasar.
 
 Ahora tenemos la habitual disyuntiva de hacer la implementación más simple y obvia que es devolver el valor que esperamos y escribir un nuevo test que nos obligue a implementar una solución general; o bien ir directamente a esa solución general.
 
-En esta ocasión me voy a decantar por la primera opción porque, como se puede apreciar, se van a romper los test anteriores, por lo que prefiero solucionar eso antes. Pero para ello, necesito que este test pase.
+En esta ocasión me voy a decantar por la primera opción porque, como se puede apreciar, se van a romper los tests anteriores, por lo que prefiero solucionar eso antes. Pero para ello, necesito que este test pase.
 
 ```php
 class ClassifyDocument
@@ -744,7 +744,7 @@ Nuestra última implementación inflexible necesita un masaje… quiero decir: n
 
 El test falla y para hacerlo pasar necesitamos obtener de algún sitio la etapa educativa. Como hemos visto antes, podemos averiguarla preguntando a **Student** el cual, a su vez, podemos obtener pidiéndolo al **StudentRepository** mediante su **Id**, el cual conocemos.
 
-Para ello, nos vamos al método setUp generamos y montamos el *stub*.
+Para ello, nos vamos al método `setUp`, generamos y montamos el *stub*.
 
 ```php
     public function setUp()
@@ -844,7 +844,7 @@ class ClassifyDocument
         $student = $this->studentRepository->byId(
             $classifyDocumentRequest->studentId()
         );
-        return $schoolYear.'/'.$student->Stage();
+        return $schoolYear.'/'.$student->stage();
     }
 }
 ```
@@ -907,7 +907,7 @@ class ClassifyDocument
         $student = $this->studentRepository->byId(
             $classifyDocumentRequest->studentId()
         );
-        return $schoolYear.'/'.$student->Stage().'/'.$student->Level();
+        return $schoolYear.'/'.$student->stage().'/'.$student->level();
     }
 }
 ```
@@ -952,8 +952,8 @@ class ClassifyDocument
 
         $route = [
             $schoolYear,
-            $student->Stage(),
-            $student->Level()
+            $student->stage(),
+            $student->level()
         ];
         return implode(DIRECTORY_SEPARATOR, $route);
     }
@@ -1023,9 +1023,9 @@ class ClassifyDocument
 
         $route = [
             $schoolYear,
-            $student->Stage(),
-            $student->Level(),
-            $student->Group()
+            $student->stage(),
+            $student->level(),
+            $student->group()
         ];
         return implode(DIRECTORY_SEPARATOR, $route);
     }
@@ -1036,7 +1036,7 @@ class ClassifyDocument
 
 Para nuestro ejemplo no he querido complicarme mucho, por lo que nos vamos a encontrar con que el resto de elementos de la ruta son fáciles de implementar y la forma de hacerlo ahora es bastante evidente.
 
-Por esa razón, no voy a alargar más el artículo y voy a pasar directamente al resultado final y las conclusiones.
+Por esa razón, no voy a alargar más el capítulo y voy a pasar directamente al resultado final y las conclusiones.
 
 En todo caso, para llegar al final no tenemos más que seguir con nuestro ciclo de siempre: test que falla, implementar hasta conseguir que pase, refactorizar y seguir. El punto final lo tendremos cuando el test de aceptación pase.
 
@@ -1107,7 +1107,6 @@ class ClassifyDocumentAcceptanceTest extends TestCase
     }
 }
 ```
-En cualquier caso, puedes ver el código en [este repositorio](https://github.com/franiglesias/dojo). Seguramente podrás observar algunos refinamientos y mejoras de nombres que no están reflejados en el código de este artículo.
 
 ## Conclusiones
 
@@ -1118,8 +1117,8 @@ Para que podamos hablar de TDD, los tests tienen que generarnos la necesidad de 
 Si haces TDD a ritmo de *baby steps* de manera que cada paso te fuerce a implementar la solución más simple, primero, y a refactorizar en busca de un buen diseño, lo cierto es que puedes tener que hacer bastantes tests:
 
 - El primero para hacer una implementación "tonta" e inflexible: el típico devolver exactamente lo que esperas.
-- El segundo para provocar que la implementación inflexible falle e implementar una solución sencilla, aunque no sea del todo genérica.
-- Un tercer test que ponga en cuestión la solución anterior y nos lleve a una más genérica. n este punto seguramente ya podríamos empezar a refactorizar para mejorar el diseño
+- El segundo para provocar que la implementación inflexible falle y forzarte a buscar una solución sencilla, aunque no sea del todo genérica.
+- Un tercer test que ponga en cuestión la solución anterior y nos lleve a una más genérica. En este punto seguramente ya podríamos empezar a refactorizar para mejorar el diseño
 - Además, podrían haber aparecido casos límite que no pueden tratarse con la solución general y tendrían un test específico.
 
 En cualquier caso esto va a depender del tamaño de los *baby steps* que decidamos tomar, que dependen de nuestra experiencia, del conocimiento que tengamos de la tarea, etc.
