@@ -2,7 +2,7 @@
 
 Los principios de diseño están muy relacionados con el testing de tal forma que son tanto objetivo de diseño como herramienta para lograrlo.
 
-En el capítulo anterior sobre test doubles, hicimos un repaso de los mismos y sus tipos. En este, reflexionaremos sobre la aplicación de principios de diseño y el uso de test-doubles.
+En el capítulo anterior sobre *test doubles*, hicimos un repaso de los mismos y sus tipos. En este, reflexionaremos sobre la aplicación de principios de diseño y el uso de *test doubles*.
 
 Las consecuencias sobre la escritura de tests se podrían sintetizar en dos beneficios principales:
 
@@ -37,7 +37,7 @@ El principio entonces se aplica en el sentido de que un objeto o una clase no de
 
 ### Sustitución de Liskov
 
-El principio de sustitución de Liskov está en la base de nuestra posibilidad de realizar test doubles.
+El principio de sustitución de Liskov está en la base de nuestra posibilidad de realizar *test doubles*.
 
 Este principio dice que en una jerarquía de clases, las clases base y las derivadas deben ser intercambiables, sin tener que cambiar el código que las usa.
 
@@ -73,13 +73,13 @@ Cualquier repetición en el código debería llevarnos a un refactor con el obje
 
 Este principio no se aplica sólo al código probado, sino también a los propios tests y, por supuesto, a los test doubles.
 
-El principio DRY no tiene que buscarse necesariamente por diseño previo, sino que podemos aplicarlo a medida que detectamos repeticiones en nuestro código. Por ejemplo, si observamos que estamos usando el mismo test-double por tercera vez, puede ser el momento de moverlo a una propiedad del Test Case e inicializarlo en el setUp.
+El principio DRY no tiene que buscarse necesariamente por diseño previo, sino que podemos aplicarlo a medida que detectamos repeticiones en nuestro código. Por ejemplo, si observamos que estamos usando el mismo *test double* por tercera vez, puede ser el momento de moverlo a una propiedad del Test Case e inicializarlo en el setUp.
 
 ### YAGNI: No lo vas a necesitar
 
 El principio Yagni nos recuerda que no deberíamos desarrollar aquello que no necesitamos ahora.
 
-Por lo tanto, nuestros tests doubles tienen que responder a la necesidad específica que tengamos en el momento de crearlo. Un test double puede comenzar siendo un simple dummy en un test para pasar a ser un Mock en otro.
+Por lo tanto, nuestros *tests doubles* tienen que responder a la necesidad específica que tengamos en el momento de crearlo. Un test double puede comenzar siendo un simple *dummy* en un test para pasar a ser un `mock` en otro.
 
 ## Un ejemplo
 
@@ -158,17 +158,17 @@ class SendNotificationServiceTest extends TestCase
 
 ```
 
-Tanto `Mailer` como `Message` son interfaces, de modo que el servicio no depende de ninguna implementación concreta. En el proyecto podríamos estar usando SwiftMailer, por poner un ejemplo, pero nada nos impediría utilizar una implementación que ponga mensaje en Twitter, Slack, Telegram..., con tal de escribir un Adapter que cumpla la interfaz de `Mailer`.
+Tanto `Mailer` como `Message` son interfaces, de modo que el servicio no depende de ninguna implementación concreta. En el proyecto podríamos estar usando `SwiftMailer`, por poner un ejemplo, pero nada nos impediría utilizar una implementación que ponga mensaje en Twitter, Slack, Telegram..., con tal de escribir un Adapter que cumpla la interfaz de `Mailer`.
 
 En el test la implementación concreta nos da igual. Nosotros sólo queremos que nuestro servicio intente enviar el mensaje y devuelva una excepción si no puede hacerlo.
 
-Al aplicar la Inversión de Dependencias, es decir, al depender de interfaces, podemos preparar *Stubs* que reproduzcan el comportamiento que necesitamos sin mucho esuerzo. En nuestro caso, que el mensaje se ha enviado correctamente (el Mailer devolvería true).
+Al aplicar la Inversión de Dependencias, es decir, al depender de interfaces, podemos preparar *Stubs* que reproduzcan el comportamiento que necesitamos sin mucho esfuerzo. En nuestro caso, que el mensaje se ha enviado correctamente (el Mailer devolvería true).
 
 Por otra parte, está claro que `Mailer` sólo tiene una responsabilidad, que es enviar mensajes, por lo que su comportamiento es sencillo de simular. Y también debería verse que se cumplen los principios Abierto/Cerrado y Liskov. El hecho de que sólo nos interese un método en la interfaz de `Mailer`, nos dice que también aplicamos Segregación de Interfaces: nuestras implementaciones concretas podrían tener otros métodos, pero para esta situación sólo queremos uno.
 
-`Message` aquí actúa como dummy, no queremos que haga nada en particular, pero lo necesitamos para cumplir la interface.
+`Message` aquí actúa como *dummy*, no queremos que haga nada en particular, pero lo necesitamos para cumplir la interfaz.
 
-He dejado las variables para que el test sea más fácil de leer, pero podrían eliminarse haciendo un **inline variable** dado que no tenemos que hacer nada con ellas. Los test así quedarían:
+He dejado las variables para que el test sea más fácil de leer, pero podrían eliminarse haciendo un **inline variable** dado que no tenemos que hacer nada con ellas. Los tests quedarían así:
 
 ```php
 class SendNotificationServiceTest extends TestCase
@@ -227,7 +227,7 @@ Lo mismo ocurre respecto al principio YAGNI. Nuestro servicio no tiene que estar
 
 ## En resumen
 
-Los principio de diseño no rigen sólo para el código de producción, sino que deberían impregnar todo el desarrollo, incluyendo los test y los test doubles cuando los necesitemos.
+Los principio de diseño no rigen sólo para el código de producción, sino que deberían impregnar todo el desarrollo, incluyendo los test y los *test doubles* cuando los necesitemos.
 
 
 
