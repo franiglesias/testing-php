@@ -98,7 +98,7 @@ class LuhnValidator
 
 ```
 
-Y ahora el test pasa.
+Y ahora el test pasa. Como habíamos visto en el capítulo anterior, nos basta con hacer pasar el test, de modo que posponemos la decisión sobre cómo debería pasar.
 
 ## Buscando un nuevo ejemplo
 
@@ -123,7 +123,7 @@ Mi siguiente ejemplo será: "00000000001".
 
 Pero, un momento, ¿sería un número válido o no? Hemos quedado en que no puede serlo.
 
-Lo cierto es que si aplicamos el algoritmo vemos que nuestro ejemplo no sería válido, por lo tanto, nuestro un test en el estado actual del código no pasaría, que es lo que queremos.
+Lo cierto es que si aplicamos el algoritmo vemos que nuestro ejemplo no sería un número de tarjeta válido, por lo tanto, nuestro un test en el estado actual del código no pasaría, que es lo que queremos.
 
 ¿Y por qué este ejemplo en concreto y no otro?
 
@@ -184,7 +184,7 @@ class LuhnValidator
 
 ```
 
-Este ha sido un primer q, y puede que no sea suficiente para demostrar todo lo que queremos. Pero lo interesante es que estamos avanzando en pequeños pasos, que es la intención del ejercicio.
+Hemos resuelto un primer problema, que es asegurarnos de que la cadena es invertida, y puede que no sea suficiente para demostrar todo lo que queremos. Pero lo interesante es que estamos avanzando en pequeños pasos, que es la intención del ejercicio.
 
 Tal cual está el código en este momento no tendríamos por qué hacer mucho más. A primera vista tendríamos la opción de realizar un pequeño refactor:
 
@@ -208,7 +208,7 @@ class LuhnValidator
 
 ## Los tests deben forzar implementaciones
 
-Una premisa de TDD es que cualquier código de producción sólo puede crearse como **respuesta a un test que falle**, que es como decir a una característica no implementada todavía. Si ahora escribimos un nuevo test que pase no podríamos modificar la implementación. No es que esté "prohibido", es simplemente que en este momento si escribimos un nuevo test que pasa, no nos dice nada acerca de qué deberíamos implementar. Únicamente nos confirma lo que ya sabemos. En todo caso, este tipo de tests, que recién escrito ya pasa, nos puede servir como test de **regresión**: si algún día falla nos está indicando que algo está alterando el algoritmo. 
+Una premisa de TDD es que cualquier código de producción sólo puede crearse como **respuesta a un test que falle**, que es como decir "a una característica no implementada todavía". Si ahora escribimos un nuevo test que pase no podríamos modificar la implementación. No es que esté "prohibido", es simplemente que en este momento si escribimos un nuevo test que pasa, no nos dice nada acerca de qué deberíamos implementar. Únicamente nos confirma lo que ya sabemos. En todo caso, este tipo de tests, que recién escrito ya pasa, nos puede servir como test de **regresión**: si algún día falla nos está indicando que algo ha alterado el algoritmo. 
 
 Lo que nos interesa ahora mismo es introducir alguna variación en los ejemplos que fuerce un cambio en la implementación a fin de darle cobertura. En concreto queremos sumar los dígitos en las posiciones impares.
 
@@ -334,7 +334,7 @@ class LuhnValidator
 
 ## Buscando un algoritmo más general
 
-Todavía no tenemos mucho para forzarnos a escribir un algoritmo más general. Para eso necesitamos otro test, el cual debe fallar si queremos que nos sirva. El código nos pedirá un algoritmo más general cuando podamos observar repeticiones o algún tipo de regularidad que podamos expresar de otra manera.
+Todavía no tenemos mucho como para forzarnos a escribir un algoritmo más general. Para eso necesitamos otro test, el cual debe fallar si queremos que nos sirva. El código nos estará indicado que necesitamos un algoritmo más general cuando podamos observar repeticiones o algún tipo de regularidad que podamos expresar de otra manera.
 
 Nosotros vamos a proponer el siguiente test, que nos fuerza a considerar un tercer dígito en la validación. Ahora que ya he establecido que el algoritmo se basa en la suma, puedo volver a mi estrategia minimalista anterior. He aquí el ejemplo (a partir de ahora sólo voy a poner el test específico). Aprovecho para cambiar un poco la forma de denominar los tests para que sean más claros sobre lo que ocurre
 
@@ -368,7 +368,7 @@ class LuhnValidator
 
 ```
 
-Con este cambio, el test pasa. Y lo bueno es que ya empezamos a vislumbrar una posibilidad de refactor: el cálculo de la suma de los dígitos impares (que en la representación index0 de los arrays de PHP van en los lugares pares, para liarla más) empieza a ser difícil de leer, además de repetitivo. Podríamos empezar extrayéndolo a un método, para explicitarlo:
+Con este cambio, el test pasa. Y lo bueno es que ya empezamos a vislumbrar una posibilidad de refactor: el cálculo de la suma de los dígitos impares (que en la representación *index0* de los arrays de PHP van en los lugares pares, para liarla más) empieza a ser difícil de leer, además de repetitivo. Podríamos empezar extrayéndolo a un método, para explicitarlo:
 
 ```php
 <?php
@@ -582,7 +582,7 @@ class LuhnValidator
 }
 ```
 
-Podemos seguir usando el mismo patrón que antes, moviendo el dígito a la siguiente posición par, un test cada vez. Para abreviar el ejemplo, voy a poner sólo los tests que he ido haciendo (te doy mi palabra de que he llegado hasta aquí haciendo baby steps):
+Podemos seguir usando el mismo patrón que antes, moviendo el dígito a la siguiente posición par, un test cada vez. Para abreviar el ejemplo, voy a poner sólo los tests que he ido haciendo (te doy mi palabra de que he llegado hasta aquí haciendo *baby steps*):
 
 ```php
     public function testShouldConsiderSecondPosition(): void
