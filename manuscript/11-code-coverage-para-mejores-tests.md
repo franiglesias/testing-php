@@ -1,10 +1,10 @@
 # Usar el code coverage para mejorar los tests
 
-El code coverage es una métrica que conviene coger con pinzas y examinar con mucho cuidado.
+El **code coverage** es una métrica que conviene coger con pinzas y examinar con mucho cuidado.
 
-En principio, el code coverage nos indica las líneas de código cubiertas por la ejecución de tests y lo deseable sería, sobre el papel, acercarnos lo más posible al 100%.
+En principio, el *code coverage* nos indica las líneas de código cubiertas por la ejecución de tests y lo deseable sería, sobre el papel, acercarnos lo más posible al 100%.
 
-Por desgracia, una medida alta de coverage no garantiza que los tests prueben adecuadamente el comportamiento de las unidades de softwware. En ese sentido, es muy fácil incluso falsear la métrica con tests que ejerciten las líneas de código pero que realmente no demuestren gran cosa sobre el mismo.
+Por desgracia, una medida alta de coverage no garantiza que los tests prueben adecuadamente el comportamiento de las unidades de software. En ese sentido, es muy fácil incluso falsear la métrica con tests que ejerciten las líneas de código pero que realmente no demuestren gran cosa sobre su comportamiento.
 
 Además, ni siquiera una cobertura del 100% garantiza realmente que todos los casos han sido probados.
 
@@ -16,17 +16,17 @@ En todo caso, y a pesar de estas observaciones, mejorar el nivel de cobertura de
 
 Además, el análisis del code coverage es una buena herramienta para ayudarnos a escribir mejores tests, especialmente en situaciones de refactoring de código legacy.
 
-Así que he extraído algún material de un [artículo anterior](/ejercicio-de-refactor-1) y las desarrollo aquí un poco mejor.
+Así que he extraído algún material de un [viejo artículo del blog](/ejercicio-de-refactor-1) y lo desarrollo aquí un poco mejor.
 
 ## Code coverage y refactoring
 
-Además de lo que podríamos denominar análisis "a ojímetro" y del uso del depurador, las herramientas de Code Coverage nos pueden ayudar mucho en el refactoring al permitirnos detectar aquellas partes del código cuyo comportamiento no hayamos descrito todavía.
+Además de lo que podríamos denominar análisis "a ojímetro" y del uso del depurador, las herramientas de code coverage nos pueden ayudar mucho en el refactoring al permitirnos detectar aquellas partes del código cuyo comportamiento no hayamos descrito todavía.
 
-PHPUnit nos proporciona todo lo necesario, pero primero tendremos que condigurarlo:
+**phpunit** nos proporciona todo lo necesario, pero primero tendremos que condigurarlo:
 
 ### Preparar el entorno para disponer de análisis de Code Coverage
 
-Por una parte, vamos a crear un archivo de configuración de phpunit. Podemos hacerlo mediante el siguiente comando en shell en la raíz del proyecto:
+Por una parte, vamos a crear un archivo de configuración de **phpunit**. Podemos hacerlo mediante el siguiente comando en shell en la raíz del proyecto:
 
 ```bash
 bin/phpunit --generate-configuration
@@ -75,7 +75,7 @@ Con esto, podremos ejecutar `phpunit` con el informe de coverage que más nos co
 bin/phpunit --coverage-html ./coverage
 ```
 
-La línea anterior generará un informe de cobertura en Html creando la carpeta coverage si no existe. Abriendo el index.html en un navegador podremos acceder a él.
+La línea anterior generará un informe de cobertura en HTML creando la carpeta `coverage` si no existe. Abriendo el `index.html` en un navegador podremos acceder a él.
 
 En PHPStorm podemos crear una configuración para test indicando simplemente que use el archivo de configuración alternativo que acabamos de crear. Ejecutando los tests con coverage, el propio IDE nos mostrará qué líneas están cubiertas y cuántas no, usando colores verdes y rojo respectivamente. Además, nos mostrará el número de veces que se ejecuta cada línea.
 
@@ -95,7 +95,7 @@ En el caso de una línea o bloque cuya ejecución depende de una combinación de
 
 Veámoslo más en detalle:
 
-**Condicion1 AND Condicion2:** para ejecutar un bloque controlado por esta condicional se tiene que dar un caso en el que se cumplen ambas partes. Por otro lado, también tendríamos que probar el caso de que no se cumple toda la condicional. 
+**Condicion1 AND Condicion2**: para ejecutar un bloque controlado por esta condicional se tiene que dar un caso en el que se cumplen ambas partes. Por otro lado, también tendríamos que probar el caso de que no se cumple toda la condicional. 
 
 Por tanto, para garantizar que esté bien cubierto, y sabiendo que el bloque ha de ejecutarse como mínimo una vez, el número de hits de la expresión condicional ha de ser mayor o igual a dos: en un caso se cumple la expresión condicional y en otro no se cumple. En la siguiente tabla se pueden ver todos los casos:
 
@@ -106,7 +106,7 @@ Por tanto, para garantizar que esté bien cubierto, y sabiendo que el bloque ha 
 | false | true | false | No |
 | false | false | false | No |
 
-**Condicion1 OR Condicion2:** en este caso el bloque bajo la expresión condicional se ejecutará si al menos una de las dos condiciones se cumple. Para cubrirlo completamente, necesitamos que la expresión se ejecute cuatro veces y el bloque que controla, lo haga al menos tres veces.
+**Condicion1 OR Condicion2**: en este caso el bloque bajo la expresión condicional se ejecutará si al menos una de las dos condiciones se cumple. Para cubrirlo completamente, necesitamos que la expresión se ejecute cuatro veces y el bloque que controla, lo haga al menos tres veces.
 
 | Condición 1 | Condición 2 | Resultado | ¿Se ejecuta? |
 | :---: | :---: | :---: | :---: |
