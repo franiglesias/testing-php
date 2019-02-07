@@ -9,7 +9,7 @@ Escribo bastantes tests en mi trabajo y tiendo a hacerlo en modo TDD siempre que
 
 De este segundo aspecto es de lo que trata este capítulo, en el que intento recoger algunas ideas con las que estoy trabajando últimamente.
 
-Buena parte de esto se apoya en la charla [Be solid my tests](https://www.youtube.com/watch?v=6t2Z7uf16F4) de mi compañera y team lead en [HolaLuz](https://twitter.com/holaluzeng?lang=es), [Mavi Jiménez](https://www.youtube.com/watch?v=yvMGWCYqT04), que explica muy bien por qué y cómo nuestros tests tienen que ser SOLID, además de sólidos, y propone algunas técnicas prácticas para lograrlo.
+Buena parte de esto se apoya en la charla [Be solid my tests](https://www.youtube.com/watch?v=6t2Z7uf16F4) de mi compañera y manager en [HolaLuz](https://twitter.com/holaluzeng?lang=es), [Mavi Jiménez](https://www.youtube.com/watch?v=yvMGWCYqT04), que explica muy bien por qué y cómo nuestros tests tienen que ser SOLID, además de sólidos, y propone algunas técnicas prácticas para lograrlo.
 
 Después de ver la charla, puedes seguir leyendo.
 
@@ -35,7 +35,7 @@ public function testShouldNotAcceptStringsLongerThanAMaximumOfCharacters()
 
 La razón por la que no pongo un número concreto es que ese número es un detalle que podría cambiar. En la formulación *better* hablo de un concepto en lugar de una concreción por lo que el enunciado del test se seguiría cumpliendo incluso si el máximo cambiase o fuese configurable.
 
-En lo posible evito introducir detalles técnicos, aunque a veces es complicado, como en el caso anterior en el que menciono String, pero prefiero escribir tests que no revelen la implementación.
+En lo posible evito introducir detalles técnicos, aunque a veces es complicado, como en el caso anterior en el que menciono `string`, pero prefiero escribir tests que no revelen la implementación.
 
 Supongamos un repositorio de estudiantes en una aplicación de gestión educativa:
 
@@ -51,8 +51,8 @@ public function testShouldRetrieveStudentsInAGivenClass()
 
 El caso *Not so good* tiene dos defectos principales:
 
-* En primer lugar dice que se prueba el método `FindAllByClass`, lo que asume que existe ese método. Si en algún momento cambiamos el nombre del mismo, el test empezará a mentir.
-* En segundo lugar, no dice qué se espera que suceda, lo cual es la razón de ser del test. Tan sólo dice que se prueba, tanto da que devuelva estudiantes, como chorizos o billetes de metro.
+* En primer lugar dice que se prueba el método `findAllByClass`, lo que asume que existe ese método. Si en algún momento cambiamos su nombre, el test empezará a mentir.
+* En segundo lugar, no dice qué se espera que suceda, lo cual debería ser la razón de ser del test. Tan sólo dice qué es lo que se prueba, tanto da que devuelva estudiantes, como chorizos o billetes de metro.
 
 El caso *Better* ataca ambos problemas:
 
@@ -61,7 +61,7 @@ El caso *Better* ataca ambos problemas:
 
 ### Los tests dicen lo que debería ocurrir
 
-El uso de `Should` como elemento del nombre del test merece su mención. De hecho me gustaría poder eliminar el prefijo test, que es lo que hace que ~~los test frameworks~~ PHPUnit identifique los métodos que se tienen que ejecutar. Hay un par de soluciones:
+El uso de `Should` como elemento del nombre del test merece su mención. De hecho me gustaría poder eliminar el prefijo `test`, que es lo que hace que ~~los test frameworks~~ **phpunit** identifique los métodos que se tienen que ejecutar. Hay un par de soluciones:
 
 Usar anotaciones:
 
@@ -82,13 +82,13 @@ En este mismo sentido, me gusta la sintaxis de **phpspec**, que usa `it` como pr
 public function it_should_create_a_user_from_retrieved_data();
 ```
 
-En cualquier caso, me gusta Should como prefijo porque significa "debería", indicando que la unidad probada debería hacer algo y, por tanto, si no lo hace es que está mal.
+En cualquier caso, me gusta `Should` como prefijo porque significa "debería", indicando que la unidad probada debería hacer algo y, por tanto, si no lo hace es que está mal.
 
 ```php
 public function testShouldCalculateTheDiscountedPrice()
 ```
 
-He visto alguna propuesta de utilizar `Should` como sufijo en el nombre del `TestCase`, cosa que no estoy seguro de que pudiese funcionar en PHPUnit, pero hay que reconocer que molaría:
+He visto alguna propuesta de utilizar `Should` como sufijo en el nombre del `TestCase`, cosa que es posible configurar:
 
 ```php
 class MyClassShould extends TestCase
@@ -99,19 +99,20 @@ class MyClassShould extends TestCase
         // given, when, then code...
     }
 }
-
 ```
+
+En este sentido el principal obstáculo para adoptar estar últimas prácticas está en que las convenciones ya están muy establecidas y son difíciles de cambiar.
 
 ### Los tests certifican que cumplimos las reglas de negocio
 
-Otra estrategia de naming que me gusta tiene que ver con el cumplimiento de las reglas de negocio y de las invariantes.
+Otra estrategia de *naming* que me gusta tiene que ver con el cumplimiento de las reglas de negocio y de las invariantes.
 
 Es decir, deberíamos tener un test que verifique que se cumplen las reglas de negocio que definen lo que nuestros objetos de dominio pueden y no pueden hacer, o los criterios que los hacen válidos.
 
 Por ejemplo, este test para una factoría de `Commercial` es bastante claro:
 
 ```php
-public function testShouldNotCreateASCommercialManagerWithoutCommercialAdmin
+public function testShouldNotCreateACommercialManagerWithoutCommercialAdmin
 {
 }
 ```
@@ -132,7 +133,7 @@ Por tanto, una buena forma de afrontar esto es redactar una `checklist` de regla
 
 Uno de los defectos que me gustaría evitar en los tests es el de la aparente arbitrariedad de los valores de los ejemplos y su falta de significatividad. Quiero decir que, para alguien que lea el test puede resultar difícil comprender en una primera lectura por qué hemos elegido probar unos valores y no otros y qué significado tienen.
 
-Existen técnicas para seleccionar los valores que usamos para nuestros tests, como pueden ser *Equivalence Class Partitioning* o *Boundary Value Analysis*, que se utilizan para asegurarnos de que los tests cubren todos los escenarios posibles con el mínimo de pruebas, lo que resuelve el primer problema estableciendo una metodología.
+Existen técnicas para seleccionar los valores que usamos para nuestros tests, como pueden ser *Equivalence Class Partitioning* o *Boundary Value Analysis*, de las que hemos hablado en los primeros capítulos, que se utilizan para asegurarnos de que los tests cubren todos los escenarios posibles con el mínimo de pruebas, lo que resuelve el primer problema estableciendo una metodología.
 
 Por ejemplo, **Equivalence Class Partitioning** es una técnica muy simple con la que agrupamos todos los casos posibles en **clases** de tal modo que todos los valores de una clase serán equivalentes entre sí, por lo que cualquiera de ellos es representativo de la clase en la que está categorizado. En consecuencia, podemos hacer un test para probar cada una de esas clases en lugar de intentar comprobar todos los valores posibles.
 
@@ -325,7 +326,7 @@ Lo que hemos hecho ha sido extraer la preparación de los dobles de los reposito
 
 Obviamente, en un proyecto real, es posible que pudiésemos extraer gran parte de la preparación a métodos `setUp`, incluyendo la instanciación del servicio, o incluso parametrizar de algún modo los métodos `prepare*`, pero creo que la idea queda clara en cuanto a que el cuerpo del test tenga líneas con un mismo nivel de abstracción [^702].
 
-[^702]: Los Mocks me plantean un problema, pues se llevan las aserciones fuera del flujo Given-When-Then del test hasta el punto de tener tests sin aserciones explícitas y, de hecho, acoplan el test a la implementación del *subject under test*, algo que me fastidia sobremanera porque revientan cuando necesitas hacer un cambio.
+[^702]: Los `Mocks` me plantean un problema, pues se llevan las aserciones fuera del flujo Given-When-Then del test hasta el punto de tener tests sin aserciones explícitas y, de hecho, acoplan el test a la implementación del *subject under test*, algo que me fastidia sobremanera porque revientan cuando necesitas hacer un cambio.
 
 ## Esperar excepciones
 
@@ -368,9 +369,9 @@ public function testShouldFailIfStudentDoesNotExist()
 
 En parte, me inclino más por la primera opción, precisamente por el carácter de excepcionalidad.
 
-## Métodos assert
+## Métodos `assert*`
 
-De vez en cuando, si necesito hacer una aserción que tiene alguna complejidad o necesita alguna preparación escribo un método con nombre assert para encapsularla. Por ejemplo, este método para comparar dos arrays independientemente del orden:
+De vez en cuando, si necesito hacer una aserción que tiene alguna complejidad o necesita alguna preparación escribo un método con nombre `assert*` para encapsularla. Por ejemplo, este método para comparar dos arrays independientemente del orden:
 
 ```php
 protected function assertEqualsArrays($expected, $actual, $message = null)
