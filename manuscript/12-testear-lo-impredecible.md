@@ -190,7 +190,7 @@ Si tenemos un conjunto finito de n símbolos, la posibilidad de extraer uno cual
 
 Ahora bien este test no sólo es poco práctico para nuestro caso, sino que además lo que realmente testea es un hipotético generador aleatorio de símbolos, el cual podría ser utilizado por nuestro generador de contraseñas. Este se encargará de pedir al generador aleatorio los símbolos que vaya necesitando y componer la contraseña con ellos.
 
-De momento no vamos a crear el generador aleatorio, pero sí crearemos una interfaz para poder utilizar un test double suyo.
+De momento no vamos a crear el generador aleatorio, pero sí crearemos una interfaz para poder utilizar un *test double* suyo.
 
 ```php
 namespace TalkingBit\Readable;
@@ -412,7 +412,7 @@ interface RandomnessEngine
 
 Ya tenemos esta interfaz, suficiente para generar nuestro test double.
 
-Ahora modificaremos nuestros tests para forzar que RandomSyllableGenerator lo utilice. Empecemos por el que está fallando:
+Ahora modificaremos nuestros tests para forzar que `RandomSyllableGenerator` lo utilice. Empecemos por el que está fallando:
 
 ```php
     public function testWhenTwoVowelsTheyMustFormDiphthong()
@@ -475,7 +475,7 @@ Con este cambio, hemos conseguido implementar el grupo vocálico obligatorio en 
 
 Y ahora que tenemos los tests en verde, es momento de refactorizar. Entre otras cosas porque nuestros tests no son buenos.
 
-Veamos: nuestros tests se basan en dos especificaciones que ahora hemos resumido en una sola. Por lo tanto, debería bastarnos con un único test que compruebe si el grupo vocálico es válido ya que podemos asumir que el RandonEngine, que estamos doblando, siempre nos va a permitir escoger un grupo válido de las opciones disponibles.
+Veamos: nuestros tests se basan en dos especificaciones que ahora hemos resumido en una sola. Por lo tanto, debería bastarnos con un único test que compruebe si el grupo vocálico es válido ya que podemos asumir que el `RandonEngine`, que estamos doblando, siempre nos va a permitir escoger un grupo válido de las opciones disponibles.
 
 Por tanto, unificamos los tests en uno sólo, y aprovechamos para dejar el código un poco más limpio:
 
@@ -506,11 +506,11 @@ class RandomSyllableGeneratorTest extends TestCase
 }
 ```
 
-#### Programando el mock de `RandomnessEngine`
+#### Programando el *mock* de `RandomnessEngine`
 
-Nos queda un punto problemático: ¿qué valor debe retornar el mock de `RandomnessEngine`?
+Nos queda un punto problemático: ¿qué valor debe retornar el *mock* de `RandomnessEngine`?
 
-En el test hemos puesto que devuelva 4, por ningún motivo especial. Podemos asumir que un `RandomnessEngine` devolverá siempre valores entre los límites que le indicamos, así que 4 es un valor tan bueno como cualquier otro entre 0 y 18.
+En el test hemos puesto que devuelva `4`, por ningún motivo especial. Podemos asumir que un `RandomnessEngine` devolverá siempre valores entre los límites que le indicamos, así que 4 es un valor tan bueno como cualquier otro entre 0 y 18.
 
 En realidad, lo que nos preocupa aquí es que `RandomSyllableGenerator` llame al `RandomnessEngine` con los valores correctos.
 
@@ -936,7 +936,7 @@ En esencia, **RandomnessEngine** es un generador de números aleatorios. Como no
 * Ser mayores o iguales que un límite inferior
 * Ser menores o iguales que un límite superior
 
-Como **RandomnessEngine** es una interfaz vamos a crear una implementación de la misma, que yo voy a llamar **SystemRandomnessEngine**. Otra alternativa, sería convertir la interfaz en clase si es que preveemos que será la única implementación.
+Como **RandomnessEngine** es una interfaz vamos a crear una implementación de la misma, que yo voy a llamar **SystemRandomnessEngine**. Otra alternativa, sería convertir la interfaz en clase si es que prevemos que será la única implementación.
 
 Como ya sabemos, forzar un tipo de retorno hace que el test de tipo sea redundante, por lo que vamos directamente al primer requisito:
 
@@ -949,7 +949,7 @@ use PHPUnit\Framework\TestCase;
 class SystemRandomnessEngineTest extends TestCase
 {
 
-    public function testGeneratesANUmberEqualOrGreaterThanAMinimum()
+    public function testGeneratesANumberEqualOrGreaterThanAMinimum()
     {
         $randomEngine = new SystemRandomnessEngine();
         $this->assertGreaterThanOrEqual(0, $randomEngine->pickIntegerBetween(0, 0));
@@ -977,7 +977,7 @@ El valor devuelto es arbitrario, pero no queremos que sea cero por una razón: e
 Como ya estamos en verde, escribimos otro test que nos fuerce a implementar la generación de números al azar:
 
 ```php
-    public function testGeneratesANumberEqualOrLessThanAMaximum()
+    public function testGeneratesANumberEqualOrLowerThanAMaximum()
     {
         $randomEngine = new SystemRandomnessEngine();
         $this->assertLessThanOrEqual(10, $randomEngine->pickIntegerBetween(10, 10));
@@ -1003,7 +1003,7 @@ Realmente es una implementación trivial, pero lo que intento mostrar aquí no e
 
 Así que toca regresar **PasswordGenerator**
 
-## Probamos nuestro generador de constraseñas
+## Probamos nuestro generador de contraseñas
 
 Ahora estamos en condiciones de montar `PasswordGenerator` y que nos proporcione contraseñas legibles por humanos.
 
@@ -1116,7 +1116,7 @@ Por otra parte, el tema de los números y los símbolos lo complica. Por supuest
 
 Es hora de aplicar el principio Abierto/Cerrado.
 
-### Hackerizando la contraseña
+### *Hackerizando* la contraseña
 
 El principio Abierto/Cerrado dice que para modificar el comportamiento de un módulo de software existente no deberíamos modificarlo (cerrado a modificación), sino extenderlo (abierto a extensión).
 
@@ -1134,13 +1134,13 @@ El patrón decorador es una gran solución para estos casos. La idea es tener un
 
 Los decoradores extienden el comportamiento de otros objetos por composición, no por herencia. De hecho, eso nos permite combinar varios decoradores para obtener comportamientos complejos montados a base de comportamientos más simples.
 
-Como veremos, además, los decoradores un gran ejemplo de aplicación de principios SOLID:
+Como veremos, además, los decoradores son un gran ejemplo de aplicación de principios SOLID:
 
-* SRP: un decorador para cada variedad específica de comportamiento
-* OCP: no hay que tocar el objeto original
-* LSP: el objeto base y el decorado son intercambiables
-* ISP: cuanto más específica la interfaz, más fácil crear decoradores
-* DIP: los decoradores y el objeto decorado dependen de interfaces
+* **SRP**: un decorador para cada variedad específica de comportamiento
+* **OCP**: no hay que tocar el objeto original
+* **LSP**: el objeto base y el decorado son intercambiables
+* **ISP**: cuanto más específica la interfaz, más fácil crear decoradores
+* **DIP**: los decoradores y el objeto decorado dependen de interfaces
 
 Por ejemplo, nosotros queremos decorar nuestras contraseñas para que tengan dos características:
 
@@ -1149,7 +1149,7 @@ Por ejemplo, nosotros queremos decorar nuestras contraseñas para que tengan dos
 
 Eso son dos responsabilidades, así que necesitaremos dos decoradores.
 
-### Decorador hacker
+### Decorador *hacker*
 
 Este decorador simplemente tomará la contraseña generada por un `PasswordGenerator` con el que se compone y convertirá algunos de sus caracteres en símbolos y números.
 
@@ -1168,7 +1168,7 @@ interface Generator
 }
 ```
 
-Ahora ya podemos empezar con nuestro Hackerize. Pero primero, un test:
+Ahora ya podemos empezar con nuestro `Hackerize`. Pero primero, un test:
 
 ```php
 namespace Tests\TalkingBit\Readable\Decorator;
@@ -1626,12 +1626,12 @@ En cualquier caso, este proyecto está abierto a varias mejoras que se podrían 
 
 * Dada la complejidad de montar un generador de contraseñas con todas las piezas que hemos creado, podría estar bien introducir el patrón factoría a fin de simplificarlo.
 * Otro tema sería poder modular un poco la complejidad de las contraseñas generadas para que aún transformadas no sean tan ilegibles.
-* Por último, la posibilidad de montar un paquete para poder instalar el generador como dependencia mediante composer en otros proyectos en los que queramos utilzarlo.
+* Por último, la posibilidad de montar un paquete para poder instalar el generador como dependencia mediante composer en otros proyectos en los que queramos utilizarlo.
 
 
 ## Algunas referencias
 
-Finalmente, algunas referencias sobre el tema que he seguido para fundamentar el artículo:
+Finalmente, algunas referencias sobre el tema que he seguido para fundamentar el capítulo:
 
 [Eradicating Non-Determinism in Tests](https://martinfowler.com/articles/nonDeterminism.html)  
 [Este hilo de Stack Exchange](https://softwareengineering.stackexchange.com/questions/127975/unit-testing-methods-with-indeterminate-output)
