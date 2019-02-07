@@ -1,6 +1,6 @@
 # Test doubles (1)
 
-Estaba pensando en comenzar el artículo con la manida metáfora de los *test doubles* como especialistas de cine, los que doblan a los actores en ciertas escenas, no necesariamente peligrosas. Pero cuando más vueltas le doy, menos claro tengo que sea un buen símil.
+Estaba pensando en comenzar el capítulo con la manida metáfora de los *test doubles* como especialistas de cine, los que doblan a los actores en ciertas escenas, no necesariamente peligrosas. Pero cuando más vueltas le doy, menos claro tengo que sea un buen símil.
 
 Al fin y al cabo, los *test doubles* son más bien figurantes que, a veces, tienen una o dos líneas de diálogo en la escena, mientras que nuestra unidad bajo test es la protagonista y la que tiene que llevar el peso de la actuación: no la podemos sustituir por otra. En cambio, de los *test doubles* preferimos que no hagan nada especial y que, si lo hacen, no se salgan del guión ni un milímetro.
 
@@ -35,15 +35,15 @@ Utilizamos *test doubles* para evitar efectos no deseados en nuestros tests y as
 
 ## Test doubles y dónde encontrarlos
 
-Hay varios tipos de *test doubles* aunque tendemos a llamarlos a todos *mocks*. Pero, siendo estrictos, los mocks son un tipo específico de test double.
+Hay varios tipos de *test doubles* aunque tendemos a llamarlos a todos *mocks*. Pero, siendo estrictos, los *mocks* son un tipo específico de *test double*, como demuestra este artículo:
 
-[The little mocker](https://8thlight.com/blog/uncle-bob/2014/05/14/TheLittleMocker.html)
+[Martin, Robert C.: The little mocker](https://8thlight.com/blog/uncle-bob/2014/05/14/TheLittleMocker.html)
 
 Los vamos a agrupar en función de si acoplan, o no, el test a la implementación. Esto es: hay *test doubles* que esperan ser usados con un cierto patrón, lo cual se refleja en el test. Si ese patrón de uso cambia, el test fallará. Por eso decimos que provocan un acoplamiento del test a la implementación del SUT (*subject under test*) y eso hace que el test se vuelva frágil. Sobre esto volveremos más adelante.
 
 ### Test doubles que no acoplan el test a la implementación
 
-Dummies y Stubs no tienen expectativas sobre su uso y se limitan a participar en el comportamiento del SUT.
+*Dummies* y *Stubs* no tienen expectativas sobre su uso y se limitan a participar en el comportamiento del SUT.
 
 #### Dummy
 
@@ -81,12 +81,12 @@ En el ejemplo anterior, nuestro SUT (`SomeService`) utiliza un `Logger`, pero no
 
 En la mayor parte de los casos, un test double "dummy" no es suficiente: normalmente querremos que los colaboradores proporcionen respuestas a nuestro SUT. Por ejemplo, podríamos necesitar un servicio al que consultar la fecha y hora actuales, tal vez otro que nos diga si un usuario es válido o cualquier ejemplo que se te ocurra.
 
-Para eso necesitamos otro tipo de test double que se denomina stub. Un stub es un objeto que:
+Para eso necesitamos otro tipo de test double que se denomina **stub**. Un *stub* es un objeto que:
 
 * Implementa una interfaz
 * Tiene un comportamiento programado: al llamar a uno de sus métodos devuelve una respuesta conocida
 
-A continuación podemos ver un ejemplo de *Stub*. La clase `ClockServiceStub` nos dará siempre la misma hora que le hayamos programado al instanciar un objeto de la misma. De este modo, siempre sabremos qué fecha u hora nos va a devolver, cosa que no ocurre con la clase real.
+A continuación podemos ver un ejemplo de *Stub*. La clase `ClockServiceStub` nos dará siempre la misma hora que le hayamos programado al instanciar un ejemplar de la misma. De este modo, siempre sabremos qué fecha u hora nos va a devolver, cosa que no ocurre con la clase real.
 
 ```php
 use DateTimeImmutable;
@@ -188,7 +188,7 @@ En resumen, un mock:
 * Espera ser usado de una cierta manera
 * Introduce fragilidad en el test
 
-Los Mocks necesitan de una programación más compleja que los Spies, por lo que veremos en próximos artículos cómo generarlos. De momento, aquí tenemos un ejemplo usando Prophecy
+Los *Mocks* necesitan de una programación más compleja que los *Spies*, por lo que veremos en otra ocasión cómo generarlos. De momento, aquí tenemos un ejemplo usando **Prophecy**
 
 ```php
 class ServiceTest extends TestCase
@@ -196,7 +196,8 @@ class ServiceTest extends TestCase
     public function testMailer()
     {
         $mailerProphecy = $this->prophesize(Mailer::class);
-        $mailerProphecy->send(Argument::type(Message::class))
+        $mailerProphecy
+            ->send(Argument::type(Message::class))
             ->shouldBeCalled();
         $sut = new Service($mailerProphecy->reveal());
         $sut->execute();
@@ -208,9 +209,9 @@ class ServiceTest extends TestCase
 
 #### Fake
 
-Un Fake es una implementación de la interfaz de una clase que se crea específicamente para ser utilizada en situaciones de test. Como tal tiene comportamiento de negocio y, en realidad, necesita sus propios tests para asegurarnos de que este es correcto.
+Un **Fake** es una implementación de la interfaz de una clase que se crea específicamente para ser utilizada en situaciones de test. Como tal tiene comportamiento de negocio y, en realidad, necesita sus propios tests para asegurarnos de que este es correcto.
 
-Las razones para crear Fakes son varias. Quizá la principal pueda ser la de realizar pruebas de integración sin las limitaciones de las implementaciones de producción, como puede ser el acceso a bases de datos y otros recursos remotos, que son lentos y pueden fallar, por ejemplo un repositorio implementado en memoria.
+Las razones para crear `Fakes` son varias. Quizá la principal pueda ser la de realizar pruebas de integración sin las limitaciones de las implementaciones de producción, como puede ser el acceso a bases de datos y otros recursos remotos, que son lentos y pueden fallar, por ejemplo un repositorio implementado en memoria.
 
 ## Alternativas para generar test doubles
 
@@ -223,6 +224,8 @@ Hay muchas ocasiones en las que no tiene sentido utilizar test doubles. En su lu
 * **Requests**, **Commands**, **Events**: los objetos que son mensajes y no contienen lógica no necesitan ser doblados.
 * Cualquier otra clase que que no tenga *side effects* ni dependencias.
 
+Un motivo razonable para usar doubles de este tipo de objetos es cuando resulta costoso instanciarlos.
+
 ### Implementación directa
 
 Fundamentalmente se trata de crear objetos implementando la interfaz deseada y con un comportamiento nulo o limitado a lo que necesitemos para usarlo como test double en cualquiera de sus tipos.
@@ -231,11 +234,11 @@ Si esta implementación incluye lógica de negocio estaríamos hablando de un Fa
 
 ### Self-shunt
 
-El *self-shunt* es una técnica bastante curiosa que consiste en que el propio TestCase sea el test double haciendo que implemente la interfaz que necesitamos reproducir, lo que nos permite recoger información al estilo de un Spy.
+El *self-shunt* es una técnica bastante curiosa que consiste en que el propio TestCase sea el *test double* haciendo que implemente la interfaz que necesitamos reproducir, lo que nos permite recoger información al estilo de un *Spy*.
 
 Obviamente no es una técnica para usar de forma habitual, pero puede ser práctica en los primeros estadios de desarrollo, cuando no hemos creado todavía el colaborador y queremos ir haciéndonos una idea de su interfaz, o cuando ésta es muy simple y tiene sólo uno ó dos métodos.
 
-He aquí la versión self-shunt del MailerSpy.
+He aquí la versión *self-shunt* del `MailerSpy`.
 
 ```php
 class ServiceTest extends TestCase implements Mailer
@@ -256,7 +259,7 @@ class ServiceTest extends TestCase implements Mailer
 }
 ```
 
-A la larga, los self-shunts los iremos eliminando a medida que desarrollamos y que, consecuentemente, vamos refactorizando los tests.
+A la larga, los *self-shunts* los iremos eliminando a medida que desarrollamos y que, consecuentemente, vamos refactorizando los tests.
 
 Michael Feathers [describe el self-shunt en este artículo](https://www.yumpu.com/en/document/view/47929352/the-self-shunt-unit-testing-pattern-object-mentor).
 También es interesante echar un vistazo a [este artículo que compara los tres métodos básicos de mocking](https://8thlight.com/blog/paul-pagel/2006/09/11/self-shunt.html), escrito por Paul Pagel.
@@ -265,7 +268,7 @@ También es interesante echar un vistazo a [este artículo que compara los tres 
 
 Desde PHP 7 podemos utilizar clases anónimas. Esto es útil en los tests cuando necesitamos objetos sencillos que no se van a reutilizar fuera de ese test.
 
-He aquí el anterior ejemplo de Mailer con esta técnica:
+He aquí el anterior ejemplo de `Mailer` con esta técnica:
 
 ```php
 class ServiceTest extends TestCase
@@ -293,7 +296,3 @@ class ServiceTest extends TestCase
     }
 }
 ```
-
-## Terminando
-
-En este artículo hemos hecho un repaso de los tipos de test doubles. En próximas entregas veremos cómo usarlos en tests.
