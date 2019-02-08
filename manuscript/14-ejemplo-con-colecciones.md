@@ -4,7 +4,7 @@ Ahora que tenemos una clase Collection a la que podemos añadir objetos de un ti
 
 ## Testing dirigido por Checklist
 
-Antes de continuar con el desarrollo, voy a detenerme en una cuestión práctica: la checklist de tests.
+Antes de continuar con el desarrollo, voy a detenerme en una cuestión práctica: la `checklist` de tests.
 
 En el libro de *TDD by Example*, Kent Beck recomienda utilizar una lista de control para ir anotando en ella todas las cosas que queremos testear, tanto las que pensamos a priori, como las que vayan surgiendo a medida que avanzamos en el trabajo.
 
@@ -33,7 +33,7 @@ Y esta es la lista al final del artículo anterior:
 
 ## Filosofía de las colecciones
 
-LLegados a este punto debo hablar un poco de lo que tengo en mente sobre las colecciones.
+Llegados a este punto debo hablar un poco de lo que tengo en mente sobre las colecciones.
 
 Un primer enfoque tiene que ver con las estructuras de datos tradicionales. Algunas librerías de Colecciones ofrecen colas, pilas, heaps y demás. Sin embargo, de momento no estoy interesado en usarlas, ya que mi objetivo es más bien el manejo de colecciones con las que pueda:
 
@@ -42,9 +42,9 @@ Un primer enfoque tiene que ver con las estructuras de datos tradicionales. Algu
 * agregar datos (recuento, etc).
 * extraer información de todos los elementos de la colección.
 
-Así que voy más bien en la línea de poder recorrer los elementos de las colecciones, para lo cual PHP me ofrece diversos recursos, como implementar las interfaces de Iterator y Traversable, de modo que pueda utilizar mis colecciones con foreach y otros bucles. Pero ¿por qué no hacer que sean las propias colecciones las que se ocupen de sus propios elementos?
+Así que voy más bien en la línea de poder recorrer los elementos de las colecciones, para lo cual PHP me ofrece diversos recursos, como implementar las interfaces de `Iterator` y `Traversable`, de modo que pueda utilizar mis colecciones con `foreach` y otros bucles. Pero ¿por qué no hacer que sean las propias colecciones las que se ocupen de sus propios elementos?
 
-Esto está influenciado por algunos artículos y screencasts de [Adam Wathan](https://adamwathan.me), autor del libro [Refactoring to collections](https://adamwathan.me/refactoring-to-collections/), en el que explica cómo evolucionar el código en estilo imperativo hacia un estilo funcional, eliminado bucles y condicionales gracias al uso de colecciones y "pipelines" de colecciones.
+Esto está influenciado por algunos artículos y screencasts de [Adam Wathan](https://adamwathan.me), autor del libro [Refactoring to collections](https://adamwathan.me/refactoring-to-collections/), en el que explica cómo evolucionar el código en estilo imperativo hacia un estilo funcional, eliminado bucles y condicionales gracias al uso de colecciones y *pipelines* de colecciones.
 
 Algunas de las piezas necesarias existen en PHP, como las funciones `array_map`, `array_reduce` o `array_filter`, que nos permiten escribir en estilo funcional lo que, de otra manera haríamos mediante bucles foreach.
 
@@ -73,15 +73,15 @@ Como esto me interesa, lo añado a la lista:
 * Que pueda agregar la Collection (reduce)
 * Poder encadenar operaciones
 
-Y, ahora, centrémonos en <code>each</code>.
+Y, ahora, centrémonos en `each`.
 
 Lo que queremos es poder decirle a la colección que los elementos de la lista hagan algo, pero este algo no devolverá resultados. ¿Cómo podemos testear esto?
 
-El método each tiene que aceptar un Callable que tome un objeto del tipo coleccionado como argumento, recorrer la lista de elementos y ejecutar el callable con cada uno.
+El método `each` tiene que aceptar un `Callable` que tome un objeto del tipo coleccionado como argumento, recorrer la lista de elementos y ejecutar el `Callable` con cada uno.
 
 Una forma de testear esto podría ser añadir algunos elementos a la lista y definir una función que simplemente se ejecute una vez por cada elemento. Suena un poco "sucio", pero podría servir. 
 
-Pero en realidad, hay un test que debo realizar antes: una Collection vacía no debería ejecutar nada. Esta es mi primera tentativa en `CollectionTest.php` (sólo incluyo la parte relevante):
+Pero en realidad, hay un test que debo realizar antes: una `Collection` vacía no debería ejecutar nada. Esta es mi primera tentativa en **CollectionTest.php** (sólo incluyo la parte relevante):
 
 ```php
     public function testEachShouldDoNothingOnEmptyCollection()
@@ -95,11 +95,11 @@ Pero en realidad, hay un test que debo realizar antes: una Collection vacía no 
     }
 ```
 
-Lo primero es hacerme con una instancia de Collection mediante el método `getCollection` que, como quizá recordéis, utilizaba la técnica de *Self-shunt*, de modo que la propia clase CollectionTest actúa como elemento coleccionable.
+Lo primero es hacerme con una instancia de `Collection` mediante el método `getCollection` que, como quizá recordéis, utilizaba la técnica de *Self-shunt*, de modo que la propia clase CollectionTest actúa como elemento coleccionable.
 
 Para poder registrar su actividad, paso por referencia una variable `$log` en la que iré acumulando un asterisco por cada ejecución. En este primer test no debería ocurrir nada. 
 
-Ejecutamos el test y falla, lo que nos indica la necesidad de implementar un método <code>each</code>, que debería aceptar un Callable.
+Ejecutamos el test y falla, lo que nos indica la necesidad de implementar un método `each`, que debería aceptar un `Callable`.
 
 ```php
     public function each(Callable $function)
@@ -195,7 +195,7 @@ Y con esto hemos vuelto a verde.
 
 Podríamos generalizar este test para recorrer un número arbitrario de elementos, pero lo voy a obviar ya que podemos afirmar que each ejecuta la función tantas veces como elementos hay en la colección.
 
-En cambio, quiero detenerme en una situación que no hemos testeado todavía: que la función pasada al método each recibe el elemento correspondiente a la iteración. Todavía no hemos demostrado que eso ocurra. De hecho, hemos utilizado para el test, una función que no recibe parámetros. Necesitamos una nueva que pueda recibir el parámetro.
+En cambio, quiero detenerme en una situación que no hemos testeado todavía: que la función pasada al método `each` recibe el elemento correspondiente a la iteración. Todavía no hemos demostrado que eso ocurra. De hecho, hemos utilizado para el test, una función que no recibe parámetros. Necesitamos una nueva que pueda recibir el parámetro.
 
 ```php
     public function testEachShouldPassEveryElementToCallable()
@@ -229,7 +229,7 @@ El cambio es simple:
     }
 ```
 
-Volvemos a verde. Podríamos pensar en refactorizar. Por una parte, nuestro objetivo con el método each es encapsular el funcionamiento de foreach, siendo la función que pasamos el código que estaría dentro del bucle. Por otra parte, podríamos usar una de las funciones de array de PHP, como por ejemplo:
+Volvemos a verde. Podríamos pensar en refactorizar. Por una parte, nuestro objetivo con el método each es encapsular el funcionamiento de `foreach`, siendo la función que pasamos el código que estaría dentro del bucle. Por otra parte, podríamos usar una de las funciones de array de PHP, como por ejemplo:
 
 ```php
     public function each(Callable $function)
@@ -245,9 +245,9 @@ Y esto resulta deliciosamente conciso.
 
 ## Recapitulando `each`
 
-Debo confesar que al empezar a escribir el capítulo no las tenía todas conmigo respecto a la posibilidad de testear como es debido tanto el tema de pasar un callable y registrar sus efectos sin complicar en exceso los tests.
+Debo confesar que al empezar a escribir el capítulo no las tenía todas conmigo respecto a la posibilidad de testear como es debido tanto el tema de pasar un `Callable` y registrar sus efectos sin complicar en exceso los tests.
 
-Al final, con pequeños pasos, hemos podido implementar `each` en nuestra clase Collection.
+Al final, con pequeños pasos, hemos podido implementar `each` en nuestra clase `Collection`.
 
 La lista de tareas, queda así, eliminando la que acabamos de terminar:
 
@@ -258,9 +258,9 @@ La lista de tareas, queda así, eliminando la que acabamos de terminar:
 
 Ahora bien, al examinar el último punto me vienen a la cabeza algunas cuestiones: ¿deberían ser las colecciones objetos inmutables? Por ejemplo, en el caso de `each` si la acción que se ejecuta en el objeto lo modifica de algún modo, ¿debemos realizarlo sobre una copia y devolver ésta?
 
-En otros métodos en los que nos interesa devolver otro objeto Collection con los elementos seleccionados o transformados, es posible que nos interese poder alimentar la colección mediante un array de objetos adecuados.
+En otros métodos en los que nos interesa devolver otro objeto `Collection` con los elementos seleccionados o transformados, es posible que nos interese poder alimentar la colección mediante un array de objetos adecuados.
 
-Además, existen una serie de método que podrían ser útiles para conocer el estado de la lista (isEmpty), para comprobar si cierto elemento existe en ella o incluso para obtener un elemento según ciertos criterios. Así que nuestro checklist vuelve a crecer:
+Además, existen una serie de métodos que podrían ser útiles para conocer el estado de la lista (`isEmpty`), para comprobar si cierto elemento existe en ella o incluso para obtener un elemento según ciertos criterios. Así que nuestro *checklist* vuelve a crecer:
 
 * Que pueda devolver un array de transformaciones de los objetos (map)
 * Que pueda devolver una Collection de objetos filtrados conforme a un criterio (filter)

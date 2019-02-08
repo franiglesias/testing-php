@@ -27,7 +27,7 @@ Y, por otro lado, algunas técnicas prácticas, como:
 
 * Descartar o posponer los tests que no fallan a la primera (violación de la primera ley de TDD).
 * Usar clases anónimas para disponer de _test doubles_ de bajo coste y desechables.
-* Usar el self-shunt cuando necesitamos algún _test double_, lo que nos evita tener que tirar de mocks o inventarnos clases sin necesidad. Esto es: usar la propia clase TestCase como double.
+* Usar el self-shunt cuando necesitamos algún _test double_, lo que nos evita tener que tirar de generadores de *doubles* o inventarnos clases sin necesidad. Esto es: usar la propia clase TestCase como *double*.
 * Usar el código de producción como test para refactorizar el test: vamos modificando el test procurando que se mantenga en verde.
 * Identificar casos límite al descubrir que fallan tests anteriores, y que antes pasaban, en el último paso de implementación.
 
@@ -37,11 +37,11 @@ Y también alguna técnica organizativa útil:
 
 ## Reduciendo colecciones
 
-El primer elemento de la lista de tareas es implementar el método <code>reduce</code>. El concepto de reduce consiste en "resumir" la colección en un valor que agregue de algún modo sus elementos por medio de la función que le pasemos. Para ello, <code>reduce</code> tiene que poder arrastrar un acumulador que sea actualizado y devuelto por la función reductora. También podemos necesitar un valor para iniciar ese acumulador.
+El primer elemento de la lista de tareas es implementar el método `reduce`. El concepto de `reduce` consiste en "resumir" la colección en un valor que agregue de algún modo sus elementos por medio de la función que le pasemos. Para ello, `reduce` tiene que poder arrastrar un acumulador que sea actualizado y devuelto por la función reductora. También podemos necesitar un valor para iniciar ese acumulador.
 
-<code>reduce</code> puede devolver cualquier cosa, desde un número a un array o incluso algún objeto. No hay limitaciones aquí. Lo más importante es que aquello que devuelva la función de reducción debe pasársele como parámetro, junto con el elemento actual.
+`reduce` puede devolver cualquier cosa, desde un número a un array o incluso algún objeto. No hay limitaciones aquí. Lo más importante es que aquello que devuelva la función de reducción debe pasársele como parámetro, junto con el elemento actual.
 
-En fin, ¿cuál podría ser el test más sencillo que falle para este método? Pues siguiendo la línea de los artículos anteriores podemos empezar por el test de la colección vacía. Una colección vacía no acumularía nada ni podría reducirse a nada, así que parece bastante razonable esperar que nos devuelva <code>null</code>. Lo malo es que ese test va a pasar a la primera puesto que cualquier método que no devuelva nada explícitamente devolverá `null`.
+En fin, ¿cuál podría ser el test más sencillo que falle para este método? Pues siguiendo la línea de los artículos anteriores podemos empezar por el test de la colección vacía. Una colección vacía no acumularía nada ni podría reducirse a nada, así que parece bastante razonable esperar que nos devuelva `null`. Lo malo es que ese test va a pasar a la primera puesto que cualquier método que no devuelva nada explícitamente devolverá `null`.
 
 Por lo tanto, este test no nos vale. ¿Qué podríamos hacer entonces? Resulta que hemos mencionado que podríamos pasar un valor inicial del acumulador, por lo que en el caso de la lista vacía podríamos devolver ese mismo valor ya que al no tener elementos que iterar no se podría aplicar la función de reducción.
 
@@ -56,7 +56,7 @@ Por lo tanto, este test no nos vale. ¿Qué podríamos hacer entonces? Resulta q
     }
 ```
 
-El test fallará por razones obvias y nos pide crear el método <code>reduce</code>, cosa que ya podemos hacer con la implementación obvia devolviendo <code>0</code>, es decir, el mínimo código para que el test pase.
+El test fallará por razones obvias y nos pide crear el método `reduce`, cosa que ya podemos hacer con la implementación obvia devolviendo `0`, es decir, el mínimo código para que el test pase.
 
 ```php
     public function reduce(Callable $function, $initial)
@@ -69,7 +69,7 @@ Bien, ¿y por qué no devolver directamente el valor que pasamos en `$initial`?
 
 Después de un tiempo practicando TDD puedes pensar que este _baby step_ es demasiado _baby_ y que puedes lidiar con confianza con algunos pasos más grandes. Y no te equivocarías. Como he mencionado en algún momento de la serie, estos pasos se van adaptando a las circunstancias y los puedes ampliar o reducir dependiendo, precisamente, de tu confianza en lo que estás haciendo.
 
-Pero yo ahora prefiero hacer que los tests me vayan marcando el camino. Así, en lugar de dar un paso grande, voy a dar uno más pequeño, que además me servirá para probar que <code>$initial</code> puede ser cualquier tipo de valor. Crearé otro test.
+Pero yo ahora prefiero hacer que los tests me vayan marcando el camino. Así, en lugar de dar un paso grande, voy a dar uno más pequeño, que además me servirá para probar que `$initial` puede ser cualquier tipo de valor. Crearé otro test.
 
 ```php
     public function testReduceShouldAcceptAnyTypeForInitialValue()
@@ -95,7 +95,7 @@ En este caso, la implementación más sencilla para eso es devolver el propio pa
     }
 ```
 
-Hemos dicho que <code>reduce</code> puede devolver cualquier cosa, pero pasando un valor inicial es bastante lógico suponer que el tipo devuelto por reduce es el mismo que el del valor inicial que se pasa. Debería ser obvio que probar esto, en este momento, es inútil puesto que al devolver lo mismo que recibimos el test no nos va a aportar nada. Por tanto, deberíamos buscar otra cosa para probar.
+Hemos dicho que `reduce` puede devolver cualquier cosa, pero pasando un valor inicial es bastante lógico suponer que el tipo devuelto por `reduce` es el mismo que el del valor inicial que se pasa. Debería ser obvio que probar esto, en este momento, es inútil puesto que al devolver lo mismo que recibimos el test no nos va a aportar nada. Por tanto, deberíamos buscar otra cosa para probar.
 
 Por ejemplo, podríamos probar que la función de reducción se aplica para una colección de un elemento.
 
@@ -183,7 +183,7 @@ La razón es que no estamos iterando:
     }
 ```
 
-Y con esto resulta que hemos conseguido implementar <code>reduce</code>. Algo que podemos tachar de la lista de tareas.
+Y con esto resulta que hemos conseguido implementar `reduce`. Algo que podemos tachar de la lista de tareas.
 
 * Poder crear una Collection a partir de un array de objetos
 * Método toArray y/o mapToArray que devuelva los elementos de Collection como un array
@@ -194,9 +194,9 @@ Y con esto resulta que hemos conseguido implementar <code>reduce</code>. Algo qu
 
 En nuestra lista nos quedan varios métodos que pueden ser de utilidad para crear nuestras colecciones.
 
-El primero de ellos tiene que ver con la posibilidad de crear una colección a partir de un array, se supone que de objetos.
+El primero de ellos tiene que ver con la posibilidad de crear una colección a partir de un `array`, se supone que de objetos.
 
-En este caso, parece buena idea usar un <em>named constructor</em>, que instancie una nueva colección a partir de un array que contenga al menos un objeto. Si el array estuviese vacío no podríamos instanciar <code>Collection</code> porque no sabríamos el tipo de objetos que contiene, salvo que se lo indicásemos explícitamente, que es lo que hacemos con <code>Collection::of</code>.
+En este caso, parece buena idea usar un *named constructor*, que instancie una nueva colección a partir de un array que contenga al menos un objeto. Si el array estuviese vacío no podríamos instanciar `Collection` porque no sabríamos el tipo de objetos que contiene, salvo que se lo indicásemos explícitamente, que es lo que hacemos con *Collection::of*.
 
 Por otra parte, pueden existir arrays no válidos, aparte del vacío, como aquellos que no contengan objetos o que lleven mezclados objetos de distinto tipo, con elementos que no sean objetos.
 
@@ -245,7 +245,7 @@ Ahora quiero probar que el método toma en cuenta el array que le pasamos para i
     }
 ```
 
-Y como falla, me obliga a implementar. Si ahora forzase a crear una <code>Collection</code> con <code>CollectionTest::class</code> el test anterior fallaría, por lo que debo implementar una solución más general.
+Y como falla, me obliga a implementar. Si ahora forzase a crear una `Collection` con `CollectionTest::class` el test anterior fallaría, por lo que debo implementar una solución más general.
 
 ```php
     public static function collect(array $elements)
@@ -282,7 +282,7 @@ Hay que implementar para volver a verde:
     }
 ```
 
-Ahora tenemos que probar que <code>collect</code> es capaz de llenar la colección con los objetos que se encuentran en el array. El test mínimo que lo demuestra podría ser este:
+Ahora tenemos que probar que `collect` es capaz de llenar la colección con los objetos que se encuentran en el array. El test mínimo que lo demuestra podría ser este:
 
 ```php
     public function testShouldPopulateCollectionWithUniqueElementInArray()
@@ -352,9 +352,9 @@ La siguiente tarea que tenemos es lanzar una excepción si algún elemento del a
     }
 ```
 
-Esto era de esperar porque ya estaba contemplado en el método <code>append</code>, al que recurrimos para añadir los elementos del array a la colección en vez de incluirlos a mano en el almacén interno. Este patrón se llama <em>self-encapsulation</em> y consiste precisamente en que una clase utiliza internamente métodos para alterar sus propiedades, en vez de manejarlas directamente, de tal manera que estos métodos pueden encapsular guardas, saneamientos y otras operaciones.
+Esto era de esperar porque ya estaba contemplado en el método `append`, al que recurrimos para añadir los elementos del array a la colección en vez de incluirlos a mano en el almacén interno. Este patrón se llama *self-encapsulation* y consiste precisamente en que una clase utiliza internamente métodos para alterar sus propiedades, en vez de manejarlas directamente, de tal manera que estos métodos pueden encapsular guardas, saneamientos y otras operaciones.
 
-Ahora podemos considerar que hemos terminado de implementar el método <code>collect</code>. Es momento de refactorizarlo.
+Ahora podemos considerar que hemos terminado de implementar el método `collect`. Es momento de refactorizarlo.
 
 Los tests nos protegen contra problemas derivados de los cambios que hagamos. Al refactorizar sólo estamos cambiando la implementación, no la interfaz ni el comportamiento público, y eso es lo que nos aseguran los tests en este momento.
 
@@ -437,7 +437,7 @@ No merece la pena probar nuevos tamaños de colección, cualquier test que se no
 
 Pero lo cierto es que también planteamos un método `mapToArray`. La idea es la siguiente: 
 
-En algunas ocasiones nos interesa convertir nuestros objetos a una estructura de array asociativo (diversos mecanismos de persistencia nos piden esto). Por desgracia nuestra definición de Collection impide que podamos mapear los objetos como array para generar una "colección de arrays", aunque existe un atajo:
+En algunas ocasiones nos interesa convertir nuestros objetos a una estructura de array asociativo (diversos mecanismos de persistencia nos piden esto). Por desgracia nuestra definición de `Collection` impide que podamos mapear los objetos como array para generar una "colección de arrays", aunque existe un atajo:
 
 ```php
 	$collectionArray = $collection->reduce(function(Persistible $element, $accumulator) {
@@ -576,7 +576,7 @@ La lista se reduce y ya estamos acabando:
 
 ## Métodos de utilidad
 
-Tenemos un par de métodos de utilidad para nuestra Collection y que no hubiera estado de más implementar antes. Lo bueno es que serán fáciles de implementar y nos servirán para aprender un par de cosas más:
+Tenemos un par de métodos de utilidad para nuestra `Collection` y que no hubiera estado de más implementar antes. Lo bueno es que serán fáciles de implementar y nos servirán para aprender un par de cosas más:
 
 ```php
     public function testShouldGetTheTypeOfCollection()
@@ -655,7 +655,7 @@ Hemos desarrollado nuestra clase `Collection` y tachado todos los elementos de l
 
 Puede ser buen momento para refactorizar el código, que está completamente protegido por los tests. De este modo, podemos encontrar implementaciones mejores o más elegantes que, en un futuro, nos permitan intervenir sobre el código, bien para corregir problemas, bien para añadir nuevas funcionalidades o modificar comportamientos de la clase.
 
-Por mi parte, voy a revisar cuestiones como los *return type* de los métodos y refactorizar algunas cosas con auto-encapsulación y, si fuese posible, eliminar algunos bucles También puede ser el momento de reordenar los métodos para agruparlos por afinidad. Este ha sido el resultado:
+Por mi parte, voy a revisar cuestiones como los *return type* de los métodos y refactorizar algunas cosas con auto-encapsulación y, si fuese posible, eliminar algunos bucles. También puede ser el momento de reordenar los métodos para agruparlos por afinidad. Este ha sido el resultado:
 
 ```php
 <?php
@@ -816,7 +816,7 @@ class Collection
 }
 ```
 
-También podríamos refactorizar el test. Ahora que hemos creado algunos métodos de utilidad como isEmpty o getType, podemos cambiar algunos tests para emplearlos, de modo que sean más sencillos y más explícitos. También nos permiten eliminar las aserciones sobre propiedades privadas, que aunque se pueden hacer no deberían hacerse si es posible evitarlo.
+También podríamos refactorizar el test. Ahora que hemos creado algunos métodos de utilidad como `isEmpty` o `getType`, podemos cambiar algunos tests para emplearlos, de modo que sean más sencillos y más explícitos. También nos permiten eliminar las aserciones sobre propiedades privadas, que aunque se pueden hacer no deberían hacerse si es posible evitarlo.
 
 A mí me ha quedado así:
 

@@ -1,6 +1,6 @@
 # Apéndice 1: PhpUnit
 
-[PhpUnit](https://phpunit.de) es el framework de test por excelencia de PHP. Pertenece a la familia xUnit y con él puedes desarrollar todo tipo de tests.
+[PhpUnit](https://phpunit.de) es el framework de test por excelencia de PHP. Pertenece a la familia **xUnit** y con él puedes desarrollar todo tipo de tests.
 
 ## Instalación
 
@@ -60,7 +60,7 @@ Por último, configuraremos los namespaces del proyecto en **composer.json**, qu
 }
 ```
 
-También hemos añadido la clave config, con bin-dir, de este modo, los paquetes como `phpunit` y otros crearán un alias de su ejecutable en la carpeta `bin`, con lo que podremos lanzarlos fácilmente con `bin/phpunit`.
+También hemos añadido la clave `config`, con `bin-dir,` de este modo, los paquetes como `phpunit` y otros crearán un alias de su ejecutable en la carpeta `bin`, con lo que podremos lanzarlos fácilmente con `bin/phpunit`.
 
 Después de este cambio puedes hacer un `composer install` o un `composer dump-autoload`, para ponerte en marcha.
 

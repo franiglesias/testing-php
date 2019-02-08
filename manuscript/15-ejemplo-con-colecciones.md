@@ -23,16 +23,16 @@ Una cosa que no he reflejado en esta lista es que debería poder pedirle objetos
 * Método isEmpty que nos diga si la colección está vacía
 * Método para obtener uno o más objetos de la lista, por criterio, posición, etc.
 
-Fíjate que estoy mezclando diversos tipos de ideas más o menos concretas. Esto es lo de menos porque la iremos reescribiendo continuamente. Pero aquello que está en la checklist está fuera de nuestra cabeza y, por lo tanto, nos deja más recursos para trabajar en la tarea concreta que tengamos entre manos.
+Fíjate que estoy mezclando diversos tipos de ideas más o menos concretas. Esto es lo de menos porque la iremos reescribiendo continuamente. Pero aquello que está en la `checklist` está fuera de nuestra cabeza y, por lo tanto, nos deja más recursos para trabajar en la tarea concreta que tengamos entre manos.
 
-## Pipeline en el método each
+## *Pipeline* en el método `each`
 
-Al final del capítulo anterior quedaba implementado el método `each`, pero como nos hemos planteado la posibilidad de poder montar pipelines me gustaría abordarlo ahora antes de entrar a trabajar con otros métodos.
+Al final del capítulo anterior quedaba implementado el método `each`, pero como nos hemos planteado la posibilidad de poder montar *pipelines* me gustaría abordarlo ahora antes de entrar a trabajar con otros métodos.
 
 En líneas generales, necesitamos resolver dos cosas:
 
-* Que el método devuelva un objeto Collection para poder aplicarle los mismos métodos.
-* Si el objeto Collection va a ser inmutable con respecto al método each y devolverá un Collection nuevo con las modificaciones aplicadas.
+* Que el método devuelva un objeto `Collection` para poder aplicarle los mismos métodos.
+* Si el objeto `Collection` va a ser inmutable con respecto al método `each` y devolverá un `Collection` nuevo con las modificaciones aplicadas.
 
 El primer punto es casi trivial y muy fácil de testear. Simplemente esperamos que `each` devuelva un objeto del tipo Collection.
 
@@ -93,7 +93,7 @@ Pues pasa que el test falla dado que estamos devolviendo `null`. Hacer algo con 
     }
 ```
 
-Lo anterior es un ejemplo de la problemática de escoger bien el primer test que hacemos. En each comenzamos por una colección vacía, y al ir avanzando con nuevos tests, descubrimos que ese era un caso límite para el problema que estamos tratando puesto que al ir evolucionando la implementación llega un momento en que ese test falla. 
+Lo anterior es un ejemplo de la problemática de escoger bien el primer test que hacemos. En `each` comenzamos por una colección vacía, y al ir avanzando con nuevos tests, descubrimos que ese era un caso límite para el problema que estamos tratando puesto que al ir evolucionando la implementación llega un momento en que ese test falla. 
 
 En esta ocasión, al "saltarnos" la situación de colección vacía no hemos detectado el caso límite, sino que lo hemos tenido que pensar nosotros. Por eso, es conveniente detenerse a pensar un poco más el test inicial más sencillo posible.
 
@@ -109,27 +109,27 @@ Hay varias cuestiones con respecto a la mutabilidad y la inmutabilidad de la col
 
 * Que se puedan, o no, añadir, quitar o cambiar elementos a la colección, una vez creada. En algunos casos, necesitamos que la colección funcione como si fuese un repositorio en memoria. En otros, nos interesa una colección constante de la que obtener ciertos datos. Una colección que no se pueda modificar en este sentido, no expone métodos append o remove o, si lo hace, estos devuelven una instancia nueva de la colección.
 * Que ciertas operaciones devuelvan la colección transformada o bien una colección nueva con la transformación. Una operación de filtrado siempre debería devolvernos una colección nueva, dejando la original intacta, para poder realizar nuevas búsquedas o selecciones en ella.
-* Que se puedan modificar elementos o no, en el sentido de cambiar el estado de los elementos, pero no la colección como tal. El hecho de que la colección no pueda variar el número de elementos no implica que éstos no puedan cambiar de algún modo. El método each, implementado en el artículo anterior, encaja aquí.
+* Que se puedan modificar elementos o no, en el sentido de cambiar el estado de los elementos, pero no la colección como tal. El hecho de que la colección no pueda variar el número de elementos no implica que éstos no puedan cambiar de algún modo. El método `each`, implementado en el artículo anterior, encaja aquí.
 
 Es buena idea leerse [este artículo de Martin Fowler sobre las *collection pipelines*](https://martinfowler.com/articles/collection-pipeline/). Además, nos da un montón de pistas sobre qué funcionalidad añadir en ella.
 
 Fin de la digresión.
 
-## Antes de implementar el método map
+## Antes de implementar el método `map`
 
-La idea de `map` es aplicar una transformación a cada elemento de la colección actual y creando una nueva colección con los resultados de esa transformación. Collection es inmutable con respecto a `map` y tampoco los objetos deberían ver su estado cambiado.
+La idea de `map` es aplicar una transformación a cada elemento de la colección actual, creando una nueva colección con los resultados de esa transformación. `Collection` es inmutable con respecto a `map` y tampoco los objetos deberían ver su estado cambiado.
 
 En cierto modo, `map` es lo mismo que `each`, pero devolviendo resultados.
 
-Un problema que nos plantea `map` tiene que ver con lo que devuelve. Si queremos poder hacer pipelines, debería devolver un objeto Collection (en principio nos da igual qué objetos colecciona), por lo que vamos a necesitar poder crearlo a partir de arrays de objetos. Eso es algo que habíamos puesto en nuestra lista de tareas, en el apartado de ideas a considerar, pero que ahora lo vamos a reformular.
+Un problema que nos plantea `map` tiene que ver con lo que devuelve. Si queremos poder hacer pipelines, debería devolver un objeto `Collection` (en principio nos da igual qué objetos colecciona), por lo que vamos a necesitar poder crearlo a partir de arrays de objetos. Eso es algo que habíamos puesto en nuestra lista de tareas, en el apartado de ideas a considerar, pero que ahora lo vamos a reformular.
 
-Además, me estoy fijando que hay algunas ideas que no están bien expresadas y que incluso entran en contracción, como que el método `map` devuelva un array, cuando quiero que devuelva un Collection y así poderlo encadenar.
+Además, me estoy fijando que hay algunas ideas que no están bien expresadas y que incluso entran en contradicción, como que el método `map` devuelva un array, cuando quiero que devuelva un `Collection` y así poderlo encadenar.
 
 Sin embargo, hay una cuestión que me preocupa: ¿y si no devuelvo objetos en la función de mapeo? Por ejemplo, a lo mejor sólo quiero obtener una lista simple de nombres a partir de una colección de objetos.
 
-Una solución es forzar que todas las transformación den como resultado objetos, que no tienen que ser del mismo tipo que los de la colección original, de modo que pueda coleccionarlos sin más. Eso me lleva a pensar en que podría ser necesario un método `mapToArray` o `toArray` (o ambos), con el que mapear una colección a un array y que sería el punto final de un pipeline.
+Una solución es forzar que todas las transformaciones den como resultado objetos, que no tienen que ser del mismo tipo que los de la colección original, de modo que pueda coleccionarlos sin más. Eso me lleva a pensar en que podría ser necesario un método `mapToArray` o `toArray` (o ambos), con el que mapear una colección a un array y que sería el punto final de un pipeline.
 
-Otra solución sería generalizar Collection para permitir cualquier tipo de dato, de modo que pueda coleccionar cualquier cosa. Esta idea es correcta y es interesante. Podríamos poder seguir especificando el tipo para garantizar que la lista se mantenga coherente. Aún siguiendo este desarrollo, sigue siendo interesante incluir el método `mapToArray` para poder obtener la colección en ese formato que suele ser útil para interactuar con otro código existente.
+Otra solución sería generalizar `Collection` para permitir cualquier tipo de dato, de modo que pueda coleccionar cualquier cosa. Esta idea es correcta y es interesante. Podríamos poder seguir especificando el tipo para garantizar que la lista se mantenga coherente. Aún siguiendo este desarrollo, sigue siendo interesante incluir el método `mapToArray` para poder obtener la colección en ese formato que suele ser útil para interactuar con otro código existente.
 
 ¿Cuál de las dos elegir? Pues da un poco igual. Como estamos desarrollando con TDD estamos protegidos para realizar cualquier cambio, no sólo refactoring, sino también cambios de funcionalidad. Mi opción va a ser la primera (sólo Objetos) y luego, ya veremos. Lo anoto para no olvidarlo, además de reorganizar un poco la lista conforme a las reflexiones que he estado haciendo:
 
@@ -143,19 +143,19 @@ Otra solución sería generalizar Collection para permitir cualquier tipo de dat
 * Método para obtener uno o más objetos de la lista, por criterio, posición, etc.
 * Método toArray y/o mapToArray que devuelva los elementos de Collection como un array
 
-Ahora sí, ahora vamos con map
+Ahora sí, ahora vamos con `map`.
 
-## Implementando map
+## Implementando `map`
 
-Repasemos lo que sabemos sobre map:
+Repasemos lo que sabemos sobre `map`:
 
-* Tiene que devolver Collection
-* Tiene que aceptar un callable
-* Este callable tiene que devolver objetos coleccionables, que no tienen por qué ser del mismo tipo que los coleccionables
+* Tiene que devolver `Collection`
+* Tiene que aceptar un `Callable`
+* Este `Callable` tiene que devolver objetos coleccionables, que no tienen por qué ser del mismo tipo que los coleccionables
 
 Así que tendremos que probar eso.
 
-El caso más sencillo sería el de la colección vacía, como hemos dicho antes, no queremos romper el pipeline, por lo que el test podría ser el siguiente:
+El caso más sencillo sería el de la colección vacía, como hemos dicho antes, no queremos romper el *pipeline*, por lo que el test podría ser el siguiente:
 
 ```php
     public function testMapShouldAllowPipelineOnEmptyCollection)
@@ -168,7 +168,7 @@ El caso más sencillo sería el de la colección vacía, como hemos dicho antes,
     }
 ```
 
-Obviamente, el test va a fallar porque no tenemos método map. Lo creamos y pasamos de nuevo el test para ver que falla. Después haremos la implementación más sencilla posible, que es devolver la misma colección.
+Obviamente, el test va a fallar porque no tenemos método `map`. Lo creamos y pasamos de nuevo el test para ver que falla. Después haremos la implementación más sencilla posible, que es devolver la misma colección.
 
 ```php
     public function map(Callable $function) : Collection
@@ -179,7 +179,7 @@ Obviamente, el test va a fallar porque no tenemos método map. Lo creamos y pasa
 
 Y esto nos coloca en verde de nuevo.
 
-Ocurre, sin embargo, que no queremos que map devuelva la misma Collection, sino otra. Así que necesitamos un test que pruebe eso:
+Ocurre, sin embargo, que no queremos que map devuelva la misma `Collection`, sino otra. Así que necesitamos un test que pruebe eso:
 
 ```php
     public function testMapShouldReturnAnotherCollection()
@@ -239,7 +239,7 @@ Y cambiamos el test:
     }
 ```
 
-Estamos chequeando un estado privado del objeto $result, que sabenos que es del tipo Collection por los tests anteriores. Siendo estrictos no deberíamos chequear propiedades privadas, aunque creo que hay situaciones en las que por pragmatismo es mejor hacerlo. Por otro lado, poder obtener el tipo de objeto de una colección sería razonable, así que podríamos añadir a la lista esa característica.
+Estamos chequeando un estado privado del objeto `$result`, que sabemos que es del tipo `Collection` por los tests anteriores. Siendo estrictos no deberíamos chequear propiedades privadas, aunque creo que hay situaciones en las que por pragmatismo es mejor hacerlo. Por otro lado, poder obtener el tipo de objeto de una colección sería razonable, así que podríamos añadir a la lista esa característica.
 
 * Que pueda devolver una Collection de transformaciones de los objetos (map)
 * Que pueda devolver una Collection de objetos filtrados conforme a un criterio (filter)
@@ -261,7 +261,7 @@ En cualquier caso, ahora hemos conseguido un test que falla, con lo que estamos 
     }
 ```
 
-Ahora el test pasa, pero no prueba que estemos mapeando, sólo prueba que devolvemos una Collection con el tipo MappedObject, el objeto resultado del mapeo. Nuestro test necesita una cierta <strong>triangulación</strong>, es decir, varias aserciones que, juntas, prueben lo que queremos mostrar con el test. Debemos volver al rojo, retomando un test que descartamos antes:
+Ahora el test pasa, pero no prueba que estemos mapeando, sólo prueba que devolvemos una `Collection` con el tipo `MappedObject`, el objeto resultado del mapeo. Nuestro test necesita una cierta **triangulación**, es decir, varias aserciones que, juntas, prueben lo que queremos mostrar con el test. Debemos volver al rojo, retomando un test que descartamos antes:
 
 ```php
     public function testShouldMapSingleElement()
@@ -379,7 +379,7 @@ Y como el código es poco inteligible, vamos a refactorizar un poco aprovechando
 
 Al igual que ocurre con `each`, no hay razón para pensar que haya otros casos límite con colecciones de más de dos elementos, por lo que no merece la pena escribir tests para probar que podemos mapear colecciones más grandes.
 
-Nos quedan unas cuantas cosas pendientes en la lista de tareas, pero las afrontaremos en futuras entregas.
+Nos quedan unas cuantas cosas pendientes en la lista de tareas, pero las afrontaremos en los siguientes capítulos.
 
 * Que pueda devolver una Collection de objetos filtrados conforme a un criterio (filter)
 * Que pueda agregar la Collection (reduce)

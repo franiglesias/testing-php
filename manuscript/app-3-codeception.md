@@ -10,7 +10,7 @@ Con composer sólo hay que requerir la dependencia:
 composer require "codeception/codeception" --dev
 ```
 
-Si estamos en un proyecto Symfony 4, Flex detectará que puede instalar una receta específica y generará todo lo necesario para empezar con Codeception.
+Si estamos en un proyecto **Symfony 4**, **Flex** detectará que puede instalar una receta específica y generará todo lo necesario para empezar con **Codeception**, aunque esta solución no me convence nada.
 
 Puedes invocar codeception en:
 
@@ -24,17 +24,17 @@ Opcionalmente, puedes hacer un enlace simbólico o alias para poder invocarlo de
 ln --symbolic ../vendor/bin/codecept  bin/codecept
 ```
 
-Si no sea ha generado automáticamente, puedes preparar el proyecto para usar codeception lanzando:
+Si no se ha generado automáticamente, puedes preparar el proyecto para usar **codeception** lanzando:
 
 ```bash
 vendor/bin/codecept bootstrap
 ```
 
-Esto preparará todo lo necesario, incluyendo las carpetas necesarias para generar los tests y las definiciones de las suites.
+Esto preparará todo lo necesario, incluyendo las carpetas en las que organizar los tests y las definiciones de las suites.
 
 ## Ejemplo de uso
 
-Para mostrar el modo en que trabaja codeception, vamos a mostrar cómo podríamos hacer una suite para probar los endpoint de nuestras API.
+Para dar un ejemplo del modo en que trabaja **codeception**, vamos a mostrar cómo podríamos hacer una suite para probar los endpoint de nuestras API.
 
 ### Test de api
 
@@ -90,7 +90,7 @@ modules:
 
 *Nota: En el ejemplo, estoy usando un entorno docker en el que la ip del servidor web es 172.22.0.4. Este dato podría ser diferente en tu caso concreto.*
 
-Fundamentalmente, lo que hace este archivo es indicarle a codeception que utilice un actor llamado **ApiTester** y un helper llamado **Api**, lo cual nos proporcionará métodos específicos para escribir los tests de api de una manera significativa.
+Fundamentalmente, lo que hace este archivo es indicarle a **codeception** que utilice un actor llamado **ApiTester** y un helper llamado **Api**, lo cual nos proporcionará métodos específicos para escribir los tests de api de una manera significativa.
 
 A continuación, vamos a generar una plantilla para un primer test:
 
@@ -147,7 +147,7 @@ Para empezar, el parámetro `$I` es el tester y nos permite escribir los test en
 
 La primera línea, `$I->sendGET('/lucky/number');`, nos dice que enviamos una petición GET a una URI, que es el endpoint bajo test.
 
-La segunda línea, `$I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK)`, nos dice que lo que esperamos es ver que el código de respuesta de la petición anterior debería ser 200 (OK).
+La segunda línea, `$I->seeResponseCodeIs(HttpCode::OK)`, nos dice que lo que esperamos es ver que el código de respuesta de la petición anterior debería ser 200 (OK).
 
 La última línea, `$I->seeResponseMatchesJsonType(['number' => 'integer']);`, verifica que la respuesta tiene un campo `number` que es un entero.
 
@@ -201,5 +201,5 @@ class LuckyControllerTest extends WebTestCase
 
 En comparación, el test de **phpunit** resulta más oscuro y técnico, mientras que el de **codeception** puede leerse como una descripción casi narrativa de lo que debería ocurrir en ese *endpoint*.
 
-Básicamente, lo que hace **codeception** es poner una capa sobre **phpunit** que adapta el *framework* para que sea más fácil escribir los distintos niveles de tests, eliminando algunos de los preparativos que tendríamos que escribir.
+Básicamente, lo que hace **codeception** es poner una capa sobre **phpunit** que adapta el *framework* para que sea más fácil escribir los distintos niveles de tests, eliminando algunos de los preparativos que tendríamos que incluir para que pueda funcionar.
 

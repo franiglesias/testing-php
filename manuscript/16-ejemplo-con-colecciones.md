@@ -16,7 +16,7 @@ Y nuestra lista de tareas había quedado así:
 
 Antes de nada, voy a hacer un poco de limpieza en la lista.
 
-Los puntos de devolver la colección para hacer pipelines y el tema de la inmutabilidad están más o menos recogidos en las implementaciones que hemos hecho hasta ahora y lo cierto es que la que vamos a afrontar ahora (la del método filter) lo implica claramente, así que las voy a tachar de la lista.
+Los puntos de devolver la colección para hacer *pipelines* y el tema de la inmutabilidad están más o menos recogidos en las implementaciones que hemos hecho hasta ahora y lo cierto es que la que vamos a afrontar ahora (la del método `filter`) lo implica claramente, así que las voy a tachar de la lista.
 
 Por otro lado, voy a reorganizarla un poco para poner cerca cuestiones que son similares. Finalmente, la lista queda así:
 
@@ -28,14 +28,14 @@ Por otro lado, voy a reorganizarla un poco para poner cerca cuestiones que son s
 * Método isEmpty que nos diga si la colección está vacía
 * Método getType devuelve tipo de la colección
 
-## Estos artículos van de TDD más que de Collections
+## Estos capítulos tratan de TDD más que de Collections
 
-A estas alturas debería estar claro que lo que me importa de estos artículos es más el aprendizaje de la metodología TDD que la creación de una biblioteca de Collections. La biblioteca puede ser útil _per se_ y podríamos hablar de ello en otro artículo, pero para mí esta serie es algo parecido a una kata con la que mejorar mis habilidades como desarrollador que utiliza TDD siempre que puede.
+A estas alturas debería estar claro que lo que me importa de estos capítulos es más el aprendizaje de la metodología TDD que la creación de una biblioteca de Collections. La biblioteca puede ser útil _per se_ y podríamos hablar de ello en otro lugar, pero para mí este ejercicio es algo parecido a una kata con la que mejorar mis habilidades como desarrollador que utiliza TDD siempre que puede. Y, en el contexto del libro, es un modo de recapitular todo lo que hemos ido aprendiendo.
 
 En realidad, a medida que profundizo en este proyecto, me doy cuenta de la capacidad de TDD para aprender a programar mejor y para conseguir mejores diseños de software:
 
 * La metodología te va guiando paso por paso: no importa lo complejo que pueda ser el problema porque lo estás dividiendo en trozos muy pequeños y manejables.
-* Cada fragmento del problema acaba teniendo una implementación cuya dificultad oscila entre lo obvio y los sencillo. Si la implementación es complicada, es porque seguramente estamos testeando algo que no debemos o no estamos desmenuzando bien el problema.
+* Cada fragmento del problema acaba teniendo una implementación cuya dificultad oscila entre lo obvio y lo bastante sencillo. Si la implementación es complicada, es porque seguramente estamos testeando algo que no debemos o no estamos desmenuzando bien el problema.
 * El ciclo test mínimo que falle - implementación mínima para pasar el test te permite no agobiarte tratando de mantener una imagen completa del problema en la cabeza. Vas dando pequeños pasos y, cuando te das cuenta, has llegado al final sin cansarte.
 * Y cuando llegas al final tienes un producto que funciona, que posiblemente no de grandes problemas de integración (y si los da, puedes crear nuevos tests para probarlos) y que tiene una cobertura de tests del 100%, por lo que cualquier regresión se manifestará enseguida.
 
@@ -67,7 +67,7 @@ Podemos adoptar dos enfoques. Hasta ahora, hemos escrito un test para probar cad
 
 Yo voy a optar por la primera y dar pasos más cortos.
 
-Mi primer test mínimo prueba que `filter` devuelve un objeto Collection:
+Mi primer test mínimo prueba que `filter` devuelve un objeto `Collection`:
 
 ```php
     public function testFilterShouldReturnACollection()
@@ -80,7 +80,7 @@ Mi primer test mínimo prueba que `filter` devuelve un objeto Collection:
     }
 ```
 
-El test fallará puesto que no existe el método filter y volverá a fallar al proponer una implementación vacía. 
+El test fallará puesto que no existe el método `filter` y volverá a fallar al proponer una implementación vacía. 
 
 ```php
     public function filter(Callable $function)
@@ -97,9 +97,9 @@ De momento, nos bastará retornar la propia Collection para volver a verde. Sí,
     }
 ```
 
-Ahora que estamos en verde y que no hay implementación más sencilla posible, vayamos al siguiente punto, que es el que trata sobre el tipo de objeto de la lista. Nos damos cuenta de que ese test no nos va a servir de nada, al menos no en este momento, así que lo dejaremos para el final. ¿Por qué sabemos que no nos va a servir de nada? Pues porque ese test va a pasar a la primera ya que estamos devolviendo el mismo objeto Collection sobre el que operamos. Y lo mismo ocurre con el siguiente (la colección devuelta está vacía).
+Ahora que estamos en verde y que no hay implementación más sencilla posible, vayamos al siguiente punto, que es el que trata sobre el tipo de objeto de la lista. Nos damos cuenta de que ese test no nos va a servir de nada, al menos no en este momento, así que lo dejaremos para el final. ¿Por qué sabemos que no nos va a servir de nada? Pues porque ese test va a pasar a la primera ya que estamos devolviendo el mismo objeto `Collection` sobre el que operamos. Y lo mismo ocurre con el siguiente (la colección devuelta está vacía).
 
-Lo que necesitamos siempre para avanzar es un test que falle y eso nos lleva al punto cuatro: la Collection no es la misma que la original. Este tests sí va a fallar, obligándonos a introducir un cambio en la implementación suficiente para pasar:
+Lo que necesitamos siempre para avanzar es un test que falle y eso nos lleva al punto cuatro: la `Collection` no es la misma que la original. Este test sí va a fallar, obligándonos a introducir un cambio en la implementación suficiente para pasar:
 
 ```php
     public function testFilterShouldReturnNewCollection()
@@ -138,7 +138,7 @@ En el caso comprobar el tipo de objeto, sí que podemos.
     }
 ```
 
-Prueba superada. El método `filter` devuelve una Collection de `stdClass` y nosotros queremos una de `CollectionTest`. Por tanto, debemos cambiar la implementación para que podamos volver al verde:
+Prueba superada. El método `filter` devuelve una `Collection` de `stdClass` y nosotros queremos una de `CollectionTest`. Por tanto, debemos cambiar la implementación para que podamos volver al verde:
 
 ```php
     public function filter(Callable $function)
@@ -192,7 +192,7 @@ Trataremos el caso particular con una cláusula de guarda, sin más.
     }
 ```
 
-Ahora, podríamos probar el caso de que la función de filtrado devuelva false. Entonces la colección devuelta por filter no podrá tener elementos. Este test falla:
+Ahora, podríamos probar el caso de que la función de filtrado devuelva `false`. Entonces la colección devuelta por filter no podrá tener elementos. Este test falla:
 
 ```php
     public function testFilterShouldNotIncludeElementIfCallableReturnsFalse()
@@ -222,7 +222,7 @@ Obligándonos a hacer una implementación mínima del filtrado para que el test 
     }
 ```
 
-Para nuestro siguiente test necesitamos que la lista tenga más de un elemento. En la implementación de los métodos each y map llegamos a la conclusión de que dos elementos serían suficientes para probar que la función funcionaría bien para cualquier tamaño de colección.
+Para nuestro siguiente test necesitamos que la lista tenga más de un elemento. En la implementación de los métodos `each` y `map` llegamos a la conclusión de que dos elementos serían suficientes para probar que la función funcionaría bien para cualquier tamaño de colección.
 
 ```php
     public function testFilterShouldIterateOverAllElements()
@@ -286,7 +286,7 @@ Mi apuesta es que el test pasará.
 
 Y lo hace.
 
-## Ahorrando algunos tests con return type y type hinting
+## Ahorrando algunos tests con *return type* y *type hinting*
 
 La primera regla de TDD dice que lo primero es escribir el test más sencillo posible que falle (y no compilar es fallar). Esto quiere decir que si el test no se puede ejecutar porque hemos cometido un error al escribir la implementación, o aún no la hemos escrito, es lo mismo que decir que el test falla. El error nos dice qué tenemos que hacer.
 
@@ -319,7 +319,7 @@ Pero usando return type, el test resulta innecesario, ya que el intérprete me o
     }
 ```
 
-No funcionaría porque el intérprete lanza un error, y no se ejecuta el código hasta que devolvemos un Collection, haciendo el test innecesario por redundante. Si más adelante la implementación provocase devolver un objeto que no fuese Collection, el propio intérprete haría fallar todos los tests implicados.
+No funcionaría porque el intérprete lanza un error, y no se ejecuta el código hasta que devolvemos un `Collection`, haciendo el test innecesario por redundante. Si más adelante la implementación provocase devolver un objeto que no fuese `Collection`, el propio intérprete haría fallar todos los tests implicados.
 
 Es más, incluso es posible que nuestro test del tipo devuelto sea insuficiente si el método puede tener varios puntos de salida, con la posibilidad de devolver cosas diferentes:
 
@@ -336,7 +336,7 @@ Es más, incluso es posible que nuestro test del tipo devuelto sea insuficiente 
 
 Este código podría no hacer fallar el test del tipo devuelto si `$someCondition` no se cumple al ejecutarlo (en el caso de que el test no contemple la posibilidad de que haya varios puntos de retorno), aunque sí podría hacer que fallasen otros.
 
-Pero con return type el intérprete fallará en el momento en que el flujo intente retornar por la rama del if, haya o no haya tests que lo comprueben explícitamente.
+Pero con *return type* el intérprete fallará en el momento en que el flujo intente retornar por la rama del `if`, haya o no haya tests que lo comprueben explícitamente.
 
 ```php
     public function filter(Callable $function) : Collection
@@ -349,7 +349,7 @@ Pero con return type el intérprete fallará en el momento en que el flujo inten
     }
 ```
 
-Ocurre lo mismo si hacemos Type hinting en los parámetros de los métodos, incluso de los privados, si el parámetro que se pasa no es del tipo indicado, se lanzará un error y los tests correspondientes fallarán. Eso nos indica, además, que es una buena práctica hacer type hinting en los métodos privados para aumentar la confianza en ese código. Si la implementación cambia en el futuro y deja de respetarse el tipo del parámetro, los tests que ejecuten esa llamada fallarán, alertándonos de una regresión.
+Ocurre lo mismo si hacemos *Type hinting* en los parámetros de los métodos, incluso de los privados, si el parámetro que se pasa no es del tipo indicado, se lanzará un error y los tests correspondientes fallarán. Eso nos indica, además, que es una buena práctica hacer *type hinting* en los métodos privados para aumentar la confianza en ese código. Si la implementación cambia en el futuro y deja de respetarse el tipo del parámetro, los tests que ejecuten esa llamada fallarán, alertándonos de una regresión.
 
 Los programadores de otros lenguajes fuertemente tipados llevan años disfrutando de esta ventaja y es una práctica que merece la pena adoptar.
 
@@ -384,13 +384,13 @@ Volvemos a pasar los tests para asegurarnos de que no rompemos nada.
 
 ## Devolver un objeto
 
-Muy relacionado con el método filter estaría el tener un método que nos permite recuperar un elemento de la colección que cumpla un criterio. Al igual que en el método de filtrado, pasaremos una función que encapsule ese criterio.
+Muy relacionado con el método `filter` estaría el tener un método que nos permite recuperar un elemento de la colección que cumpla un criterio. Al igual que en el método de filtrado, pasaremos una función que encapsule ese criterio.
 
 La diferencia es que nuestro nuevo método debe devolver el primer objeto que encuentre cumpliendo el criterio. Le vamos a llamar `getBy`.
 
-En este caso no podemos hacer return type y será necesario comprobar que el objeto recibido es del tipo deseado.
+En este caso no podemos hacer *return type* y será necesario comprobar que el objeto recibido es del tipo deseado.
 
-El principal problema que nos plantea este método es qué hacer en caso de que no existan elementos de la colección que cumplan los criterios definidos. Las opciones principales son retornar null o lanzar una excepción. 
+El principal problema que nos plantea este método es qué hacer en caso de que no existan elementos de la colección que cumplan los criterios definidos. Las opciones principales son retornar `null` o lanzar una excepción. 
 
 En el segundo caso, la excepción expresaría el hecho de que el elemento debería estar y que lo "raro" es que no esté. Esto tiene sentido en ciertas situaciones, por ejemplo, si hacemos una búsqueda de un objeto por su ID, que sabemos que existe. Otro ejemplo es que hayamos ejecutado filter antes y que hayamos extraído los criterios de `getBy` de los resultados de esa búsqueda.
 
