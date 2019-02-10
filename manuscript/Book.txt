@@ -9,6 +9,7 @@
 7-clean-testing.md
 8-test-doubles-1.md
 9-test-doubles-2.md
+9b-test-doubles-3.md
 10-tdd-babysteps-real-world-project.md
 11-code-coverage-para-mejores-tests.md
 12-testear-lo-impredecible.md

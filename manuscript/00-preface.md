@@ -65,6 +65,8 @@ A partir de ahi, empiezan los capítulos más orientados a la práctica con ejem
 
 *Test doubles (1)* y *Test doubles (2) Principios de diseño* estudian los distintos tipos de dobles de tests, sus aplicaciones y cómo se relacionan con los principios de diseño.
 
+*Test doubles(3) un proyecto desde cero* es, como indica su título un proyecto de TDD usando doubles.
+
 *Resolver problemas con baby-steps* es un capítulo que vuelve a incidir sobre la base de la metodología TDD.
 
 *Usar el code coverage para mejorar los tests* busca reflexionar sobre la utilidad de la medida de la cobertura de código para mejorar nuestra batería de tests.
@@ -77,5 +79,18 @@ Lo ideal sería que te animases a realizar los ejemplos por tu cuenta y en tu pr
 
 Finalmente, una serie de apéndices aportan información de carácter más práctico sobre algunos de los frameworks de testing y TDD disponibles para PHP, así como un *dojo*, un proyecto básico PHP/Symfony *dockerizado* que puedes usar para practicar tanto los ejemplos del libro como cualquier otro que se te ocurra.
 
+## Gracias
 
+Posiblemente este proyecto nació, aunque entonces no lo sabía, en un meetup de [PHPVigo](https://vigotech.org) en el que hice una charla introduciendo el tema del testing y que, de hecho, es más o menos el primer capítulo de introducción. Todo lo demás, el blog y el propio libro son, por así decir, extensiones de esa charla.
 
+Así que gracias a la gente de PHPVigo, en particular Sergio Carracedo, Félix Gómez y Rolando Caldas, por haber confiado en un perfecto desconocido aquel día de hace ya un par de años.
+
+Hablando de confiar en desconocidos, poco después de esa charla me vine a trabajar a Barcelona. Gracias a Ricard Clau por hacer que eso fuera posible. Y gracias especiales a Raúl Araya por un montón de cosas, que mejoraron mucho mi vida aquí.
+
+Aprendí muchísimo en los coding dojo de la [Software Crafters](https://www.meetup.com/es-ES/Software-Crafters-Barcelona/) en donde, además, me sentí muy acogido. No os menciono en detalle porque seguro que me olvido de alguien y sería muy injusto.
+
+Gracias a Javi y Rafa, de [CodelyTV](https://codely.tv), por apoyar el libro como lo están haciendo. 
+
+Gracias a Alexey Pyltsyn, que está preparando la versión en ruso del libro.
+
+Y, por supuesto, gracias a todo el equipo de HolaluzEng, por haberme hecho sentir en casa desde el primer día, por ayudarme a crecer profesionalmente y por estar ahí siempre que lo he necesitado.
