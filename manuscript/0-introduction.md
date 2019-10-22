@@ -218,7 +218,7 @@ TDD favorece lo que se llama diseño emergente: al ir añadiendo tests, que eva
 
 La consecuencia de seguir la disciplina TDD es que tu código está automáticamente documentado y respaldado por tests en todo momento. No hay que esperar. Si un cambio introduce un problema, habrá un test que falle. El código estará listo para funcionar casi en el mismo momento de escribirlo. ¿Qué no te gusta la arquitectura y podrías hacerlo mejor? Los tests te protegen de los cambios porque cuando rompas algo lo sabrás de inmediato.
 
-Las consecuencias en la calidad de tu código también se notarán. Para escribir tests de esta manera tienes que crear código desacoplado. Seguir [los principios SOLID](/principios-solid/) como guía en la toma de decisiones es lo que te va a permitir lograr justamente eso.
+Las consecuencias en la calidad de tu código también se notarán. Para escribir tests de esta manera tienes que crear código desacoplado. Seguir [los principios SOLID](https://es.wikipedia.org/wiki/SOLID) como guía en la toma de decisiones es lo que te va a permitir lograr justamente eso.
 
 Es posible que, al principio, no te veas capaz de llegar a este nivel de trabajo y micro-progresión y tu práctica sea más desorganizada. Pero no te preocupes, avanza hacia ese objetivo. Un paso cada vez.
 
