@@ -251,6 +251,7 @@ Un framework para testing es un paquete de software que nos permite escribir tes
 
 Si no usamos un framework, podríamos escribir un test más o menos así, en *pseudocódigo*:
 
+```
 function shouldCalculateFee()
 {
     // Given / Arrange 
@@ -269,6 +270,7 @@ function shouldCalculateFee()
     throw Exception('CalculateFee failed')
     
 }
+```
 
 Usando un framework el test podría ser así:
 
@@ -288,7 +290,7 @@ function shouldCalculateFee()
 }
 ```
 
-Aunque el código es muy similar, usar un framework de tests aporta varias ventajas:
+Aunque el código es muy similar, usar un framework de test aporta varias ventajas:
 
 * Ofrece un conjunto de aserciones que nos permiten verificar de forma expresiva diversos tipos de resultados de nuestras pruebas.
 * Recopila información sobre la ejecución de los tests, mostrando estadísticas, tiempo de ejecución, etc.
@@ -298,7 +300,7 @@ Las aserciones (*asserts* o *matchers*) son funciones provistas por el framework
 
 Existen varios tipos o familias de frameworks, según su orientación:
 
-* **xUnit**: es el tipo más genérico. Los tests se estructura en TestCases y utiliza aserciones para verificar los resultados (JUnit, PHPUNit, etc).
+* **xUnit**: es el tipo más genérico. Los tests se estructura en TestCases y utiliza aserciones para verificar los resultados (JUnit, PHPUnit, etc).
 * **xSpec**: los test de tipo Spec se usan en metodologías TDD o Behavior Driven Development y ponen el énfasis en la descripción del comportamiento esperado de las unidades bajo test (RSpec, phpspec, JSpec).
 * **xBehave**: son frameworks para Behavior Driven Development, se orientan a la realización de tests de aceptación (JBehave, Cucumber, Behat).
 
