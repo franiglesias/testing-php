@@ -522,13 +522,13 @@ Por ejemplo, esto sería como tener un Product cuyo `id` es el especificado en `
 ```php
 $product->method('id')->willReturn($id);
 ```
-En otro capítulo veremos algunas cosas con más detalle.
+En otro capítulo profundizaremos en la creación y uso de dobles de test.
 
-Finalmente, si ejecutamos el test, veremos que también pasa.
+Finalmente, si ejecutamos el test, comprobaremos que también pasa.
 
 ## Testeando que podemos añadir productos al carro
 
-Con lo anterior hemos comprobado que podemos instanciar el carro y podemos tachar dos requisitos de nuestra lista. Nuestro objetivo ahora es probar que podemos añadir productos. En cierto modo ya sabemos que esto se cumple puesto tenemos un test que muestra que podemos instanciar el carro añadiendo un producto. Además, si vemos el código podemos comprobar que internamente se llama al método que añade productos, lo que implica que el test existente prueba, indirectamente, el comportamiento que vamos a examinar ahora.
+Con lo anterior hemos verificado que podemos instanciar el carro y podemos tachar dos requisitos de nuestra lista. Nuestro objetivo ahora es probar que podemos añadir productos. En cierto modo ya sabemos que esto se cumple pues tenemos un test que muestra que es posible instanciar el carro añadiendo un producto. Además, si vemos el código podemos comprobar que internamente se llama al método que añade productos, lo que implica que el test existente prueba, indirectamente, el comportamiento que vamos a examinar ahora.
 
 Sin embargo, cuando hacemos tests unitarios, deberíamos considerar la clase bajo test como una caja negra y no pensar en su implementación, sino en su comportamiento observable. Podría ocurrir que la forma de añadir productos al carro fuese distinta en la creación que durante el resto de su ciclo de vida, por lo que testear explícitamente el método para añadir productos es mucho más seguro.
 
@@ -563,7 +563,7 @@ public function testShouldAddAProduct(): void
 }
 ```
 
-Si queremos testear que podemos añadir una cantidad de productos mayor que uno, nos encontramos que no nos vale el mismo test. `count` nos dice cuántos productos distintos hay, mientras que `totalProducts` nos dice cuántas unidades de productos hay en total. Primero veremos el test y luego analizaremos algunas cosas interesantes:
+Si queremos testear que podemos añadir una cantidad de productos mayor a uno, nos encontramos que no nos vale el mismo test. `count` nos dice cuántos productos distintos hay, mientras que `totalProducts` nos dice cuántas unidades de productos hay en total. Primero veremos el test y luego analizaremos algunas cosas interesantes:
 
 ```php
 public function testShouldAddAProductInQuantity(): void
