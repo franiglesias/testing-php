@@ -84,7 +84,7 @@ Volviendo al punto anterior, la sensación de *tarea terminada* es determinante 
 
 La respuesta es otra pregunta: ¿cómo puedes decir que el producto funciona si no lo has testeado?
 
-Es habitual tener la siguiente experiencia: dedicar un tiempo a desarrollar un código, entregarlo y tener que emplear el mismo tiempo o más para corregir detectar y corregir errores que se han manifestado tras entregar el producto. De tal modo que la definición de producto **terminado** queda completamente cuestionada: ¿podemos decir que un producto está terminado si tenemos que corregir errores que impiden su funcionamiento en muchos de los casos de uso habituales?
+Es habitual tener la siguiente experiencia: dedicar un tiempo a desarrollar un código, entregarlo y tener que emplear el mismo tiempo o más para detectar y corregir errores que se han manifestado tras entregar el producto. De tal modo que la definición de producto **terminado** queda completamente cuestionada: ¿podemos decir que un producto está terminado si tenemos que corregir errores que impiden su funcionamiento en muchos de los casos de uso habituales?
 
 Ese tiempo que hemos tenido que dedicar a corregir errores hubiera podido dedicarse a prevenirlos mediante un testeo adecuado que guiase el desarrollo. No sólo eso, los errores pueden tener consecuencias en forma de pérdida de ingresos, publicidad negativa, etc, que son medibles y, muy probablemente, supongan un mayor coste que haber tratado de garantizar una buena cobertura de tests.
 
